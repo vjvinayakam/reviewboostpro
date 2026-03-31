@@ -1532,7 +1532,7 @@ function sendWhatsApp() {
   }
 
   // Auto-generate funnel URL from current page — always correct
-  var reviewLink = window.location.origin + window.location.pathname + '?review=true';
+  var reviewLink = 'https://vjvinayakam.github.io/reviewboostpro/?review=true';
   var template = document.getElementById('msg-template').value || appState.messageTemplate;
   var msg = template
     .replace(/{name}/g, name)
@@ -1573,7 +1573,7 @@ function testWhatsAppLink() {
     document.getElementById('cust-phone').focus();
     return;
   }
-  var reviewLink = window.location.origin + window.location.pathname + '?review=true';
+  var reviewLink = 'https://vjvinayakam.github.io/reviewboostpro/?review=true';
   var template = document.getElementById('msg-template') ? document.getElementById('msg-template').value : appState.messageTemplate;
   var msg = template
     .replace(/{name}/g, name)
@@ -1608,7 +1608,7 @@ function onGoogleLinkInput() {
 function updatePreview() {
   var name = document.getElementById('cust-name').value || 'Customer';
   var template = document.getElementById('msg-template') ? document.getElementById('msg-template').value : appState.messageTemplate;
-  var reviewLink = window.location.origin + window.location.pathname + '?review=true';
+  var reviewLink = 'https://vjvinayakam.github.io/reviewboostpro/?review=true';
   var linkDisplay = reviewLink;
   var msg = template
     .replace(/{name}/g,'<em>'+name+'</em>')
