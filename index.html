@@ -330,8 +330,9 @@ tr:hover td{background:rgba(34,197,94,.03);}
 .star-btn{font-size:2.5rem;background:none;border:none;opacity:.3;transition:opacity .2s,transform .2s;}
 .star-btn.active,.star-btn:hover{opacity:1;transform:scale(1.15);}
 .star-label{font-size:.85rem;color:var(--mid);margin-bottom:1.5rem;min-height:1.2em;}
-.btn-funnel{width:100%;padding:.9rem;background:var(--green);border:none;border-radius:10px;color:#000;font-size:.95rem;font-weight:600;transition:background .2s,transform .2s;}
+.btn-funnel{width:100%;padding:.9rem;background:var(--green);border:none;border-radius:10px;color:#000;font-size:.95rem;font-weight:600;transition:background .2s,transform .2s,opacity .2s;}
 .btn-funnel:hover{background:var(--green-l);transform:translateY(-1px);}
+.btn-funnel.disabled{opacity:.4;pointer-events:none;}
 .funnel-privacy{font-size:.75rem;color:var(--dim);margin-top:1rem;}
 
 /* FEEDBACK SCREEN */
@@ -1028,7 +1029,7 @@ Could you spare 30 seconds to rate us? It means the world to small businesses li
       <button class="star-btn" onclick="selectStar(5)">⭐</button>
     </div>
     <div class="star-label" id="star-label">Tap a star to rate</div>
-    <button class="btn-funnel" id="funnel-btn" onclick="submitRating()" style="opacity:.4;pointer-events:none">Continue →</button>
+    <button class="btn-funnel" id="funnel-btn" onclick="submitRating()">Continue →</button>
     <div class="funnel-privacy">🔒 Your response is confidential</div>
   </div>
 </div>
@@ -1124,7 +1125,7 @@ function initApp() {
     var lbl = document.getElementById('star-label');
     if(lbl) lbl.textContent = 'Tap a star to rate';
     var fbtn = document.getElementById('funnel-btn');
-    if(fbtn){ fbtn.style.opacity='0.4'; fbtn.style.pointerEvents='none'; }
+    if(fbtn){ fbtn.classList.add('disabled'); }
     // make page visible
     document.documentElement.style.visibility = 'visible';
   } else {
@@ -1585,7 +1586,7 @@ function selectStar(n) {
   var labels = ['','Terrible 😞','Poor 😕','Okay 😐','Good 😊','Excellent! 🤩'];
   document.getElementById('star-label').textContent = labels[n];
   var btn = document.getElementById('funnel-btn');
-  btn.style.opacity='1'; btn.style.pointerEvents='auto';
+  if(btn){ btn.classList.remove('disabled'); }
 }
 
 function submitRating() {
