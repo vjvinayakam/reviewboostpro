@@ -38,6 +38,7 @@ input,textarea,select{font-family:'Geist',sans-serif;}
 /* ── SCREENS ── */
 .screen{display:none;min-height:100vh;}
 .screen.active{display:block;}
+#screen-funnel.active,#screen-feedback.active,#screen-thanks.active,#screen-auth.active{display:flex !important;}
 
 /* ══════════════════════════════════════
    SCREEN 1 — LANDING PAGE
@@ -431,7 +432,7 @@ tr:hover td{background:rgba(34,197,94,.03);}
 <!-- ═══════════════════════════════════════
      SCREEN 1: LANDING PAGE
 ═══════════════════════════════════════ -->
-<div id="screen-landing" class="screen active">
+<div id="screen-landing" class="screen">
 
 <!-- NAV -->
 <nav id="main-nav">
@@ -1040,7 +1041,7 @@ Could you spare 30 seconds to rate us? It means the world to small businesses li
   <div class="feedback-card">
     <div class="feedback-icon">🙏</div>
     <div class="feedback-h">We're sorry to hear that</div>
-    <div class="feedback-sub">Please tell us what went wrong. Your feedback goes directly to the owner — not to Google.</div>
+    <div class="feedback-sub">Please tell us what went wrong. <strong>Your feedback goes directly and privately to the business owner — it will NOT be posted on Google.</strong></div>
     <div class="feedback-tags" id="feedback-tags">
       <button class="tag-btn" onclick="toggleTag(this)">⏱️ Long wait time</button>
       <button class="tag-btn" onclick="toggleTag(this)">😐 Staff attitude</button>
@@ -1071,10 +1072,15 @@ Could you spare 30 seconds to rate us? It means the world to small businesses li
 </div>
 
 <script>
+// ═══════════════ EARLY URL CHECK ═══════════════
+// Hide page immediately to prevent flash of wrong screen
+document.documentElement.style.visibility='hidden';
+
 // ═══════════════ STATE ═══════════════
 var appState = {
   bizName: 'My Business',
   googleLink: 'https://g.page/your-business/review',
+  funnelUrl: 'https://vjvinayakam.github.io/reviewboostpro/?review=true',
   messageTemplate: "Hi {name} 👋\n\nThank you for visiting {business}! We hope you had a great experience.\n\nCould you spare 30 seconds to rate us? It means the world to small businesses like ours! 🙏\n\n👉 {review_link}",
   sends: [],
   customers: [],
@@ -1091,8 +1097,49 @@ try {
   }
 } catch(e) {}
 
+// URL routing handled by initApp()
+
 function saveState() {
   try { localStorage.setItem('rbp_state', JSON.stringify(appState)); } catch(e) {}
+}
+
+// ═══════════════ INIT — decide which screen to show ═══════════════
+function initApp() {
+  var params = new URLSearchParams(window.location.search);
+  if(params.get('review') === 'true') {
+    // Customer clicked review link — show funnel immediately
+    document.querySelectorAll('.screen').forEach(function(s){
+      s.classList.remove('active');
+      s.style.display = '';
+    });
+    var funnel = document.getElementById('screen-funnel');
+    funnel.classList.add('active');
+    funnel.style.display = 'flex';
+    // set business name from state
+    var bn = document.getElementById('funnel-biz-name');
+    if(bn) bn.textContent = appState.bizName || 'My Business';
+    // reset star state
+    appState.selectedStar = 0;
+    document.querySelectorAll('.star-btn').forEach(function(s){ s.classList.remove('active'); });
+    var lbl = document.getElementById('star-label');
+    if(lbl) lbl.textContent = 'Tap a star to rate';
+    var fbtn = document.getElementById('funnel-btn');
+    if(fbtn){ fbtn.style.opacity='0.4'; fbtn.style.pointerEvents='none'; }
+    // make page visible
+    document.documentElement.style.visibility = 'visible';
+  } else {
+    // Normal visit — show landing page
+    var landing = document.getElementById('screen-landing');
+    landing.classList.add('active');
+    document.documentElement.style.visibility = 'visible';
+  }
+}
+
+// Run init as soon as DOM is ready
+if(document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initApp);
+} else {
+  initApp();
 }
 
 // ═══════════════ CURSOR ═══════════════
@@ -1127,7 +1174,15 @@ function showScreen(id) {
 }
 function showLanding() { showScreen('screen-landing'); }
 function showAuth(tab) { showScreen('screen-auth'); switchAuthTab(tab); }
-function showFunnel() { showScreen('screen-funnel'); document.getElementById('funnel-biz-name').textContent = appState.bizName; }
+function showFunnel() {
+  showScreen('screen-funnel');
+  document.getElementById('funnel-biz-name').textContent = appState.bizName || 'My Business';
+  appState.selectedStar = 0;
+  document.querySelectorAll('.star-btn').forEach(function(s){ s.classList.remove('active'); });
+  document.getElementById('star-label').textContent = 'Tap a star to rate';
+  var btn = document.getElementById('funnel-btn');
+  if(btn){ btn.style.opacity='.4'; btn.style.pointerEvents='none'; }
+}
 function goToDashboard() {
   var n = document.getElementById('biz-name');
   if(n && n.value) appState.bizName = n.value;
@@ -1210,15 +1265,17 @@ function resetSignupForm(){
   var biz=appState._pendingBiz||'';
   var owner=appState._pendingOwner||'';
   var email=appState._pendingEmail||'';
-  document.getElementById('form-signup').innerHTML=
-    '<div class="auth-error-banner" id="signup-error" style="display:block">Looks like there was a typo. Please correct your email and try again.</div>'+
-    '<div class="form-group" id="fg-biz"><label>Business name</label><input type="text" class="form-input" placeholder="e.g. SmileCare Dental Clinic" id="biz-name" oninput="clearFieldError(\'fg-biz\')" value="'+biz+'"><span class="field-error">Please enter your business name.</span></div>'+
-    '<div class="form-group" id="fg-owner"><label>Your name</label><input type="text" class="form-input" placeholder="Dr. Priya Sharma" id="signup-owner" oninput="clearFieldError(\'fg-owner\')" value="'+owner+'"><span class="field-error">Please enter your name.</span></div>'+
-    '<div class="form-group" id="fg-email"><label>Email address</label><input type="email" class="form-input" placeholder="you@yourbusiness.com" id="signup-email" oninput="clearFieldError(\'fg-email\')" value="'+email+'"><span class="field-error" id="fg-email-msg">Please enter a valid email address.</span></div>'+
-    '<div class="form-group" id="fg-pass"><label>Password</label><input type="password" class="form-input" placeholder="At least 6 characters" id="signup-pass" oninput="clearFieldError(\'fg-pass\')"><span class="field-error" id="fg-pass-msg">Password must be at least 6 characters.</span></div>'+
-    '<button class="btn-auth" id="btn-signup" onclick="validateSignup()">Create account →</button>'+
-    '<div class="auth-note">By signing up you agree to our <a href="#">Terms</a> &amp; <a href="#">Privacy Policy</a></div>';
-  // auto-focus email field so user can fix it immediately
+  var el=document.getElementById('form-signup');
+  if(!el) return;
+  // Build form parts separately to avoid escaping issues
+  var errDiv='<div class="auth-error-banner" id="signup-error" style="display:block">Looks like there was a typo. Please correct your email and try again.</div>';
+  var bizDiv='<div class="form-group" id="fg-biz"><label>Business name</label><input type="text" class="form-input" placeholder="e.g. SmileCare Dental Clinic" id="biz-name" value="'+biz+'"><span class="field-error">Please enter your business name.</span></div>';
+  var ownerDiv='<div class="form-group" id="fg-owner"><label>Your name</label><input type="text" class="form-input" placeholder="Dr. Priya Sharma" id="signup-owner" value="'+owner+'"><span class="field-error">Please enter your name.</span></div>';
+  var emailDiv='<div class="form-group" id="fg-email"><label>Email address</label><input type="email" class="form-input" placeholder="you@yourbusiness.com" id="signup-email" value="'+email+'"><span class="field-error">Please enter a valid email address.</span></div>';
+  var passDiv='<div class="form-group" id="fg-pass"><label>Password</label><input type="password" class="form-input" placeholder="At least 6 characters" id="signup-pass"><span class="field-error">Password must be at least 6 characters.</span></div>';
+  var btnDiv='<button class="btn-auth" id="btn-signup" onclick="validateSignup()">Create account →</button>';
+  var noteDiv='<div class="auth-note">By signing up you agree to our <a href="#">Terms</a> &amp; <a href="#">Privacy Policy</a></div>';
+  el.innerHTML = errDiv+bizDiv+ownerDiv+emailDiv+passDiv+btnDiv+noteDiv;
   setTimeout(function(){
     var ef=document.getElementById('signup-email');
     if(ef){ef.focus();ef.select();}
@@ -1334,7 +1391,7 @@ function updateDashboard() {
     var glEl = document.getElementById('google-review-link');
     if(glEl && appState.googleLink) glEl.value = appState.googleLink;
     var fuEl = document.getElementById('saas-funnel-url');
-    if(fuEl && appState.funnelUrl) fuEl.value = appState.funnelUrl;
+    if(fuEl) fuEl.value = appState.funnelUrl || 'https://vjvinayakam.github.io/reviewboostpro/?review=true';
     var mtEl = document.getElementById('msg-template');
     if(mtEl && appState.messageTemplate) mtEl.value = appState.messageTemplate;
     updatePreview();
@@ -1534,42 +1591,71 @@ function selectStar(n) {
 function submitRating() {
   var n = appState.selectedStar;
   if(!n) return;
-  if(n<=3) {
+
+  if(n <= 3) {
+    // 1-3 stars → private feedback form
     showScreen('screen-feedback');
   } else {
-    // 4-5 stars → Google
-    var link = appState.googleLink || 'https://g.page/your-business/review';
-    window.open(link,'_blank');
+    // 4-5 stars → redirect to Google Review page
+    var googleLink = appState.googleLink || '';
     appState.stats.reviews++;
-    // Update latest send
-    if(appState.sends.length>0){
+    if(appState.sends.length > 0){
       var last = appState.sends[appState.sends.length-1];
       last.status='Reviewed'; last.rating=n;
     }
     saveState();
-    document.getElementById('thanks-msg').textContent = 'Thank you! You have been redirected to Google to leave your review. We appreciate your time! ⭐';
-    showScreen('screen-thanks');
+
+    if(googleLink && googleLink !== 'https://g.page/your-business/review' && googleLink.trim() !== '') {
+      // redirect in same tab so it feels native
+      document.getElementById('thanks-msg').textContent = 'Redirecting you to Google to leave your review... ⭐';
+      showScreen('screen-thanks');
+      setTimeout(function(){ window.location.href = googleLink; }, 1500);
+    } else {
+      // Google link not set — show thank you without redirect
+      document.getElementById('thanks-msg').textContent = 'Thank you for your positive feedback! ⭐ The business owner will be notified.';
+      showScreen('screen-thanks');
+    }
   }
 }
 
 function submitFeedback() {
   appState.stats.feedback++;
-  var text = document.getElementById('feedback-text').value;
+  var text = document.getElementById('feedback-text').value.trim();
   var tags = [];
   document.querySelectorAll('#feedback-tags .tag-btn.active').forEach(function(t){ tags.push(t.textContent.trim()); });
-  // Add to inbox
-  var d = document.getElementById('inbox-dynamic');
-  if(d){
-    var now = new Date();
-    var timeStr = 'Just now';
-    d.innerHTML += '<div style="border:1px solid var(--border);border-radius:10px;padding:1.25rem;margin-bottom:.75rem;border-left:3px solid var(--amber)"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem"><div style="font-size:.88rem;font-weight:600">New Customer · '+'⭐'.repeat(appState.selectedStar)+' ('+appState.selectedStar+' stars)</div><div style="display:flex;gap:.5rem"><button class="btn-sm">Mark resolved</button></div></div><div style="font-size:.85rem;color:var(--mid);line-height:1.6">'+(tags.length?tags.join(', ')+'. ':'')+(text||'No additional comments.')+'</div><div style="font-size:.73rem;color:var(--dim);margin-top:.5rem">'+timeStr+'</div></div>';
-  }
-  if(appState.sends.length>0){
+
+  // Save feedback to appState for dashboard inbox
+  if(!appState.feedbackItems) appState.feedbackItems = [];
+  var now = new Date();
+  var timeStr = now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})+', '+now.toLocaleDateString('en-IN',{day:'numeric',month:'short'});
+  appState.feedbackItems.push({
+    rating: appState.selectedStar,
+    tags: tags,
+    message: text || 'No additional comments.',
+    time: timeStr,
+    resolved: false
+  });
+
+  // Update latest send status
+  if(appState.sends.length > 0){
     var last = appState.sends[appState.sends.length-1];
     last.status='Reviewed'; last.rating=appState.selectedStar;
   }
   saveState();
-  document.getElementById('thanks-msg').textContent = 'Your feedback has been sent privately to the business owner. Thank you for helping them improve! 🙏';
+
+  // Add to inbox DOM if dashboard is open
+  var d = document.getElementById('inbox-dynamic');
+  if(d){
+    var borderColor = appState.selectedStar <= 2 ? 'var(--red)' : 'var(--amber)';
+    d.innerHTML += '<div style="border:1px solid rgba(0,0,0,.08);border-radius:10px;padding:1.25rem;margin-bottom:.75rem;border-left:3px solid '+borderColor+';background:#fff">'+
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem">'+
+      '<div style="font-size:.88rem;font-weight:600;color:#111">'+'⭐'.repeat(appState.selectedStar)+' · '+appState.selectedStar+' star'+(appState.selectedStar>1?'s':'')+' (private)</div>'+
+      '<button class="btn-sm" onclick="this.parentElement.parentElement.style.opacity=0.4">Mark resolved</button></div>'+
+      '<div style="font-size:.85rem;color:#4a6b4a;line-height:1.6">'+(tags.length?'<strong>Tags:</strong> '+tags.join(', ')+'<br>':'')+(text||'No additional comments.')+'</div>'+
+      '<div style="font-size:.73rem;color:#8da08d;margin-top:.5rem">Received '+timeStr+'</div></div>';
+  }
+
+  document.getElementById('thanks-msg').textContent = 'Your feedback has been sent privately to the business owner. They will work on it! 🙏';
   showScreen('screen-thanks');
 }
 
