@@ -958,7 +958,7 @@ Could you spare 30 seconds to rate us? It means the world to small businesses li
         <div class="form-group" style="margin-bottom:1.25rem">
           <label style="font-size:.8rem;color:var(--mid);display:block;margin-bottom:.4rem">Your SaaS Review Funnel URL <span style="color:var(--red)">*</span></label>
           <input type="text" class="input-field" id="saas-funnel-url" placeholder="https://yourapp.netlify.app?review=true" value="" oninput="onFunnelUrlInput()">
-          <div style="font-size:.75rem;color:var(--dim);margin-top:.4rem;">This is the link sent to customers in WhatsApp. They land here → rate → 4-5⭐ goes to Google, 1-3⭐ stays private. <span style="color:var(--amber)">Host the app first to get this URL.</span></div>
+          <div style="font-size:.75rem;color:var(--dim);margin-top:.4rem;">This is the link sent in WhatsApp. Keep it short — e.g. <strong>https://vjvinayakam.github.io/reviewboostpro/?review=true</strong> — your Google link is saved separately below.</div>
         </div>
         <div class="form-group" style="margin-bottom:.5rem">
           <label style="font-size:.8rem;color:var(--mid);display:block;margin-bottom:.4rem">Your Google Review link <span style="color:var(--red)">*</span></label>
@@ -1548,18 +1548,7 @@ function sendWhatsApp() {
     .replace(/{business}/g, appState.bizName)
     .replace(/{review_link}/g, reviewLink);
 
-  // Append google link as param so funnel can redirect correctly
-  var googleLinkForUrl = (document.getElementById('google-review-link') && document.getElementById('google-review-link').value.trim()) || appState.googleLink || '';
-  if(googleLinkForUrl && reviewLink.indexOf('?') !== -1){
-    reviewLink = reviewLink + '&g=' + encodeURIComponent(googleLinkForUrl);
-  } else if(googleLinkForUrl){
-    reviewLink = reviewLink + '?g=' + encodeURIComponent(googleLinkForUrl);
-  }
-  // Rebuild message with updated link
-  msg = template
-    .replace(/{name}/g, name)
-    .replace(/{business}/g, appState.bizName)
-    .replace(/{review_link}/g, reviewLink);
+  // Keep WhatsApp link SHORT — Google link is saved in localStorage, funnel reads it from there
   var waUrl = 'https://wa.me/'+phone+'?text='+encodeURIComponent(msg);
   // Use anchor click — cannot be blocked by popup blockers
   var a = document.createElement('a');
@@ -1722,20 +1711,29 @@ function submitRating() {
     }
     saveState();
 
-    // Try multiple sources for the Google link
-    var params = new URLSearchParams(window.location.search);
-    var googleLink = params.get('g') || (appState.googleLink || '').trim();
-    var isRealLink = googleLink && googleLink !== 'https://g.page/your-business/review' && googleLink.length > 10;
+    // Read Google link from localStorage (saved when business owner set it in dashboard)
+    var googleLink = '';
+    try {
+      var st = localStorage.getItem('rbp_state');
+      if(st){ var parsed = JSON.parse(st); googleLink = (parsed.googleLink || '').trim(); }
+    } catch(e){}
+    // Fallback to appState
+    if(!googleLink) googleLink = (appState.googleLink || '').trim();
+    
+    var isRealLink = googleLink && 
+      googleLink !== 'https://g.page/your-business/review' && 
+      googleLink.indexOf('http') === 0 &&
+      googleLink.length > 15;
 
     if(isRealLink){
-      // Redirect immediately to Google — no thank you page
+      // Go straight to Google — no intermediate page
       window.location.href = googleLink;
     } else {
-      // No Google link — show thank you with message
+      // Google link not set — show thank you
       showScreen('screen-thanks');
       document.getElementById('thanks-msg').innerHTML =
         'Thank you for your positive rating! 🌟<br><br>' +
-        '<span style="font-size:.85rem;color:rgba(255,255,255,.6)">The business owner needs to add their Google Review link in the dashboard settings.</span>';
+        '<span style="font-size:.85rem;color:rgba(255,255,255,.5)">We appreciate your time.</span>';
     }
   }
 }
