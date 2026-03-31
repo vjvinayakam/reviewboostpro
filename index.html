@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ReviewBoostPRO — Turn Customers Into Google Reviews</title>
+<title>Rate Your Experience</title>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -1083,9 +1083,9 @@ Could you spare 30 seconds to rate us? It means the world to small businesses li
   <div class="auth-grid-bg"></div>
   <div class="auth-glow"></div>
   <div class="funnel-card">
-    <div class="funnel-biz"><div class="logo-dot" style="width:6px;height:6px"></div> <span id="funnel-biz-name">My Business</span></div>
-    <div class="funnel-h">How was your experience?</div>
-    <div class="funnel-sub">Your honest feedback helps us serve you better.</div>
+    <div class="funnel-biz" style="font-size:.9rem;font-weight:600;color:rgba(255,255,255,.7);margin-bottom:.5rem;"><span id="funnel-biz-name">My Business</span></div>
+    <div class="funnel-h">How was your visit?</div>
+    <div class="funnel-sub">We'd love to hear about your experience with us.</div>
     <div class="star-row" id="star-row">
       <button class="star-btn" onclick="selectStar(1)">⭐</button>
       <button class="star-btn" onclick="selectStar(2)">⭐</button>
@@ -1096,7 +1096,7 @@ Could you spare 30 seconds to rate us? It means the world to small businesses li
     <div class="star-label" id="star-label">Tap a star to rate</div>
     <div id="star-hint" style="font-size:.78rem;color:rgba(255,255,255,.4);margin-bottom:.75rem;min-height:1em;"></div>
     <button class="btn-funnel disabled" id="funnel-btn" onclick="submitRating()">Continue →</button>
-    <div class="funnel-privacy">🔒 Your response is confidential · Not posted publicly</div>
+    <div class="funnel-privacy">🔒 Your response is confidential</div>
   </div>
 </div>
 
@@ -1109,6 +1109,7 @@ Could you spare 30 seconds to rate us? It means the world to small businesses li
     <div class="feedback-icon">🙏</div>
     <div class="feedback-h">We're sorry to hear that</div>
     <div class="feedback-sub">We'd love to make things right. What could we have done better?</div>
+    <div id="feedback-biz-name" style="font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:.5rem;margin-top:-.5rem;"></div>
     <div class="feedback-tags" id="feedback-tags">
       <button class="tag-btn" onclick="toggleTag(this)">⏱️ Long wait time</button>
       <button class="tag-btn" onclick="toggleTag(this)">😐 Staff attitude</button>
@@ -1118,7 +1119,7 @@ Could you spare 30 seconds to rate us? It means the world to small businesses li
       <button class="tag-btn" onclick="toggleTag(this)">Other</button>
     </div>
     <textarea class="textarea-field" placeholder="Tell us more... (optional)" rows="4" id="feedback-text"></textarea>
-    <button class="btn-funnel" style="margin-top:1rem" onclick="submitFeedback()">Send private feedback →</button>
+    <button class="btn-funnel" style="margin-top:1rem" onclick="submitFeedback()">Submit feedback →</button>
     <div class="funnel-privacy" style="margin-top:.75rem">🙏 Thank you for helping us improve.</div>
   </div>
 </div>
@@ -1133,7 +1134,7 @@ Could you spare 30 seconds to rate us? It means the world to small businesses li
       <div style="font-size:3rem;margin-bottom:1rem">🎉</div>
       <div class="funnel-h">Thank you!</div>
       <div class="funnel-sub" id="thanks-msg">Thank you for sharing!</div>
-      <button class="btn-funnel" style="margin-top:1.5rem" onclick="showLanding()">← Back to home</button>
+      <div style="margin-top:1.5rem;font-size:.85rem;color:rgba(255,255,255,.4)">You may close this tab.</div>
     </div>
   </div>
 </div>
@@ -1189,6 +1190,8 @@ function initApp() {
     // set business name from state
     var bn = document.getElementById('funnel-biz-name');
     if(bn) bn.textContent = appState.bizName || 'My Business';
+    var fbn = document.getElementById('feedback-biz-name');
+    if(fbn) fbn.textContent = appState.bizName || 'My Business';
     // reset star state
     appState.selectedStar = 0;
     document.querySelectorAll('.star-btn').forEach(function(s){ s.classList.remove('active'); });
@@ -1268,6 +1271,8 @@ function showAuth(tab) { showScreen('screen-auth'); switchAuthTab(tab); }
 function showFunnel() {
   showScreen('screen-funnel');
   document.getElementById('funnel-biz-name').textContent = appState.bizName || 'My Business';
+  var fbn2 = document.getElementById('feedback-biz-name');
+  if(fbn2) fbn2.textContent = appState.bizName || '';
   appState.selectedStar = 0;
   document.querySelectorAll('.star-btn').forEach(function(s){ s.classList.remove('active'); });
   document.getElementById('star-label').textContent = 'Tap a star to rate';
