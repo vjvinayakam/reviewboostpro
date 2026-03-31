@@ -47,6 +47,7 @@ input,textarea,select{font-family:'Geist',sans-serif;}
 .screen{display:none;min-height:100vh;}
 .screen.active{display:block;}
 #screen-funnel.active,#screen-feedback.active,#screen-thanks.active,#screen-auth.active{display:flex !important;}
+#screen-thanks.active{align-items:center;justify-content:center;}
 
 /* ══════════════════════════════════════
    SCREEN 1 — LANDING PAGE
@@ -1107,7 +1108,7 @@ Could you spare 30 seconds to rate us? It means the world to small businesses li
   <div class="feedback-card">
     <div class="feedback-icon">🙏</div>
     <div class="feedback-h">We're sorry to hear that</div>
-    <div class="feedback-sub">Please tell us what went wrong. <strong>Your feedback goes directly and privately to the business owner — it will NOT be posted on Google.</strong></div>
+    <div class="feedback-sub">We'd love to make things right. What could we have done better?</div>
     <div class="feedback-tags" id="feedback-tags">
       <button class="tag-btn" onclick="toggleTag(this)">⏱️ Long wait time</button>
       <button class="tag-btn" onclick="toggleTag(this)">😐 Staff attitude</button>
@@ -1118,7 +1119,7 @@ Could you spare 30 seconds to rate us? It means the world to small businesses li
     </div>
     <textarea class="textarea-field" placeholder="Tell us more... (optional)" rows="4" id="feedback-text"></textarea>
     <button class="btn-funnel" style="margin-top:1rem" onclick="submitFeedback()">Send private feedback →</button>
-    <div class="funnel-privacy" style="margin-top:.75rem">This feedback goes only to the business owner.</div>
+    <div class="funnel-privacy" style="margin-top:.75rem">🙏 Thank you for helping us improve.</div>
   </div>
 </div>
 
@@ -1126,13 +1127,13 @@ Could you spare 30 seconds to rate us? It means the world to small businesses li
      SCREEN 6: THANK YOU
 ═══════════════════════════════════════ -->
 <div id="screen-thanks" class="screen">
-  <div class="auth-grid-bg"></div>
-  <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;">
-    <div class="funnel-card" style="text-align:center">
+  <div class="auth-grid-bg" style="pointer-events:none"></div>
+  <div style="width:100%;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:1.5rem;">
+    <div class="funnel-card" style="text-align:center;max-width:440px;width:100%;">
       <div style="font-size:3rem;margin-bottom:1rem">🎉</div>
       <div class="funnel-h">Thank you!</div>
-      <div class="funnel-sub" id="thanks-msg">Your feedback has been sent privately to the business owner.</div>
-      <button class="btn-funnel" style="margin-top:1rem" onclick="showLanding()">← Back to home</button>
+      <div class="funnel-sub" id="thanks-msg">Thank you for sharing!</div>
+      <button class="btn-funnel" style="margin-top:1.5rem" onclick="showLanding()">← Back to home</button>
     </div>
   </div>
 </div>
@@ -1771,7 +1772,7 @@ function submitFeedback() {
       '<div style="font-size:.73rem;color:#8da08d;margin-top:.5rem">Received '+timeStr+'</div></div>';
   }
 
-  document.getElementById('thanks-msg').textContent = 'Your feedback has been sent privately to the business owner. They will work on it! 🙏';
+  document.getElementById('thanks-msg').textContent = 'Thank you for sharing! We will use this to improve your experience. 🙏';
   showScreen('screen-thanks');
 }
 
