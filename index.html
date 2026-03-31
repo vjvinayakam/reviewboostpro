@@ -904,10 +904,7 @@ tr:hover td{background:rgba(34,197,94,.03);}
       </div>
 
       <!-- NO GOOGLE LINK WARNING -->
-      <div id="no-google-link-warn" style="background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.25);border-radius:10px;padding:.85rem 1.1rem;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;gap:.75rem;font-size:.83rem;color:#fcd34d;">
-        <div><strong>⚠️ SaaS Funnel URL not set.</strong> The WhatsApp message needs a link to your review page. <span style="opacity:.8">Host the app → paste the URL below.</span></div>
-        <button class="btn-sm" style="border-color:rgba(245,158,11,.3);color:#fcd34d;white-space:nowrap;" onclick="document.getElementById('saas-funnel-url').focus();document.getElementById('saas-funnel-url').scrollIntoView({behavior:'smooth',block:'center'});">Set URL ↓</button>
-      </div>
+
 
       <div class="send-form">
         <div style="font-size:.88rem;font-weight:600;margin-bottom:1rem;color:rgba(255,255,255,.7)">📲 New message</div>
@@ -955,11 +952,7 @@ Could you spare 30 seconds to rate us? It means the world to small businesses li
 
 👉 {review_link}</textarea>
         </div>
-        <div class="form-group" style="margin-bottom:1.25rem">
-          <label style="font-size:.8rem;color:var(--mid);display:block;margin-bottom:.4rem">Your SaaS Review Funnel URL <span style="color:var(--red)">*</span></label>
-          <input type="text" class="input-field" id="saas-funnel-url" placeholder="https://yourapp.netlify.app?review=true" value="" oninput="onFunnelUrlInput()">
-          <div style="font-size:.75rem;color:var(--dim);margin-top:.4rem;">This is the link sent in WhatsApp. Keep it short — e.g. <strong>https://vjvinayakam.github.io/reviewboostpro/?review=true</strong> — your Google link is saved separately below.</div>
-        </div>
+
         <div class="form-group" style="margin-bottom:.5rem">
           <label style="font-size:.8rem;color:var(--mid);display:block;margin-bottom:.4rem">Your Google Review link <span style="color:var(--red)">*</span></label>
           <input type="text" class="input-field" id="google-review-link" placeholder="https://g.page/your-business/review" value="" oninput="onGoogleLinkInput()">
@@ -1486,8 +1479,7 @@ function updateDashboard() {
   setTimeout(function(){
     var glEl = document.getElementById('google-review-link');
     if(glEl && appState.googleLink) glEl.value = appState.googleLink;
-    var fuEl = document.getElementById('saas-funnel-url');
-    if(fuEl) fuEl.value = appState.funnelUrl || 'https://vjvinayakam.github.io/reviewboostpro/?review=true';
+
     var mtEl = document.getElementById('msg-template');
     if(mtEl && appState.messageTemplate) mtEl.value = appState.messageTemplate;
     updatePreview();
@@ -1534,39 +1526,30 @@ function sendWhatsApp() {
     return;
   }
   if(!rawPhone || phone.length < 7){
-    showToast('⚠️ Please enter a valid WhatsApp number with country code (e.g. +91 98765 43210)');
+    showToast('⚠️ Please enter a valid WhatsApp number with country code');
     document.getElementById('cust-phone').focus();
     return;
   }
 
-  var funnelUrlEl = document.getElementById('saas-funnel-url');
-  var funnelUrl = (funnelUrlEl && funnelUrlEl.value.trim()) || appState.funnelUrl || '';
-  var reviewLink = funnelUrl || window.location.href.split('?')[0] + '?review=true';
+  // Auto-generate funnel URL from current page — always correct
+  var reviewLink = window.location.origin + window.location.pathname + '?review=true';
   var template = document.getElementById('msg-template').value || appState.messageTemplate;
   var msg = template
     .replace(/{name}/g, name)
     .replace(/{business}/g, appState.bizName)
     .replace(/{review_link}/g, reviewLink);
 
-  // Keep WhatsApp link SHORT — Google link is saved in localStorage, funnel reads it from there
   var waUrl = 'https://wa.me/'+phone+'?text='+encodeURIComponent(msg);
-  // Use anchor click — cannot be blocked by popup blockers
   var a = document.createElement('a');
-  a.href = waUrl;
-  a.target = '_blank';
-  a.rel = 'noopener';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
+  a.href = waUrl; a.target = '_blank'; a.rel = 'noopener';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
 
-  // Show fallback link in case popup was blocked
   var fallbackDiv = document.getElementById('wa-fallback');
   if(fallbackDiv){
     fallbackDiv.innerHTML = '🔗 WhatsApp not opening? <a href="'+waUrl+'" target="_blank" rel="noopener" style="color:var(--green-d);font-weight:600;text-decoration:underline;">Click here to open manually</a>';
     fallbackDiv.style.display = 'block';
   }
 
-  // Record the send
   var id = 'send_'+Date.now();
   var now = new Date();
   var timeStr = now.getHours()+':'+String(now.getMinutes()).padStart(2,'0')+', '+now.toLocaleDateString('en-IN',{day:'numeric',month:'short'});
@@ -1574,10 +1557,7 @@ function sendWhatsApp() {
   appState.customers.push({name:name, phone:phone, time:timeStr, rating:0});
   appState.stats.sent++;
   saveState();
-  renderSendTable();
-  renderActivityTable();
-  renderCustomersTable();
-  animateStats();
+  renderSendTable(); renderActivityTable(); renderCustomersTable(); animateStats();
   document.getElementById('cust-name').value='';
   document.getElementById('cust-phone').value='';
   updatePreview();
@@ -1593,22 +1573,17 @@ function testWhatsAppLink() {
     document.getElementById('cust-phone').focus();
     return;
   }
-  var funnelUrlEl = document.getElementById('saas-funnel-url');
-  var funnelUrl = (funnelUrlEl && funnelUrlEl.value.trim()) || appState.funnelUrl || window.location.href.split('?')[0] + '?review=true';
+  var reviewLink = window.location.origin + window.location.pathname + '?review=true';
   var template = document.getElementById('msg-template') ? document.getElementById('msg-template').value : appState.messageTemplate;
   var msg = template
     .replace(/{name}/g, name)
     .replace(/{business}/g, appState.bizName)
-    .replace(/{review_link}/g, funnelUrl);
-  var waUrl = 'https://wa.me/' + phone + '?text=' + encodeURIComponent(msg);
+    .replace(/{review_link}/g, reviewLink);
+  var waUrl = 'https://wa.me/'+phone+'?text='+encodeURIComponent(msg);
   showToast('✅ Opening WhatsApp — check your phone/browser!');
   var a = document.createElement('a');
-  a.href = waUrl;
-  a.target = '_blank';
-  a.rel = 'noopener';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
+  a.href = waUrl; a.target = '_blank'; a.rel = 'noopener';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
 }
 
 function simulateOpen(id) {
@@ -1623,13 +1598,7 @@ function simulateOpen(id) {
   }
 }
 
-function onFunnelUrlInput() {
-  var val = document.getElementById('saas-funnel-url').value.trim();
-  var warn = document.getElementById('no-google-link-warn');
-  if(warn) warn.style.display = val ? 'none' : 'flex';
-  appState.funnelUrl = val;
-  updatePreview();
-}
+
 
 function onGoogleLinkInput() {
   var val = document.getElementById('google-review-link').value.trim();
@@ -1639,9 +1608,8 @@ function onGoogleLinkInput() {
 function updatePreview() {
   var name = document.getElementById('cust-name').value || 'Customer';
   var template = document.getElementById('msg-template') ? document.getElementById('msg-template').value : appState.messageTemplate;
-  var fuEl = document.getElementById('saas-funnel-url');
-  var reviewLink = (fuEl && fuEl.value.trim()) || appState.funnelUrl || '';
-  var linkDisplay = reviewLink ? reviewLink : '<span style="color:var(--amber);font-style:italic">⚠️ set your SaaS funnel URL below ↓</span>';
+  var reviewLink = window.location.origin + window.location.pathname + '?review=true';
+  var linkDisplay = reviewLink;
   var msg = template
     .replace(/{name}/g,'<em>'+name+'</em>')
     .replace(/{business}/g,'<strong>'+appState.bizName+'</strong>')
