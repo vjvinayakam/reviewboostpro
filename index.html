@@ -30,6 +30,10 @@ body{font-family:'Geist',sans-serif;background:var(--bg);color:var(--white);over
 a{text-decoration:none;color:inherit;}
 button{cursor:none;font-family:'Geist',sans-serif;}
 input,textarea,select{font-family:'Geist',sans-serif;}
+@media(hover:none),(pointer:coarse){
+  body,button,a{cursor:auto !important;}
+  .cur,.cur-ring{display:none !important;}
+}
 
 /* ── CURSOR ── */
 .cur{position:fixed;width:10px;height:10px;background:var(--green);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .2s,height .2s;}
@@ -342,12 +346,15 @@ tr:hover td{background:rgba(34,197,94,.03);}
 .feedback-icon{font-size:2.5rem;margin-bottom:1rem;}
 .feedback-h{font-family:'Instrument Serif',serif;font-size:1.8rem;font-weight:400;margin-bottom:.5rem;}
 .feedback-sub{font-size:.85rem;color:var(--mid);margin-bottom:1.5rem;}
-.textarea-field{width:100%;background:var(--dash-bg3);border:1px solid var(--dash-border);border-radius:10px;padding:1rem;color:var(--dash-text);font-size:.9rem;outline:none;resize:none;min-height:120px;transition:border-color .2s;}
-.textarea-field:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(34,197,94,.1);}
-.textarea-field::placeholder{color:var(--dash-dim);}
+.textarea-field{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:1rem;color:var(--white);font-size:.9rem;outline:none;resize:none;min-height:120px;transition:border-color .2s;}
+.textarea-field:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(34,197,94,.15);}
+.textarea-field::placeholder{color:rgba(255,255,255,.35);}
+#screen-dashboard .textarea-field{background:var(--dash-bg3);border-color:var(--dash-border);color:var(--dash-text);}
+#screen-dashboard .textarea-field:focus{border-color:var(--green);}
+#screen-dashboard .textarea-field::placeholder{color:var(--dash-dim);}
 .feedback-tags{display:flex;flex-wrap:wrap;gap:.5rem;margin:.75rem 0 1rem;}
-.tag-btn{padding:.35rem .8rem;background:var(--bg3);border:1px solid var(--border);border-radius:50px;font-size:.78rem;color:var(--mid);transition:all .2s;}
-.tag-btn.active,.tag-btn:hover{background:rgba(34,197,94,.08);border-color:var(--border2);color:var(--green-l);}
+.tag-btn{padding:.5rem 1rem;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);border-radius:50px;font-size:.82rem;color:rgba(255,255,255,.7);transition:all .2s;cursor:pointer;}
+.tag-btn.active,.tag-btn:hover{background:rgba(34,197,94,.15);border-color:rgba(34,197,94,.4);color:var(--green-l);}
 
 /* TOAST */
 .toast{position:fixed;bottom:2rem;right:2rem;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:1rem 1.5rem;font-size:.85rem;color:var(--white);z-index:9990;transform:translateY(100px);opacity:0;transition:all .4s;display:flex;align-items:center;gap:.6rem;}
@@ -419,6 +426,59 @@ tr:hover td{background:rgba(34,197,94,.03);}
 #screen-dashboard [style*="border-bottom:1px solid var(--border)"]{border-color:var(--dash-border) !important;}
 #screen-dashboard [style*="border-left:3px solid var(--red)"]{border-left-color:var(--red) !important;background:#fff8f8 !important;}
 #screen-dashboard [style*="border-left:3px solid var(--amber)"]{border-left-color:var(--amber) !important;background:#fffbf0 !important;}
+
+/* ══════════════════════════════════════
+   MOBILE RESPONSIVE
+══════════════════════════════════════ */
+@media(max-width:768px){
+  /* NAV */
+  nav{padding:.9rem 1.2rem;}
+  .nav-links{display:none;}
+  /* HERO */
+  .hero{padding:5rem 1.2rem 3rem;}
+  .hero h1{font-size:2.4rem;}
+  .hero-sub{font-size:.95rem;}
+  .hero-mockup{display:none;}
+  /* SECTIONS */
+  .section{padding:3rem 1.2rem;}
+  .how-steps{grid-template-columns:1fr;gap:1rem;}
+  .step-connector{display:none;}
+  .feat-grid{grid-template-columns:1fr;}
+  .price-grid{grid-template-columns:1fr;}
+  .footer-top{grid-template-columns:1fr;gap:2rem;}
+  .faq{padding:3rem 1.2rem;}
+  .cta-banner{padding:3rem 1.2rem;}
+  /* DASHBOARD */
+  #screen-dashboard{flex-direction:column;}
+  .sidebar{width:100%;height:auto;flex-direction:row;flex-wrap:wrap;padding:.75rem;gap:.25rem;position:relative;border-right:none;border-bottom:1px solid var(--dash-border);}
+  .sb-logo{padding:.25rem .5rem .25rem;border:none;margin:0;font-size:.9rem;}
+  .sb-section{display:none;}
+  .sb-item{padding:.4rem .6rem;font-size:.75rem;border-left:none;border-bottom:2px solid transparent;margin:0;}
+  .sb-item.active{border-left:none;border-bottom-color:var(--green);}
+  .sb-bottom{display:none;}
+  .dash-main{padding:1rem;}
+  .stats-grid{grid-template-columns:1fr 1fr;}
+  .grid-2,.grid-3{grid-template-columns:1fr;}
+  .send-form-grid{grid-template-columns:1fr;}
+  .how-steps{grid-template-columns:1fr;}
+  /* FUNNEL */
+  .funnel-card{margin:1rem;padding:1.75rem 1.25rem;}
+  .funnel-h{font-size:1.5rem;}
+  .star-btn{font-size:2rem;}
+  /* FEEDBACK */
+  .feedback-card{margin:1rem;padding:1.75rem 1.25rem;}
+  .feedback-tags{gap:.4rem;}
+  .tag-btn{font-size:.78rem;padding:.4rem .75rem;}
+  /* AUTH */
+  .auth-card{margin:1rem;padding:1.75rem 1.25rem;}
+  /* THANKS */
+  #screen-thanks .funnel-card{margin:1rem;padding:1.75rem 1.25rem;}
+}
+@media(max-width:400px){
+  .hero h1{font-size:2rem;}
+  .star-btn{font-size:1.8rem;}
+  .stats-grid{grid-template-columns:1fr;}
+}
 </style>
 </head>
 <body>
@@ -1020,7 +1080,7 @@ Could you spare 30 seconds to rate us? It means the world to small businesses li
   <div class="funnel-card">
     <div class="funnel-biz"><div class="logo-dot" style="width:6px;height:6px"></div> <span id="funnel-biz-name">My Business</span></div>
     <div class="funnel-h">How was your experience?</div>
-    <div class="funnel-sub">Your feedback helps us improve and helps others find great care.</div>
+    <div class="funnel-sub">Your honest feedback helps us serve you better.</div>
     <div class="star-row" id="star-row">
       <button class="star-btn" onclick="selectStar(1)">⭐</button>
       <button class="star-btn" onclick="selectStar(2)">⭐</button>
@@ -1029,8 +1089,9 @@ Could you spare 30 seconds to rate us? It means the world to small businesses li
       <button class="star-btn" onclick="selectStar(5)">⭐</button>
     </div>
     <div class="star-label" id="star-label">Tap a star to rate</div>
-    <button class="btn-funnel" id="funnel-btn" onclick="submitRating()">Continue →</button>
-    <div class="funnel-privacy">🔒 Your response is confidential</div>
+    <div id="star-hint" style="font-size:.78rem;color:rgba(255,255,255,.4);margin-bottom:.75rem;min-height:1em;"></div>
+    <button class="btn-funnel disabled" id="funnel-btn" onclick="submitRating()">Continue →</button>
+    <div class="funnel-privacy">🔒 Your response is confidential · Not posted publicly</div>
   </div>
 </div>
 
@@ -1477,6 +1538,18 @@ function sendWhatsApp() {
     .replace(/{business}/g, appState.bizName)
     .replace(/{review_link}/g, reviewLink);
 
+  // Append google link as param so funnel can redirect correctly
+  var googleLinkForUrl = (document.getElementById('google-review-link') && document.getElementById('google-review-link').value.trim()) || appState.googleLink || '';
+  if(googleLinkForUrl && reviewLink.indexOf('?') !== -1){
+    reviewLink = reviewLink + '&g=' + encodeURIComponent(googleLinkForUrl);
+  } else if(googleLinkForUrl){
+    reviewLink = reviewLink + '?g=' + encodeURIComponent(googleLinkForUrl);
+  }
+  // Rebuild message with updated link
+  msg = template
+    .replace(/{name}/g, name)
+    .replace(/{business}/g, appState.bizName)
+    .replace(/{review_link}/g, reviewLink);
   var waUrl = 'https://wa.me/'+phone+'?text='+encodeURIComponent(msg);
   // Use anchor click — cannot be blocked by popup blockers
   var a = document.createElement('a');
@@ -1609,6 +1682,16 @@ function selectStar(n) {
   stars.forEach(function(s,i){ s.classList.toggle('active', i<n); });
   var labels = ['','Terrible 😞','Poor 😕','Okay 😐','Good 😊','Excellent! 🤩'];
   document.getElementById('star-label').textContent = labels[n];
+  var hint = document.getElementById('star-hint');
+  if(hint){
+    if(n >= 4){
+      hint.textContent = '✨ You will be taken to Google to leave a review';
+      hint.style.color = 'rgba(74,222,128,.7)';
+    } else {
+      hint.textContent = '🔒 Your feedback goes privately to the owner only';
+      hint.style.color = 'rgba(255,200,100,.7)';
+    }
+  }
   var btn = document.getElementById('funnel-btn');
   if(btn){ btn.classList.remove('disabled'); }
 }
@@ -1629,18 +1712,20 @@ function submitRating() {
     }
     saveState();
 
-    var googleLink = (appState.googleLink || '').trim();
-    var isRealLink = googleLink && googleLink !== 'https://g.page/your-business/review';
+    // Try multiple sources for the Google link
+    var params = new URLSearchParams(window.location.search);
+    var googleLink = params.get('g') || (appState.googleLink || '').trim();
+    var isRealLink = googleLink && googleLink !== 'https://g.page/your-business/review' && googleLink.length > 10;
 
     if(isRealLink){
-      // Redirect immediately to Google
+      // Redirect immediately to Google — no thank you page
       window.location.href = googleLink;
     } else {
-      // No Google link configured — show a prompt to open Google
+      // No Google link — show thank you with message
       showScreen('screen-thanks');
       document.getElementById('thanks-msg').innerHTML =
-        'Thank you for your 5-star rating! 🌟<br><br>' +
-        'To complete your review on Google, please ask the business owner to set up their Google Review link in the dashboard.';
+        'Thank you for your positive rating! 🌟<br><br>' +
+        '<span style="font-size:.85rem;color:rgba(255,255,255,.6)">The business owner needs to add their Google Review link in the dashboard settings.</span>';
     }
   }
 }
