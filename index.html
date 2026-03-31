@@ -1088,8 +1088,8 @@ Could you spare 30 seconds to rate us? It means the world to small businesses li
     </div>
     <div class="star-label" id="star-label">Tap a star to rate</div>
     <div id="star-hint" style="font-size:.78rem;color:rgba(255,255,255,.4);margin-bottom:.75rem;min-height:1em;"></div>
-    <button class="btn-funnel disabled" id="funnel-btn" onclick="submitRating()">Continue →</button>
-    <div class="funnel-privacy">🔒 Your response is confidential</div>
+    <button class="btn-funnel disabled" id="funnel-btn" onclick="submitRating()" style="display:none">Continue →</button>
+
   </div>
 </div>
 
@@ -1652,15 +1652,27 @@ function selectStar(n) {
   var hint = document.getElementById('star-hint');
   if(hint){
     if(n >= 4){
-      hint.textContent = '✨ You will be taken to Google to leave a review';
-      hint.style.color = 'rgba(74,222,128,.7)';
+      hint.textContent = '✨ Taking you to Google...';
+      hint.style.color = 'rgba(74,222,128,.8)';
     } else {
-      hint.textContent = '🔒 Your feedback goes privately to the owner only';
-      hint.style.color = 'rgba(255,200,100,.7)';
+      hint.textContent = '💛 We value your feedback and will use it to improve';
+      hint.style.color = 'rgba(255,200,100,.8)';
     }
   }
   var btn = document.getElementById('funnel-btn');
-  if(btn){ btn.classList.remove('disabled'); }
+  if(btn){
+    if(n >= 4){
+      btn.classList.add('disabled');
+      btn.style.display = 'none';
+    } else {
+      btn.classList.remove('disabled');
+      btn.style.display = 'block';
+    }
+  }
+  // 4-5 stars: redirect immediately, no need to click Continue
+  if(n >= 4){
+    setTimeout(function(){ submitRating(); }, 800);
+  }
 }
 
 function submitRating() {
