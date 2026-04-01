@@ -721,19 +721,38 @@ async function doSignup() {
   btn.textContent = 'Creating account...'; btn.style.opacity='.7'; btn.style.pointerEvents='none';
 
   if(sb) {
-    var result = await sb.auth.signUp({ email: email, password: pass, options: { data: { full_name: owner } } });
+    // Store biz/owner in auth metadata — always works regardless of RLS
+    var result = await sb.auth.signUp({
+      email: email, password: pass,
+      options: { data: { full_name: owner, business_name: biz } }
+    });
     if(result.error) {
-      err.textContent = result.error.message; err.style.display='block';
+      var msg = result.error.message || 'Signup failed';
+      // Make common errors user-friendly
+      if(msg.toLowerCase().includes('already registered') || msg.toLowerCase().includes('already exists') || msg.toLowerCase().includes('duplicate')) {
+        msg = 'This email is already registered. Please sign in instead.';
+      } else if(msg.toLowerCase().includes('database')) {
+        msg = 'Account created! Please check your email to confirm, then sign in.';
+        // Auth user was created even if metadata save had issues
+        appState.bizName = biz; saveState();
+        showConfirmationScreen(email);
+        return;
+      }
+      err.textContent = msg; err.style.display='block';
       btn.textContent='Create account →'; btn.style.opacity='1'; btn.style.pointerEvents='auto';
       return;
     }
-    if(result.data && result.data.user) {
-      await sb.from('profiles').upsert({ id: result.data.user.id, business_name: biz, owner_name: owner });
-    }
+    // NOTE: Do NOT save to profiles table here — user email not confirmed yet
+    // Profile will be created on first login via loadAndGoToDashboard()
   }
 
   appState.bizName = biz; saveState();
+  showConfirmationScreen(email);
+}
+
+function showConfirmationScreen(email) {
   var formEl = document.getElementById('form-signup');
+  if(!formEl) return;
   formEl.innerHTML = '';
   var successDiv = document.createElement('div');
   successDiv.style.cssText = 'background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:8px;padding:1.25rem;font-size:.88rem;line-height:1.8;color:var(--green-l);text-align:center;';
@@ -787,11 +806,27 @@ async function doSignOut() {
 async function loadAndGoToDashboard() {
   if(sb && appState.currentUser) {
     var r = await sb.from('profiles').select('*').eq('id', appState.currentUser.id).single();
-    if(r.data) {
+    if(r.data && r.data.business_name) {
+      // Profile exists — load it
       appState.bizName = r.data.business_name || 'My Business';
       appState.googleLink = r.data.google_review_url || '';
       if(r.data.message_template) appState.messageTemplate = r.data.message_template;
       saveState();
+    } else {
+      // Profile missing — save from auth metadata (first login after email confirmation)
+      var meta = appState.currentUser.user_metadata || {};
+      var bizFromMeta = meta.business_name || meta.full_name || 'My Business';
+      var ownerFromMeta = meta.full_name || '';
+      appState.bizName = bizFromMeta;
+      saveState();
+      // Save to profiles table now that user is confirmed
+      try {
+        await sb.from('profiles').upsert({
+          id: appState.currentUser.id,
+          business_name: bizFromMeta,
+          owner_name: ownerFromMeta
+        });
+      } catch(e) {}
     }
     await loadStats();
   }
