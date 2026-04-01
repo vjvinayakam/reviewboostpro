@@ -5,71 +5,35 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Rate Your Experience</title>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root {
-  --bg:#080c08; --bg2:#0e140e; --bg3:#141c14; --bg4:#1a241a;
-  --green:#22c55e; --green-d:#16a34a; --green-l:#4ade80; --green-pale:#dcfce7;
-  --white:#f8faf8; --mid:#94a394; --dim:#4a5e4a;
-  --border:rgba(255,255,255,0.07); --border2:rgba(34,197,94,0.2);
-  --red:#ef4444; --amber:#f59e0b; --blue:#3b82f6;
-
-  /* Dashboard light theme overrides */
-  --dash-bg:#f0f4f0;
-  --dash-bg2:#ffffff;
-  --dash-bg3:#f7faf7;
-  --dash-sidebar:#ffffff;
-  --dash-text:#111811;
-  --dash-mid:#4a6b4a;
-  --dash-dim:#8da08d;
-  --dash-border:rgba(0,0,0,0.08);
-  --dash-border2:rgba(34,197,94,0.3);
-}
-*{margin:0;padding:0;box-sizing:border-box;}
-html{scroll-behavior:smooth;}
+:root{--bg:#080c08;--bg2:#0e140e;--bg3:#141c14;--green:#22c55e;--green-d:#16a34a;--green-l:#4ade80;--white:#f8faf8;--mid:#94a394;--dim:#4a5e4a;--border:rgba(255,255,255,0.07);--border2:rgba(34,197,94,0.2);--red:#ef4444;--amber:#f59e0b;--blue:#3b82f6;--dash-bg:#f0f4f0;--dash-bg2:#ffffff;--dash-bg3:#f7faf7;--dash-sidebar:#ffffff;--dash-text:#111811;--dash-mid:#4a6b4a;--dash-dim:#8da08d;--dash-border:rgba(0,0,0,0.08);--dash-border2:rgba(34,197,94,0.3);}
+*{margin:0;padding:0;box-sizing:border-box;}html{scroll-behavior:smooth;}
 body{font-family:'Geist',sans-serif;background:var(--bg);color:var(--white);overflow-x:hidden;}
-a{text-decoration:none;color:inherit;}
-button{cursor:pointer;font-family:'Geist',sans-serif;}
+a{text-decoration:none;color:inherit;}button{cursor:pointer;font-family:'Geist',sans-serif;}
 input,textarea,select{font-family:'Geist',sans-serif;}
-/* Custom cursor only on desktop */
-@media(hover:hover) and (pointer:fine){
-  body{cursor:none;}
-  button,a{cursor:none;}
-}
-@media(hover:none),(pointer:coarse){
-  .cur,.cur-ring{display:none !important;}
-}
-
-/* ── CURSOR ── */
-.cur{position:fixed;width:10px;height:10px;background:var(--green);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .2s,height .2s;}
+@media(hover:hover) and (pointer:fine){body{cursor:none;}button,a{cursor:none;}}
+@media(hover:none),(pointer:coarse){.cur,.cur-ring{display:none!important;}}
+.cur{position:fixed;width:10px;height:10px;background:var(--green);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);}
 .cur-ring{position:fixed;width:36px;height:36px;border:1px solid rgba(34,197,94,0.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:left .12s ease,top .12s ease;}
-
-/* ── SCREENS ── */
-.screen{display:none;min-height:100vh;}
-.screen.active{display:block;}
-#screen-funnel.active,#screen-feedback.active,#screen-thanks.active,#screen-auth.active{display:flex !important;}
-#screen-thanks.active{align-items:center;justify-content:center;}
-
-/* ══════════════════════════════════════
-   SCREEN 1 — LANDING PAGE
-══════════════════════════════════════ */
-/* NAV */
+.screen{display:none;min-height:100vh;}.screen.active{display:block;}
+#screen-funnel.active,#screen-feedback.active,#screen-auth.active{display:flex!important;}
+#screen-thanks.active{display:flex!important;align-items:center;justify-content:center;}
 nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:1.1rem 5rem;border-bottom:1px solid var(--border);background:rgba(8,12,8,0.85);backdrop-filter:blur(20px);}
-.nav-logo{display:flex;align-items:center;gap:.6rem;font-size:1.15rem;font-weight:700;letter-spacing:-.02em;}
+.nav-logo{display:flex;align-items:center;gap:.6rem;font-size:1.15rem;font-weight:700;}
 .logo-dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 12px var(--green);}
 .nav-links{display:flex;gap:2.5rem;list-style:none;}
-.nav-links a{font-size:.88rem;color:var(--mid);transition:color .2s;font-weight:400;}
+.nav-links a{font-size:.88rem;color:var(--mid);}
 .nav-links a:hover{color:var(--white);}
 .nav-right{display:flex;gap:.75rem;align-items:center;}
-.btn-ghost-nav{padding:.55rem 1.2rem;border:1px solid var(--border);border-radius:6px;font-size:.83rem;color:var(--mid);background:none;transition:border-color .2s,color .2s;}
-.btn-ghost-nav:hover{border-color:rgba(255,255,255,.2);color:var(--white);}
-.btn-nav{padding:.55rem 1.2rem;background:var(--green);border:none;border-radius:6px;font-size:.83rem;font-weight:600;color:#000;transition:background .2s,transform .15s;}
-.btn-nav:hover{background:var(--green-l);transform:translateY(-1px);}
-
-/* HERO */
+.btn-ghost-nav{padding:.55rem 1.2rem;border:1px solid var(--border);border-radius:6px;font-size:.83rem;color:var(--mid);background:none;}
+.btn-ghost-nav:hover{color:var(--white);}
+.btn-nav{padding:.55rem 1.2rem;background:var(--green);border:none;border-radius:6px;font-size:.83rem;font-weight:600;color:#000;}
+.btn-nav:hover{background:var(--green-l);}
 .hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:8rem 2rem 5rem;position:relative;overflow:hidden;}
 .hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(34,197,94,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(34,197,94,0.04) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse at center,black 30%,transparent 80%);}
 .hero-glow{position:absolute;top:20%;left:50%;transform:translateX(-50%);width:700px;height:350px;background:radial-gradient(ellipse,rgba(34,197,94,0.14) 0%,transparent 70%);pointer-events:none;}
-.hero-badge{display:inline-flex;align-items:center;gap:.5rem;border:1px solid var(--border2);background:rgba(34,197,94,0.06);padding:.35rem 1rem;border-radius:50px;font-size:.78rem;font-weight:500;color:var(--green-l);margin-bottom:2rem;letter-spacing:.04em;animation:fadeUp .8s ease both;}
+.hero-badge{display:inline-flex;align-items:center;gap:.5rem;border:1px solid var(--border2);background:rgba(34,197,94,0.06);padding:.35rem 1rem;border-radius:50px;font-size:.78rem;font-weight:500;color:var(--green-l);margin-bottom:2rem;animation:fadeUp .8s ease both;}
 .badge-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse-dot 2s infinite;}
 @keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(1.5);}}
 .hero h1{font-family:'Instrument Serif',serif;font-size:clamp(3.2rem,7vw,6.5rem);line-height:1.02;letter-spacing:-.03em;font-weight:400;margin-bottom:1.8rem;animation:fadeUp .9s ease .1s both;max-width:900px;}
@@ -77,17 +41,13 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:cen
 .hero h1 .italic{font-style:italic;color:rgba(255,255,255,.45);}
 .hero-sub{font-size:1.1rem;color:var(--mid);line-height:1.8;max-width:560px;margin:0 auto 2.8rem;animation:fadeUp .9s ease .2s both;font-weight:300;}
 .hero-actions{display:flex;gap:1rem;align-items:center;justify-content:center;flex-wrap:wrap;animation:fadeUp .9s ease .3s both;margin-bottom:4rem;}
-.btn-primary{padding:1rem 2.4rem;background:var(--green);border:none;border-radius:8px;font-size:.95rem;font-weight:600;color:#000;letter-spacing:-.01em;transition:background .2s,transform .2s,box-shadow .2s;}
-.btn-primary:hover{background:var(--green-l);transform:translateY(-2px);box-shadow:0 8px 30px rgba(34,197,94,.25);}
-.btn-sec{padding:.98rem 2.4rem;border:1px solid var(--border);border-radius:8px;font-size:.95rem;color:var(--mid);background:none;transition:border-color .2s,color .2s;}
-.btn-sec:hover{border-color:rgba(255,255,255,.2);color:var(--white);}
-
-/* MOCKUP */
-.hero-mockup{width:100%;max-width:920px;margin:0 auto;background:var(--bg2);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:0 0 0 1px rgba(34,197,94,.06),0 40px 80px rgba(0,0,0,.6);animation:fadeUp .9s ease .4s both;position:relative;z-index:1;}
+.btn-primary{padding:1rem 2.4rem;background:var(--green);border:none;border-radius:8px;font-size:.95rem;font-weight:600;color:#000;}
+.btn-primary:hover{background:var(--green-l);}
+.btn-sec{padding:.98rem 2.4rem;border:1px solid var(--border);border-radius:8px;font-size:.95rem;color:var(--mid);background:none;}
+.btn-sec:hover{color:var(--white);}
+.hero-mockup{width:100%;max-width:920px;margin:0 auto;background:var(--bg2);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,.6);animation:fadeUp .9s ease .4s both;}
 .mockup-bar{background:var(--bg3);border-bottom:1px solid var(--border);padding:.65rem 1rem;display:flex;align-items:center;gap:.5rem;}
-.dot-r{width:11px;height:11px;border-radius:50%;background:#ff5f57;}
-.dot-y{width:11px;height:11px;border-radius:50%;background:#febc2e;}
-.dot-g{width:11px;height:11px;border-radius:50%;background:#28c840;}
+.dot-r{width:11px;height:11px;border-radius:50%;background:#ff5f57;}.dot-y{width:11px;height:11px;border-radius:50%;background:#febc2e;}.dot-g{width:11px;height:11px;border-radius:50%;background:#28c840;}
 .mockup-url{flex:1;margin:0 1rem;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:5px;padding:.3rem .75rem;font-size:.75rem;color:var(--mid);text-align:center;}
 .mockup-body{display:grid;grid-template-columns:180px 1fr;min-height:380px;}
 .mockup-side{background:var(--bg3);border-right:1px solid var(--border);padding:1rem 0;}
@@ -106,7 +66,6 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:cen
 .m-card{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:.75rem;}
 .m-card-title{font-size:.7rem;font-weight:500;color:rgba(255,255,255,.5);margin-bottom:.5rem;}
 .m-table-row{display:flex;justify-content:space-between;align-items:center;padding:.3rem 0;border-bottom:1px solid var(--border);font-size:.7rem;}
-.m-table-row:last-child{border:none;}
 .m-pill{padding:.15rem .5rem;border-radius:4px;font-size:.6rem;font-weight:500;}
 .m-pill.sent{background:rgba(34,197,94,.1);color:var(--green);}
 .m-pill.open{background:rgba(59,130,246,.1);color:var(--blue);}
@@ -114,43 +73,32 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:cen
 .m-bar-top{display:flex;justify-content:space-between;font-size:.65rem;color:var(--mid);margin-bottom:.25rem;}
 .m-bar-bg{background:rgba(255,255,255,.06);border-radius:4px;height:6px;overflow:hidden;}
 .m-bar-fill{height:6px;border-radius:4px;background:linear-gradient(90deg,var(--green),var(--green-l));}
-
-/* LOGOS */
-.logos-bar{padding:4rem 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);overflow:hidden;}
+.logos-bar{padding:4rem 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
 .logos-label{text-align:center;font-size:.8rem;color:var(--dim);margin-bottom:2rem;letter-spacing:.08em;text-transform:uppercase;}
 .logos-track{display:flex;gap:3rem;align-items:center;justify-content:center;flex-wrap:wrap;padding:0 4rem;}
-.logo-chip{font-size:.85rem;color:var(--dim);font-weight:500;white-space:nowrap;}
-
-/* SECTIONS */
+.logo-chip{font-size:.85rem;color:var(--dim);font-weight:500;}
 .section{padding:6rem 5rem;}
 .sec-tag{display:inline-block;border:1px solid var(--border2);background:rgba(34,197,94,.06);padding:.3rem .85rem;border-radius:50px;font-size:.75rem;font-weight:500;color:var(--green-l);letter-spacing:.05em;text-transform:uppercase;margin-bottom:1.2rem;}
-.sec-h{font-family:'Instrument Serif',serif;font-size:clamp(2rem,4vw,3.5rem);font-weight:400;line-height:1.1;letter-spacing:-.02em;margin-bottom:1rem;}
+.sec-h{font-family:'Instrument Serif',serif;font-size:clamp(2rem,4vw,3.5rem);font-weight:400;line-height:1.1;margin-bottom:1rem;}
 .sec-h .g{color:var(--green);}
 .sec-p{font-size:1rem;color:var(--mid);line-height:1.8;max-width:580px;}
 .sec-p.center{text-align:center;margin:0 auto;}
-.sec-center{text-align:center;}
-
-/* HOW IT WORKS */
 .how-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;margin-top:4rem;}
-.step-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:2rem 1.5rem;position:relative;transition:border-color .3s;}
+.step-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:2rem 1.5rem;position:relative;}
 .step-card:hover{border-color:var(--border2);}
-.step-num{font-family:'Instrument Serif',serif;font-size:2.5rem;color:rgba(34,197,94,.15);font-weight:400;line-height:1;margin-bottom:1rem;}
+.step-num{font-family:'Instrument Serif',serif;font-size:2.5rem;color:rgba(34,197,94,.15);font-weight:400;margin-bottom:1rem;}
 .step-icon{font-size:1.5rem;margin-bottom:.75rem;}
 .step-title{font-size:.95rem;font-weight:600;margin-bottom:.5rem;}
 .step-desc{font-size:.85rem;color:var(--mid);line-height:1.6;}
-.step-connector{position:absolute;right:-1.5rem;top:50%;transform:translateY(-50%);color:var(--dim);font-size:1.2rem;z-index:1;}
-
-/* FEATURES */
+.step-connector{position:absolute;right:-1.5rem;top:50%;transform:translateY(-50%);color:var(--dim);font-size:1.2rem;}
 .feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin-top:3rem;}
-.feat-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:1.75rem;transition:border-color .3s,transform .3s;}
+.feat-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:1.75rem;}
 .feat-card:hover{border-color:var(--border2);transform:translateY(-3px);}
 .feat-icon{width:40px;height:40px;border-radius:10px;background:rgba(34,197,94,.1);display:flex;align-items:center;justify-content:center;font-size:1.1rem;margin-bottom:1rem;}
 .feat-title{font-size:.95rem;font-weight:600;margin-bottom:.5rem;}
 .feat-desc{font-size:.84rem;color:var(--mid);line-height:1.6;}
-
-/* PRICING */
 .price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:3rem;max-width:1000px;margin-left:auto;margin-right:auto;}
-.plan-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:2rem;transition:border-color .3s;}
+.plan-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:2rem;}
 .plan-card.featured{border-color:var(--green);background:rgba(34,197,94,.04);}
 .plan-badge{display:inline-block;background:var(--green);color:#000;font-size:.7rem;font-weight:700;padding:.2rem .6rem;border-radius:4px;margin-bottom:.75rem;}
 .plan-name{font-size:1rem;font-weight:600;margin-bottom:.5rem;}
@@ -160,29 +108,22 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:cen
 .plan-features{list-style:none;margin-bottom:1.5rem;}
 .plan-features li{font-size:.84rem;color:rgba(255,255,255,.75);padding:.4rem 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.5rem;}
 .plan-features li::before{content:"✓";color:var(--green);font-size:.75rem;flex-shrink:0;}
-.plan-cta{display:block;text-align:center;padding:.8rem;border:1px solid var(--border);border-radius:8px;font-size:.85rem;font-weight:500;color:var(--mid);transition:all .2s;}
-.plan-cta:hover{border-color:rgba(255,255,255,.2);color:var(--white);}
+.plan-cta{display:block;text-align:center;padding:.8rem;border:1px solid var(--border);border-radius:8px;font-size:.85rem;font-weight:500;color:var(--mid);}
+.plan-cta:hover{color:var(--white);}
 .plan-cta.green-cta{background:var(--green);border-color:var(--green);color:#000;font-weight:600;}
-.plan-cta.green-cta:hover{background:var(--green-l);}
-
-/* FAQ */
 .faq{padding:6rem 5rem;max-width:800px;margin:0 auto;}
-.faq-item{border:1px solid var(--border);border-radius:10px;margin-bottom:.75rem;overflow:hidden;transition:border-color .3s;}
+.faq-item{border:1px solid var(--border);border-radius:10px;margin-bottom:.75rem;overflow:hidden;}
 .faq-item:hover,.faq-item.open{border-color:var(--border2);}
-.faq-q{padding:1.25rem 1.5rem;font-size:.9rem;font-weight:500;display:flex;justify-content:space-between;align-items:center;cursor:none;}
+.faq-q{padding:1.25rem 1.5rem;font-size:.9rem;font-weight:500;display:flex;justify-content:space-between;align-items:center;}
 .faq-icon{color:var(--green);font-size:1.2rem;transition:transform .3s;}
 .faq-item.open .faq-icon{transform:rotate(45deg);}
 .faq-a{padding:0 1.5rem;font-size:.85rem;color:var(--mid);line-height:1.7;max-height:0;overflow:hidden;transition:max-height .4s ease,padding .3s;}
 .faq-item.open .faq-a{max-height:200px;padding-bottom:1.25rem;}
-
-/* CTA BANNER */
 .cta-banner{padding:6rem 5rem;text-align:center;border-top:1px solid var(--border);}
-.cta-banner h2{font-family:'Instrument Serif',serif;font-size:clamp(2.5rem,5vw,4.5rem);font-weight:400;line-height:1.1;margin-bottom:1rem;letter-spacing:-.02em;}
+.cta-banner h2{font-family:'Instrument Serif',serif;font-size:clamp(2.5rem,5vw,4.5rem);font-weight:400;line-height:1.1;margin-bottom:1rem;}
 .cta-banner p{font-size:1rem;color:var(--mid);margin-bottom:2rem;}
 .cta-actions{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:1rem;}
 .cta-note{font-size:.8rem;color:var(--dim);}
-
-/* FOOTER */
 footer{padding:4rem 5rem 2rem;border-top:1px solid var(--border);}
 .footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem;}
 .footer-brand{display:flex;align-items:center;gap:.5rem;font-size:1rem;font-weight:700;margin-bottom:.75rem;}
@@ -190,21 +131,13 @@ footer{padding:4rem 5rem 2rem;border-top:1px solid var(--border);}
 .footer-col h5{font-size:.83rem;font-weight:600;margin-bottom:1rem;color:rgba(255,255,255,.6);}
 .footer-col ul{list-style:none;}
 .footer-col ul li{margin-bottom:.6rem;}
-.footer-col ul li a{font-size:.83rem;color:var(--dim);transition:color .2s;}
+.footer-col ul li a{font-size:.83rem;color:var(--dim);}
 .footer-col ul li a:hover{color:var(--white);}
 .footer-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:2rem;border-top:1px solid var(--border);font-size:.8rem;color:var(--dim);}
 .footer-links{display:flex;gap:1.5rem;}
-.footer-links a{color:var(--dim);transition:color .2s;}
-.footer-links a:hover{color:var(--white);}
-
-/* ANIMATIONS */
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
 .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease;}
 .reveal.visible{opacity:1;transform:none;}
-
-/* ══════════════════════════════════════
-   SCREEN 2 — AUTH
-══════════════════════════════════════ */
 #screen-auth{display:none;min-height:100vh;align-items:center;justify-content:center;background:var(--bg);position:relative;}
 #screen-auth.active{display:flex;}
 .auth-grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(34,197,94,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(34,197,94,0.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;}
@@ -212,37 +145,26 @@ footer{padding:4rem 5rem 2rem;border-top:1px solid var(--border);}
 .auth-card{position:relative;z-index:1;width:100%;max-width:440px;background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:2.5rem;box-shadow:0 40px 80px rgba(0,0,0,.5);}
 .auth-logo{display:flex;align-items:center;gap:.5rem;font-size:1.1rem;font-weight:700;margin-bottom:2rem;justify-content:center;}
 .auth-tabs{display:flex;background:var(--bg3);border-radius:10px;padding:.3rem;margin-bottom:2rem;}
-.auth-tab{flex:1;padding:.6rem;border:none;background:none;color:var(--mid);font-size:.85rem;font-weight:500;border-radius:7px;transition:all .2s;}
-.auth-tab.active{background:var(--bg2);color:var(--white);box-shadow:0 2px 8px rgba(0,0,0,.3);}
+.auth-tab{flex:1;padding:.6rem;border:none;background:none;color:var(--mid);font-size:.85rem;font-weight:500;border-radius:7px;}
+.auth-tab.active{background:var(--bg2);color:var(--white);}
 .auth-form{display:flex;flex-direction:column;gap:1rem;}
 .form-group{display:flex;flex-direction:column;gap:.4rem;}
 .form-group label{font-size:.8rem;font-weight:500;color:rgba(255,255,255,.6);}
-.form-input{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:.75rem 1rem;color:var(--white);font-size:.9rem;outline:none;transition:border-color .2s;-webkit-appearance:none;appearance:none;}
+.form-input{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:.75rem 1rem;color:var(--white);font-size:.9rem;outline:none;transition:border-color .2s;}
 .form-input:focus{border-color:var(--border2);background:var(--bg3);}
 .form-input::placeholder{color:var(--dim);}
-.form-input:-webkit-autofill,.form-input:-webkit-autofill:hover,.form-input:-webkit-autofill:focus{-webkit-box-shadow:0 0 0 1000px var(--bg3) inset;-webkit-text-fill-color:var(--white);caret-color:var(--white);}
+.form-input:-webkit-autofill,.form-input:-webkit-autofill:focus{-webkit-box-shadow:0 0 0 1000px var(--bg3) inset;-webkit-text-fill-color:var(--white);}
 .field-error{font-size:.75rem;color:var(--red);margin-top:.25rem;display:none;}
 .form-group.has-error .form-input{border-color:var(--red);}
 .form-group.has-error .field-error{display:block;}
 .auth-error-banner{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:8px;padding:.75rem 1rem;font-size:.82rem;color:#fca5a5;margin-bottom:.5rem;display:none;}
-.auth-success-banner{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:8px;padding:.75rem 1rem;font-size:.82rem;color:var(--green-l);margin-bottom:.5rem;display:none;text-align:center;}
-.btn-auth{width:100%;padding:.9rem;background:var(--green);border:none;border-radius:8px;color:#000;font-size:.95rem;font-weight:600;margin-top:.5rem;transition:background .2s,transform .2s;}
-.btn-auth:hover{background:var(--green-l);transform:translateY(-1px);}
-.auth-divider{display:flex;align-items:center;gap:1rem;margin:.5rem 0;}
-.auth-divider span{font-size:.8rem;color:var(--dim);}
-.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--border);}
+.btn-auth{width:100%;padding:.9rem;background:var(--green);border:none;border-radius:8px;color:#000;font-size:.95rem;font-weight:600;margin-top:.5rem;}
+.btn-auth:hover{background:var(--green-l);}
 .auth-note{text-align:center;font-size:.8rem;color:var(--dim);margin-top:1rem;}
 .auth-note a{color:var(--green-l);}
-.auth-back{position:absolute;top:1.5rem;left:1.5rem;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:.5rem .9rem;color:var(--mid);font-size:.82rem;z-index:2;transition:color .2s;}
-.auth-back:hover{color:var(--white);}
-
-/* ══════════════════════════════════════
-   SCREEN 3 — DASHBOARD
-══════════════════════════════════════ */
+.auth-back{position:absolute;top:1.5rem;left:1.5rem;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:.5rem .9rem;color:var(--mid);font-size:.82rem;z-index:2;}
 #screen-dashboard{display:none;min-height:100vh;background:var(--dash-bg);}
 #screen-dashboard.active{display:flex;}
-
-/* SIDEBAR */
 .sidebar{width:240px;flex-shrink:0;background:var(--dash-sidebar);border-right:1px solid var(--dash-border);box-shadow:2px 0 12px rgba(0,0,0,0.06);display:flex;flex-direction:column;padding:1.5rem 0;height:100vh;position:sticky;top:0;}
 .sb-logo{display:flex;align-items:center;gap:.5rem;font-size:1rem;font-weight:700;padding:.5rem 1.5rem 1.5rem;border-bottom:1px solid var(--dash-border);margin-bottom:1rem;color:var(--dash-text);}
 .sb-section{font-size:.68rem;font-weight:600;color:var(--dash-dim);text-transform:uppercase;letter-spacing:.08em;padding:.25rem 1.5rem;margin-top:.75rem;}
@@ -250,46 +172,28 @@ footer{padding:4rem 5rem 2rem;border-top:1px solid var(--border);}
 .sb-item:hover{color:var(--dash-text);background:rgba(34,197,94,.05);}
 .sb-item.active{color:var(--green-d);border-left-color:var(--green);background:rgba(34,197,94,.08);font-weight:600;}
 .sb-icon{font-size:1rem;width:18px;text-align:center;}
-.sb-badge{margin-left:auto;background:var(--green);color:#000;font-size:.65rem;font-weight:700;padding:.1rem .45rem;border-radius:50px;}
 .sb-bottom{margin-top:auto;padding:1.5rem;border-top:1px solid var(--dash-border);}
 .sb-user{display:flex;align-items:center;gap:.75rem;}
 .sb-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--green-d));display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#000;}
 .sb-user-name{font-size:.83rem;font-weight:600;color:var(--dash-text);}
-.sb-user-plan{font-size:.7rem;color:var(--green-d);}
-
-/* MAIN CONTENT */
+.sb-user-email{font-size:.7rem;color:var(--dash-dim);margin-top:.1rem;word-break:break-all;}
 .dash-main{flex:1;overflow-y:auto;padding:2rem;color:var(--dash-text);}
 .dash-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;}
-.dash-title{font-size:1.4rem;font-weight:700;letter-spacing:-.02em;color:var(--dash-text);}
+.dash-title{font-size:1.4rem;font-weight:700;color:var(--dash-text);}
 .dash-subtitle{font-size:.83rem;color:var(--dash-mid);margin-top:.2rem;}
 .dash-header-right{display:flex;gap:.75rem;align-items:center;}
-
-/* TABS */
-.dash-tabs{display:flex;gap:.5rem;margin-bottom:1.5rem;border-bottom:1px solid var(--dash-border);padding-bottom:0;}
-.dash-tab{padding:.6rem 1.2rem;font-size:.85rem;color:var(--dash-mid);border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .2s,border-color .2s;}
-.dash-tab.active{color:var(--dash-text);border-bottom-color:var(--green);}
 .dash-panel{display:none;}
 .dash-panel.active{display:block;}
-
-/* STAT CARDS */
 .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem;}
-.stat-card{background:var(--dash-bg2);border:1px solid var(--dash-border);border-radius:12px;padding:1.25rem;transition:border-color .3s,box-shadow .3s;}
-.stat-card:hover{border-color:var(--dash-border2);box-shadow:0 4px 16px rgba(34,197,94,.08);}
+.stat-card{background:var(--dash-bg2);border:1px solid var(--dash-border);border-radius:12px;padding:1.25rem;}
+.stat-card:hover{border-color:var(--dash-border2);}
 .stat-label{font-size:.78rem;color:var(--dash-mid);margin-bottom:.5rem;display:flex;align-items:center;gap:.4rem;}
-.stat-value{font-size:1.8rem;font-weight:700;letter-spacing:-.03em;line-height:1;color:var(--dash-text);}
-.stat-change{font-size:.75rem;margin-top:.4rem;}
-.stat-change.up{color:var(--green);}
-.stat-change.down{color:var(--red);}
-
-/* CARDS */
+.stat-value{font-size:1.8rem;font-weight:700;color:var(--dash-text);}
+.stat-change{font-size:.75rem;margin-top:.4rem;color:var(--green-d);}
 .card{background:var(--dash-bg2);border:1px solid var(--dash-border);border-radius:12px;padding:1.5rem;box-shadow:0 1px 4px rgba(0,0,0,.04);}
 .card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;}
 .card-title{font-size:.9rem;font-weight:600;color:var(--dash-text);}
-.card-action{font-size:.78rem;color:var(--green-l);}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;}
-.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:1rem;}
-
-/* TABLE */
 .table-wrap{overflow-x:auto;}
 table{width:100%;border-collapse:collapse;}
 th{font-size:.75rem;font-weight:600;color:var(--dash-dim);text-align:left;padding:.6rem .75rem;border-bottom:1px solid var(--dash-border);background:var(--dash-bg3);}
@@ -300,25 +204,17 @@ tr:hover td{background:rgba(34,197,94,.03);}
 .badge.sent{background:rgba(34,197,94,.1);color:var(--green);}
 .badge.opened{background:rgba(59,130,246,.1);color:var(--blue);}
 .badge.reviewed{background:rgba(245,158,11,.1);color:var(--amber);}
-.badge.pending{background:rgba(255,255,255,.06);color:var(--mid);}
-
-/* SEND FORM */
-.send-form{background:var(--dash-bg2);border:1px solid var(--dash-border);border-radius:12px;padding:1.5rem;margin-bottom:1rem;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+.send-form{background:var(--dash-bg2);border:1px solid var(--dash-border);border-radius:12px;padding:1.5rem;margin-bottom:1rem;}
 .send-form-grid{display:grid;grid-template-columns:1fr 1fr 1.5fr;gap:1rem;align-items:end;}
-.form-group-inline label{font-size:.78rem;font-weight:500;color:var(--mid);display:block;margin-bottom:.4rem;}
-.input-field{width:100%;background:var(--dash-bg3);border:1px solid var(--dash-border);border-radius:8px;padding:.7rem 1rem;color:var(--dash-text);font-size:.85rem;outline:none;transition:border-color .2s;}
-.input-field:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(34,197,94,.1);}
+.form-group-inline label{font-size:.78rem;font-weight:500;color:var(--dash-mid);display:block;margin-bottom:.4rem;}
+.input-field{width:100%;background:var(--dash-bg3);border:1px solid var(--dash-border);border-radius:8px;padding:.7rem 1rem;color:var(--dash-text);font-size:.85rem;outline:none;}
+.input-field:focus{border-color:var(--green);}
 .input-field::placeholder{color:var(--dash-dim);}
-.btn-whatsapp{display:flex;align-items:center;justify-content:center;gap:.5rem;padding:.7rem 1.5rem;background:#25d366;border:none;border-radius:8px;color:#fff;font-size:.85rem;font-weight:600;white-space:nowrap;transition:background .2s,transform .2s;}
-.btn-whatsapp:hover{background:#1fb855;transform:translateY(-1px);}
-.btn-sm{padding:.5rem 1rem;border-radius:7px;font-size:.78rem;font-weight:500;border:1px solid var(--dash-border);background:none;color:var(--dash-mid);transition:all .2s;}
-.btn-sm:hover{color:var(--dash-text);border-color:rgba(0,0,0,.2);background:var(--dash-bg3);}
+.btn-whatsapp{display:flex;align-items:center;justify-content:center;gap:.5rem;padding:.7rem 1.5rem;background:#25d366;border:none;border-radius:8px;color:#fff;font-size:.85rem;font-weight:600;white-space:nowrap;}
+.btn-whatsapp:hover{background:#1fb855;}
+.btn-sm{padding:.5rem 1rem;border-radius:7px;font-size:.78rem;font-weight:500;border:1px solid var(--dash-border);background:none;color:var(--dash-mid);}
+.btn-sm:hover{color:var(--dash-text);background:var(--dash-bg3);}
 .btn-sm.green{background:var(--green);border-color:var(--green);color:#fff;font-weight:600;}
-.btn-sm.green:hover{background:var(--green-d);}
-
-/* SETTINGS PANEL */
-.settings-section{margin-bottom:1.5rem;}
-.settings-label{font-size:.8rem;font-weight:600;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.75rem;}
 .settings-row{display:flex;align-items:center;justify-content:space-between;padding:.85rem 0;border-bottom:1px solid var(--dash-border);}
 .settings-row:last-child{border:none;}
 .settings-key{font-size:.88rem;font-weight:500;color:var(--dash-text);}
@@ -327,212 +223,89 @@ tr:hover td{background:rgba(34,197,94,.03);}
 .toggle.on{background:var(--green);}
 .toggle::after{content:'';position:absolute;width:16px;height:16px;background:#fff;border-radius:50%;top:2px;left:2px;transition:left .2s;}
 .toggle.on::after{left:18px;}
-
-/* REVIEW FUNNEL */
 #screen-funnel{display:none;min-height:100vh;align-items:center;justify-content:center;background:var(--bg);}
-#screen-funnel.active{display:flex;}
 .funnel-card{width:100%;max-width:480px;background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:2.5rem;text-align:center;box-shadow:0 40px 80px rgba(0,0,0,.5);position:relative;z-index:1;}
-.funnel-biz{font-size:.8rem;color:var(--mid);margin-bottom:1rem;display:flex;align-items:center;justify-content:center;gap:.4rem;}
 .funnel-h{font-family:'Instrument Serif',serif;font-size:2rem;font-weight:400;line-height:1.2;margin-bottom:.6rem;}
 .funnel-sub{font-size:.9rem;color:var(--mid);margin-bottom:2rem;}
 .star-row{display:flex;gap:.75rem;justify-content:center;margin-bottom:1.5rem;}
 .star-btn{font-size:2.5rem;background:none;border:none;opacity:.3;transition:opacity .2s,transform .2s;}
 .star-btn.active,.star-btn:hover{opacity:1;transform:scale(1.15);}
-.star-label{font-size:.85rem;color:var(--mid);margin-bottom:1.5rem;min-height:1.2em;}
-.btn-funnel{width:100%;padding:.9rem;background:var(--green);border:none;border-radius:10px;color:#000;font-size:.95rem;font-weight:600;transition:background .2s,transform .2s,opacity .2s;}
-.btn-funnel:hover{background:var(--green-l);transform:translateY(-1px);}
+.star-label{font-size:.85rem;color:var(--mid);margin-bottom:.75rem;min-height:1.2em;}
+.btn-funnel{width:100%;padding:.9rem;background:var(--green);border:none;border-radius:10px;color:#000;font-size:.95rem;font-weight:600;transition:background .2s,opacity .2s;}
+.btn-funnel:hover{background:var(--green-l);}
 .btn-funnel.disabled{opacity:.4;pointer-events:none;}
-.funnel-privacy{font-size:.75rem;color:var(--dim);margin-top:1rem;}
-
-/* FEEDBACK SCREEN */
 #screen-feedback{display:none;min-height:100vh;align-items:center;justify-content:center;background:var(--bg);position:relative;}
-#screen-feedback.active{display:flex;}
 .feedback-card{width:100%;max-width:500px;background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:2.5rem;box-shadow:0 40px 80px rgba(0,0,0,.5);position:relative;z-index:10;}
 .feedback-icon{font-size:2.5rem;margin-bottom:1rem;}
 .feedback-h{font-family:'Instrument Serif',serif;font-size:1.8rem;font-weight:400;margin-bottom:.5rem;}
 .feedback-sub{font-size:.85rem;color:var(--mid);margin-bottom:1.5rem;}
-.textarea-field{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:1rem;color:var(--white);font-size:.9rem;outline:none;resize:none;min-height:120px;transition:border-color .2s;pointer-events:auto;position:relative;z-index:10;-webkit-tap-highlight-color:transparent;}
-.textarea-field:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(34,197,94,.15);}
+.textarea-field{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:1rem;color:var(--white);font-size:.9rem;outline:none;resize:none;min-height:120px;pointer-events:auto;}
+.textarea-field:focus{border-color:var(--green);}
 .textarea-field::placeholder{color:rgba(255,255,255,.35);}
 #screen-dashboard .textarea-field{background:var(--dash-bg3);border-color:var(--dash-border);color:var(--dash-text);}
-#screen-dashboard .textarea-field:focus{border-color:var(--green);}
-#screen-dashboard .textarea-field::placeholder{color:var(--dash-dim);}
 .feedback-tags{display:flex;flex-wrap:wrap;gap:.5rem;margin:.75rem 0 1rem;}
-.tag-btn{padding:.5rem 1rem;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);border-radius:50px;font-size:.82rem;color:rgba(255,255,255,.7);transition:all .2s;cursor:pointer;pointer-events:auto;position:relative;z-index:10;-webkit-tap-highlight-color:rgba(34,197,94,.2);}
+.tag-btn{padding:.5rem 1rem;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);border-radius:50px;font-size:.82rem;color:rgba(255,255,255,.7);cursor:pointer;pointer-events:auto;}
 .tag-btn.active,.tag-btn:hover{background:rgba(34,197,94,.2);border-color:rgba(34,197,94,.5);color:var(--green-l);}
-
-/* TOAST */
 .toast{position:fixed;bottom:2rem;right:2rem;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:1rem 1.5rem;font-size:.85rem;color:var(--white);z-index:9990;transform:translateY(100px);opacity:0;transition:all .4s;display:flex;align-items:center;gap:.6rem;}
 .toast.show{transform:none;opacity:1;}
-.toast-icon{color:var(--green);}
-
-/* CHART BARS */
 .chart-bars{display:flex;align-items:flex-end;gap:8px;height:80px;padding:.5rem 0;}
-.bar-col{flex:1;background:rgba(34,197,94,.15);border-radius:4px 4px 0 0;transition:background .2s;}
-.bar-col:hover{background:rgba(34,197,94,.35);}
+.bar-col{flex:1;background:rgba(34,197,94,.2);border-radius:4px 4px 0 0;}
+.bar-col:hover{background:rgba(34,197,94,.4);}
 .bar-labels{display:flex;gap:8px;margin-top:.3rem;}
-.bar-lbl{flex:1;text-align:center;font-size:.6rem;color:var(--dim);}
-
-/* PROGRESS RING */
-.ring-wrap{display:flex;flex-direction:column;align-items:center;gap:.4rem;}
-.ring-val{font-size:1.4rem;font-weight:700;}
-.ring-lbl{font-size:.72rem;color:var(--mid);}
-
-/* NOTIFICATION DOT */
+.bar-lbl{flex:1;text-align:center;font-size:.6rem;color:var(--dash-dim);}
 .notif{position:relative;}
-.notif-dot{position:absolute;top:-3px;right:-3px;width:8px;height:8px;background:var(--green);border-radius:50%;border:2px solid var(--bg2);}
-
-/* WHATSAPP PREVIEW */
-.wa-preview{background:#0f1a10;border:1px solid rgba(37,211,102,.15);border-radius:12px;padding:1rem;margin-top:.75rem;}
-.wa-preview-header{display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem;font-size:.75rem;color:#25d366;}
-.wa-bubble{background:#1a3a1e;border-radius:0 10px 10px 10px;padding:.75rem 1rem;font-size:.82rem;line-height:1.6;color:rgba(255,255,255,.85);max-width:340px;position:relative;}
-.wa-bubble::before{content:'';position:absolute;top:0;left:-8px;border:8px solid transparent;border-right-color:#1a3a1e;border-top:0;}
-.wa-time{font-size:.65rem;color:rgba(255,255,255,.3);text-align:right;margin-top:.3rem;}
-.wa-link{color:#25d366;text-decoration:underline;}
-
-/* RESPONSIVE */
+.notif-dot{position:absolute;top:-3px;right:-3px;width:8px;height:8px;background:var(--green);border-radius:50%;border:2px solid var(--dash-sidebar);}
+.wa-preview{background:#e8f5e9;border:1px solid rgba(34,197,94,.25);border-radius:12px;padding:1rem;margin-top:.75rem;}
+.wa-preview-header{display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem;font-size:.75rem;color:var(--green-d);}
+.wa-bubble{background:#c8e6c9;border-radius:0 10px 10px 10px;padding:.75rem 1rem;font-size:.82rem;line-height:1.6;color:#1a3a1e;max-width:340px;position:relative;}
+.wa-time{font-size:.65rem;color:rgba(0,0,0,.35);text-align:right;margin-top:.3rem;}
+.wa-link{color:var(--green-d);text-decoration:underline;}
 @media(max-width:768px){
-  nav{padding:1rem 1.5rem;}
-  .nav-links{display:none;}
-  .section{padding:4rem 1.5rem;}
-  .how-steps,.feat-grid,.price-grid{grid-template-columns:1fr;}
-  .footer-top{grid-template-columns:1fr;}
-  .stats-grid{grid-template-columns:1fr 1fr;}
-  .send-form-grid{grid-template-columns:1fr;}
-  .grid-2,.grid-3{grid-template-columns:1fr;}
-}
-
-/* ── DASHBOARD LIGHT EXTRAS ── */
-#screen-dashboard select.input-field{background:var(--dash-bg3);color:var(--dash-text);}
-#screen-dashboard .stat-change.up{color:var(--green-d);}
-#screen-dashboard .stat-change.down{color:var(--red);}
-#screen-dashboard .card-action{color:var(--green-d);}
-#screen-dashboard .m-card-title{color:var(--dash-mid);}
-#screen-dashboard .chart-bars .bar-col{background:rgba(34,197,94,.2);}
-#screen-dashboard .chart-bars .bar-col:hover{background:rgba(34,197,94,.45);}
-#screen-dashboard .bar-lbl{color:var(--dash-dim);}
-#screen-dashboard .notif-dot{border-color:var(--dash-sidebar);}
-#screen-dashboard th{color:var(--dash-dim);}
-#screen-dashboard .wa-preview{background:#e8f5e9;border-color:rgba(34,197,94,.25);}
-#screen-dashboard .wa-preview-header{color:var(--green-d);}
-#screen-dashboard .wa-bubble{background:#c8e6c9;color:#1a3a1e;}
-#screen-dashboard .wa-time{color:rgba(0,0,0,.35);}
-#screen-dashboard .wa-link{color:var(--green-d);}
-#screen-dashboard .form-group-inline label{color:var(--dash-mid);}
-#screen-dashboard .settings-label{color:var(--dash-dim);}
-#screen-dashboard .sb-badge{background:var(--green);color:#fff;}
-#screen-dashboard [style*="color:var(--mid)"]{color:var(--dash-mid) !important;}
-#screen-dashboard [style*="color:rgba(255,255,255,.5)"]{color:var(--dash-dim) !important;}
-#screen-dashboard [style*="color:rgba(255,255,255,.7)"]{color:var(--dash-mid) !important;}
-#screen-dashboard [style*="color:var(--dim)"]{color:var(--dash-dim) !important;}
-#screen-dashboard [style*="background:var(--bg3)"]{background:var(--dash-bg3) !important;}
-#screen-dashboard [style*="background:var(--bg2)"]{background:var(--dash-bg2) !important;}
-#screen-dashboard [style*="border:1px solid var(--border)"]{border-color:var(--dash-border) !important;}
-#screen-dashboard [style*="border-bottom:1px solid var(--border)"]{border-color:var(--dash-border) !important;}
-#screen-dashboard [style*="border-left:3px solid var(--red)"]{border-left-color:var(--red) !important;background:#fff8f8 !important;}
-#screen-dashboard [style*="border-left:3px solid var(--amber)"]{border-left-color:var(--amber) !important;background:#fffbf0 !important;}
-
-/* ══════════════════════════════════════
-   MOBILE RESPONSIVE
-══════════════════════════════════════ */
-@media(max-width:768px){
-  /* NAV */
-  nav{padding:.9rem 1.2rem;}
-  .nav-links{display:none;}
-  /* HERO */
-  .hero{padding:5rem 1.2rem 3rem;}
-  .hero h1{font-size:2.4rem;}
-  .hero-sub{font-size:.95rem;}
-  .hero-mockup{display:none;}
-  /* SECTIONS */
-  .section{padding:3rem 1.2rem;}
-  .how-steps{grid-template-columns:1fr;gap:1rem;}
-  .step-connector{display:none;}
-  .feat-grid{grid-template-columns:1fr;}
-  .price-grid{grid-template-columns:1fr;}
-  .footer-top{grid-template-columns:1fr;gap:2rem;}
-  .faq{padding:3rem 1.2rem;}
-  .cta-banner{padding:3rem 1.2rem;}
-  /* DASHBOARD */
+  nav{padding:.9rem 1.2rem;}.nav-links{display:none;}
+  .hero{padding:5rem 1.2rem 3rem;}.hero h1{font-size:2.4rem;}.hero-mockup{display:none;}
+  .section{padding:3rem 1.2rem;}.how-steps,.feat-grid,.price-grid{grid-template-columns:1fr;}
+  .step-connector{display:none;}.footer-top{grid-template-columns:1fr;gap:2rem;}
+  .faq{padding:3rem 1.2rem;}.cta-banner{padding:3rem 1.2rem;}
   #screen-dashboard{flex-direction:column;}
-  .sidebar{width:100%;height:auto;flex-direction:row;flex-wrap:wrap;padding:.75rem;gap:.25rem;position:relative;border-right:none;border-bottom:1px solid var(--dash-border);}
-  .sb-logo{padding:.25rem .5rem .25rem;border:none;margin:0;font-size:.9rem;}
-  .sb-section{display:none;}
+  .sidebar{width:100%;height:auto;flex-direction:row;flex-wrap:wrap;padding:.75rem;position:relative;border-right:none;border-bottom:1px solid var(--dash-border);}
+  .sb-logo{padding:.25rem .5rem;border:none;margin:0;font-size:.9rem;}.sb-section,.sb-bottom{display:none;}
   .sb-item{padding:.4rem .6rem;font-size:.75rem;border-left:none;border-bottom:2px solid transparent;margin:0;}
   .sb-item.active{border-left:none;border-bottom-color:var(--green);}
-  .sb-bottom{display:none;}
-  .dash-main{padding:1rem;}
-  .stats-grid{grid-template-columns:1fr 1fr;}
-  .grid-2,.grid-3{grid-template-columns:1fr;}
-  .send-form-grid{grid-template-columns:1fr;}
-  .how-steps{grid-template-columns:1fr;}
-  /* FUNNEL */
-  .funnel-card{margin:1rem;padding:1.75rem 1.25rem;}
-  .funnel-h{font-size:1.5rem;}
-  .star-btn{font-size:2rem;}
-  /* FEEDBACK */
-  .feedback-card{margin:1rem;padding:1.75rem 1.25rem;}
-  .feedback-tags{gap:.4rem;}
-  .tag-btn{font-size:.78rem;padding:.4rem .75rem;}
-  /* AUTH */
+  .dash-main{padding:1rem;}.stats-grid{grid-template-columns:1fr 1fr;}
+  .grid-2{grid-template-columns:1fr;}.send-form-grid{grid-template-columns:1fr;}
+  .funnel-card,.feedback-card{margin:1rem;padding:1.75rem 1.25rem;}
+  .funnel-h{font-size:1.5rem;}.star-btn{font-size:2rem;}
   .auth-card{margin:1rem;padding:1.75rem 1.25rem;}
-  /* THANKS */
-  #screen-thanks .funnel-card{margin:1rem;padding:1.75rem 1.25rem;}
 }
-@media(max-width:400px){
-  .hero h1{font-size:2rem;}
-  .star-btn{font-size:1.8rem;}
-  .stats-grid{grid-template-columns:1fr;}
-}
+@media(max-width:400px){.hero h1{font-size:2rem;}.star-btn{font-size:1.8rem;}.stats-grid{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
-
-<!-- CURSOR -->
 <div class="cur" id="cur"></div>
 <div class="cur-ring" id="curR"></div>
+<div class="toast" id="toast"><span style="color:var(--green)">✓</span><span id="toast-msg">Done!</span></div>
 
-<!-- TOAST -->
-<div class="toast" id="toast"><span class="toast-icon">✓</span><span id="toast-msg">Done!</span></div>
-
-<!-- ═══════════════════════════════════════
-     SCREEN 1: LANDING PAGE
-═══════════════════════════════════════ -->
+<!-- LANDING -->
 <div id="screen-landing" class="screen">
-
-<!-- NAV -->
 <nav id="main-nav">
   <div class="nav-logo"><div class="logo-dot"></div> ReviewBoostPRO</div>
-  <ul class="nav-links">
-    <li><a href="#how">How it works</a></li>
-    <li><a href="#features">Features</a></li>
-    <li><a href="#pricing">Pricing</a></li>
-    <li><a href="#faq-section">FAQ</a></li>
-  </ul>
+  <ul class="nav-links"><li><a href="#how">How it works</a></li><li><a href="#features">Features</a></li><li><a href="#pricing">Pricing</a></li><li><a href="#faq-section">FAQ</a></li></ul>
   <div class="nav-right">
     <button class="btn-ghost-nav" onclick="showAuth('login')">Sign in</button>
     <button class="btn-nav" onclick="showAuth('signup')">Start free trial →</button>
   </div>
 </nav>
-
-<!-- HERO -->
 <section class="hero">
-  <div class="hero-grid"></div>
-  <div class="hero-glow"></div>
-  <div class="hero-badge"><span class="badge-dot"></span> Trusted by 1,200+ clinics, boutiques & restaurants</div>
+  <div class="hero-grid"></div><div class="hero-glow"></div>
+  <div class="hero-badge"><span class="badge-dot"></span> Trusted by 1,200+ clinics, boutiques &amp; restaurants</div>
   <h1>Turn every customer<br>into a <span class="green">5-star</span> <span class="italic">Google review</span></h1>
   <p class="hero-sub">Send a WhatsApp message → happy customers review on Google → unhappy ones give you private feedback. Zero API required.</p>
   <div class="hero-actions">
     <button class="btn-primary" onclick="showAuth('signup')">Start free 14-day trial →</button>
     <button class="btn-sec" onclick="showFunnel()">See review funnel ↓</button>
   </div>
-
-  <!-- MOCKUP -->
   <div class="hero-mockup">
-    <div class="mockup-bar">
-      <div class="dot-r"></div><div class="dot-y"></div><div class="dot-g"></div>
-      <div class="mockup-url">app.reviewboostpro.com/dashboard</div>
-    </div>
+    <div class="mockup-bar"><div class="dot-r"></div><div class="dot-y"></div><div class="dot-g"></div><div class="mockup-url">app.reviewboostpro.com/dashboard</div></div>
     <div class="mockup-body">
       <div class="mockup-side">
         <div class="mockup-nav-item act"><div class="mni"></div>Dashboard</div>
@@ -550,195 +323,82 @@ tr:hover td{background:rgba(34,197,94,.03);}
           <div class="m-stat"><div class="m-stat-num">4.8★</div><div class="m-stat-lbl">Avg Rating</div><div class="m-stat-up">↑ 0.3</div></div>
         </div>
         <div class="m-row">
-          <div class="m-card">
-            <div class="m-card-title">RECENT SENDS</div>
+          <div class="m-card"><div class="m-card-title">RECENT SENDS</div>
             <div class="m-table-row"><span style="font-size:.7rem">Priya S.</span><span class="m-pill sent">Sent</span></div>
             <div class="m-table-row"><span style="font-size:.7rem">Rajan K.</span><span class="m-pill open">Opened</span></div>
             <div class="m-table-row"><span style="font-size:.7rem">Meera P.</span><span class="m-pill sent">Sent</span></div>
           </div>
-          <div class="m-card">
-            <div class="m-card-title">CONVERSION</div>
+          <div class="m-card"><div class="m-card-title">CONVERSION</div>
             <div class="m-bar-wrap"><div class="m-bar-top"><span>Sent → Open</span><span>69%</span></div><div class="m-bar-bg"><div class="m-bar-fill" style="width:69%"></div></div></div>
             <div class="m-bar-wrap"><div class="m-bar-top"><span>Open → Review</span><span>44%</span></div><div class="m-bar-bg"><div class="m-bar-fill" style="width:44%"></div></div></div>
-            <div class="m-bar-wrap"><div class="m-bar-top"><span>Overall</span><span>31%</span></div><div class="m-bar-bg"><div class="m-bar-fill" style="width:31%"></div></div></div>
           </div>
         </div>
       </div>
     </div>
   </div>
 </section>
-
-<!-- LOGOS -->
 <div class="logos-bar">
   <div class="logos-label">Used by businesses across India</div>
   <div class="logos-track">
-    <div class="logo-chip">🏥 Apollo Clinics</div>
-    <div class="logo-chip">💇 Style Studio</div>
-    <div class="logo-chip">🦷 SmileCare Dental</div>
-    <div class="logo-chip">👗 Zara Boutique</div>
-    <div class="logo-chip">☕ Brew & Bean</div>
-    <div class="logo-chip">💊 MedPlus Pharmacy</div>
-    <div class="logo-chip">🍽️ Spice Garden</div>
+    <div class="logo-chip">🏥 Apollo Clinics</div><div class="logo-chip">💇 Style Studio</div><div class="logo-chip">🦷 SmileCare Dental</div>
+    <div class="logo-chip">👗 Zara Boutique</div><div class="logo-chip">☕ Brew &amp; Bean</div><div class="logo-chip">💊 MedPlus Pharmacy</div>
   </div>
 </div>
-
-<!-- HOW IT WORKS -->
 <section class="section" id="how">
-  <div style="text-align:center;margin-bottom:1rem;">
-    <div class="sec-tag">How it works</div>
-    <h2 class="sec-h">Get reviews in <span class="g">4 simple steps</span></h2>
-    <p class="sec-p center">No WhatsApp API needed. No tech setup. Send your first review request in under 10 minutes.</p>
-  </div>
+  <div style="text-align:center;margin-bottom:1rem;"><div class="sec-tag">How it works</div><h2 class="sec-h">Get reviews in <span class="g">4 simple steps</span></h2><p class="sec-p center">No WhatsApp API needed. Send your first review request in under 10 minutes.</p></div>
   <div class="how-steps">
-    <div class="step-card reveal">
-      <div class="step-num">01</div>
-      <div class="step-icon">➕</div>
-      <div class="step-title">Add customer</div>
-      <div class="step-desc">Enter your customer's name and WhatsApp number in the dashboard. That's it.</div>
-      <div class="step-connector">→</div>
-    </div>
-    <div class="step-card reveal" style="transition-delay:.1s">
-      <div class="step-num">02</div>
-      <div class="step-icon">💬</div>
-      <div class="step-title">Generate link</div>
-      <div class="step-desc">ReviewBoostPRO creates a WhatsApp wa.me link with your personalised review request message.</div>
-      <div class="step-connector">→</div>
-    </div>
-    <div class="step-card reveal" style="transition-delay:.2s">
-      <div class="step-num">03</div>
-      <div class="step-icon">📲</div>
-      <div class="step-title">Click &amp; send</div>
-      <div class="step-desc">Click the Send button — WhatsApp opens with the message ready. Hit send. Done in 2 seconds.</div>
-      <div class="step-connector">→</div>
-    </div>
-    <div class="step-card reveal" style="transition-delay:.3s">
-      <div class="step-num">04</div>
-      <div class="step-icon">⭐</div>
-      <div class="step-title">Reviews roll in</div>
-      <div class="step-desc">Happy customers land on Google. Unhappy ones give private feedback. Your rating climbs.</div>
-    </div>
+    <div class="step-card reveal"><div class="step-num">01</div><div class="step-icon">➕</div><div class="step-title">Add customer</div><div class="step-desc">Enter customer name and WhatsApp number in the dashboard.</div><div class="step-connector">→</div></div>
+    <div class="step-card reveal" style="transition-delay:.1s"><div class="step-num">02</div><div class="step-icon">💬</div><div class="step-title">Generate link</div><div class="step-desc">ReviewBoostPRO creates a WhatsApp wa.me link with your review request.</div><div class="step-connector">→</div></div>
+    <div class="step-card reveal" style="transition-delay:.2s"><div class="step-num">03</div><div class="step-icon">📲</div><div class="step-title">Click &amp; send</div><div class="step-desc">Click Send — WhatsApp opens with the message ready. Hit send.</div><div class="step-connector">→</div></div>
+    <div class="step-card reveal" style="transition-delay:.3s"><div class="step-num">04</div><div class="step-icon">⭐</div><div class="step-title">Reviews roll in</div><div class="step-desc">Happy customers go to Google. Unhappy ones give private feedback.</div></div>
   </div>
 </section>
-
-<!-- FEATURES -->
 <section class="section" id="features" style="padding-top:0">
-  <div style="text-align:center;margin-bottom:1rem;">
-    <div class="sec-tag reveal">Features</div>
-    <h2 class="sec-h reveal">Everything you need to <span class="g">dominate local search</span></h2>
-  </div>
+  <div style="text-align:center;margin-bottom:1rem;"><div class="sec-tag reveal">Features</div><h2 class="sec-h reveal">Everything you need to <span class="g">dominate local search</span></h2></div>
   <div class="feat-grid">
-    <div class="feat-card reveal"><div class="feat-icon">💬</div><div class="feat-title">No-API WhatsApp Sending</div><div class="feat-desc">Generate wa.me links instantly. Send via your own WhatsApp — no Business API approvals, no monthly fees, no restrictions.</div></div>
-    <div class="feat-card reveal" style="transition-delay:.05s"><div class="feat-icon">🔀</div><div class="feat-title">Smart Review Funnel</div><div class="feat-desc">1–3 stars go to private feedback. 4–5 stars go straight to your Google Business page. Filter before it hurts your rating.</div></div>
-    <div class="feat-card reveal" style="transition-delay:.1s"><div class="feat-icon">📊</div><div class="feat-title">Live Analytics Dashboard</div><div class="feat-desc">Track messages sent, links opened, Google reviews received, and conversion rates — all in one clean view.</div></div>
-    <div class="feat-card reveal" style="transition-delay:.15s"><div class="feat-icon">🔒</div><div class="feat-title">Private Feedback Capture</div><div class="feat-desc">Unhappy customers share their experience privately. You fix the issue before it becomes a 1-star public review.</div></div>
-    <div class="feat-card reveal" style="transition-delay:.2s"><div class="feat-icon">⚡</div><div class="feat-title">Message Templates</div><div class="feat-desc">Customise your WhatsApp message with your business name, customer name, and your own tone. Warm & personal.</div></div>
-    <div class="feat-card reveal" style="transition-delay:.25s"><div class="feat-icon">🏥</div><div class="feat-title">Built for Local Business</div><div class="feat-desc">Designed for clinics, hospitals, boutiques, salons, restaurants, and pharmacies across India.</div></div>
+    <div class="feat-card reveal"><div class="feat-icon">💬</div><div class="feat-title">No-API WhatsApp Sending</div><div class="feat-desc">Generate wa.me links instantly. Send via your own WhatsApp — no API approvals.</div></div>
+    <div class="feat-card reveal"><div class="feat-icon">🔀</div><div class="feat-title">Smart Review Funnel</div><div class="feat-desc">1–3 stars go to private feedback. 4–5 stars go straight to your Google Business page.</div></div>
+    <div class="feat-card reveal"><div class="feat-icon">📊</div><div class="feat-title">Live Analytics</div><div class="feat-desc">Track messages sent, links opened, Google reviews received, and conversion rates.</div></div>
+    <div class="feat-card reveal"><div class="feat-icon">🔒</div><div class="feat-title">Private Feedback</div><div class="feat-desc">Unhappy customers share privately. Fix issues before they become public 1-star reviews.</div></div>
+    <div class="feat-card reveal"><div class="feat-icon">⚡</div><div class="feat-title">Message Templates</div><div class="feat-desc">Customise your WhatsApp message with your business name and your own tone.</div></div>
+    <div class="feat-card reveal"><div class="feat-icon">🏥</div><div class="feat-title">Built for Local Business</div><div class="feat-desc">Designed for clinics, boutiques, salons, restaurants, and pharmacies across India.</div></div>
   </div>
 </section>
-
-<!-- PRICING -->
 <section class="section" id="pricing" style="padding-top:2rem">
-  <div style="text-align:center;margin-bottom:1rem;">
-    <div class="sec-tag reveal">Pricing</div>
-    <h2 class="sec-h reveal">Simple, <span class="g">transparent pricing</span></h2>
-    <p class="sec-p center reveal">Start free. Scale as you grow. Cancel anytime.</p>
-  </div>
+  <div style="text-align:center;margin-bottom:1rem;"><div class="sec-tag reveal">Pricing</div><h2 class="sec-h reveal">Simple, <span class="g">transparent pricing</span></h2></div>
   <div class="price-grid">
-    <div class="plan-card reveal">
-      <div class="plan-name">Starter</div>
-      <div class="plan-price">₹999<span class="plan-period">/month</span></div>
-      <div class="plan-desc">Perfect for solo practitioners and small shops just getting started.</div>
-      <ul class="plan-features">
-        <li>100 WhatsApp messages/month</li>
-        <li>1 business location</li>
-        <li>Smart review funnel</li>
-        <li>Basic dashboard</li>
-        <li>Email support</li>
-      </ul>
-      <a href="#" class="plan-cta" onclick="showAuth('signup');return false;">Get started</a>
-    </div>
-    <div class="plan-card featured reveal" style="transition-delay:.1s">
-      <div class="plan-badge">MOST POPULAR</div>
-      <div class="plan-name">Growth</div>
-      <div class="plan-price">₹2,499<span class="plan-period">/month</span></div>
-      <div class="plan-desc">For growing clinics and boutiques who want consistent Google reviews every month.</div>
-      <ul class="plan-features">
-        <li>500 WhatsApp messages/month</li>
-        <li>3 business locations</li>
-        <li>Smart review funnel</li>
-        <li>Advanced analytics</li>
-        <li>Private feedback inbox</li>
-        <li>Custom message templates</li>
-        <li>WhatsApp support</li>
-      </ul>
-      <a href="#" class="plan-cta green-cta" onclick="showAuth('signup');return false;">Get started</a>
-    </div>
-    <div class="plan-card reveal" style="transition-delay:.2s">
-      <div class="plan-name">Pro</div>
-      <div class="plan-price">₹5,999<span class="plan-period">/month</span></div>
-      <div class="plan-desc">For chains and agencies managing multiple locations at scale.</div>
-      <ul class="plan-features">
-        <li>5,000 WhatsApp messages/month</li>
-        <li>Unlimited locations</li>
-        <li>Smart review funnel</li>
-        <li>Advanced dashboard + analytics</li>
-        <li>CSV bulk import</li>
-        <li>Campaign manager</li>
-        <li>Priority support</li>
-      </ul>
-      <a href="#" class="plan-cta" onclick="showAuth('signup');return false;">Get started</a>
-    </div>
+    <div class="plan-card reveal"><div class="plan-name">Starter</div><div class="plan-price">₹999<span class="plan-period">/month</span></div><div class="plan-desc">Perfect for solo practitioners and small shops.</div><ul class="plan-features"><li>100 WhatsApp messages/month</li><li>1 business location</li><li>Smart review funnel</li><li>Basic dashboard</li><li>Email support</li></ul><a href="#" class="plan-cta" onclick="showAuth('signup');return false;">Get started</a></div>
+    <div class="plan-card featured reveal"><div class="plan-badge">MOST POPULAR</div><div class="plan-name">Growth</div><div class="plan-price">₹2,499<span class="plan-period">/month</span></div><div class="plan-desc">For growing clinics and boutiques.</div><ul class="plan-features"><li>500 WhatsApp messages/month</li><li>3 business locations</li><li>Smart review funnel</li><li>Advanced analytics</li><li>Private feedback inbox</li><li>Custom templates</li><li>WhatsApp support</li></ul><a href="#" class="plan-cta green-cta" onclick="showAuth('signup');return false;">Get started</a></div>
+    <div class="plan-card reveal"><div class="plan-name">Pro</div><div class="plan-price">₹5,999<span class="plan-period">/month</span></div><div class="plan-desc">For chains and agencies at scale.</div><ul class="plan-features"><li>5,000 WhatsApp messages/month</li><li>Unlimited locations</li><li>Smart review funnel</li><li>Advanced analytics</li><li>CSV bulk import</li><li>Campaign manager</li><li>Priority support</li></ul><a href="#" class="plan-cta" onclick="showAuth('signup');return false;">Get started</a></div>
   </div>
 </section>
-
-<!-- FAQ -->
 <section class="faq" id="faq-section">
-  <div style="text-align:center;margin-bottom:2.5rem;">
-    <div class="sec-tag reveal">FAQ</div>
-    <h2 class="sec-h reveal">Common <em>questions</em></h2>
-  </div>
-  <div class="faq-item reveal" onclick="toggleFaq(this)"><div class="faq-q">Do I need a WhatsApp Business API account?<span class="faq-icon">+</span></div><div class="faq-a">No! ReviewBoostPRO uses the standard wa.me link method. You click a button, WhatsApp opens with the message pre-filled, and you hit send from your own phone. No API, no approvals, no extra cost.</div></div>
-  <div class="faq-item reveal" onclick="toggleFaq(this)"><div class="faq-q">Is this against Google's terms of service?<span class="faq-icon">+</span></div><div class="faq-a">Asking customers for reviews is fully allowed by Google. What's not allowed is incentivising reviews (like offering discounts for 5-stars). ReviewBoostPRO simply asks how their experience was — this is used by thousands of businesses globally.</div></div>
-  <div class="faq-item reveal" onclick="toggleFaq(this)"><div class="faq-q">How quickly will I see more Google reviews?<span class="faq-icon">+</span></div><div class="faq-a">Most businesses see new Google reviews within 24–48 hours of their first campaign. On average, customers see a 3–5× increase in reviews within 60 days.</div></div>
-  <div class="faq-item reveal" onclick="toggleFaq(this)"><div class="faq-q">What happens to negative feedback?<span class="faq-icon">+</span></div><div class="faq-a">Customers who rate 1–3 stars are sent to a private feedback form instead of Google. That feedback goes to your dashboard inbox so you can resolve it quietly — before it becomes a public 1-star review.</div></div>
+  <div style="text-align:center;margin-bottom:2.5rem;"><div class="sec-tag reveal">FAQ</div><h2 class="sec-h reveal">Common <em>questions</em></h2></div>
+  <div class="faq-item reveal" onclick="toggleFaq(this)"><div class="faq-q">Do I need a WhatsApp Business API account?<span class="faq-icon">+</span></div><div class="faq-a">No! ReviewBoostPRO uses the standard wa.me link method. You click a button, WhatsApp opens with the message pre-filled, and you hit send from your own phone. No API needed.</div></div>
+  <div class="faq-item reveal" onclick="toggleFaq(this)"><div class="faq-q">Is this against Google's terms?<span class="faq-icon">+</span></div><div class="faq-a">Asking customers for reviews is fully allowed by Google. ReviewBoostPRO simply asks how their experience was — used by thousands of businesses globally.</div></div>
+  <div class="faq-item reveal" onclick="toggleFaq(this)"><div class="faq-q">How quickly will I see more reviews?<span class="faq-icon">+</span></div><div class="faq-a">Most businesses see new Google reviews within 24–48 hours. On average, a 3–5× increase in reviews within 60 days.</div></div>
   <div class="faq-item reveal" onclick="toggleFaq(this)"><div class="faq-q">Is there a free trial?<span class="faq-icon">+</span></div><div class="faq-a">Yes — 14 days free with full access to Growth plan features. No credit card required.</div></div>
 </section>
-
-<!-- CTA -->
 <section class="cta-banner">
   <h2>Ready to get more<br><em>Google reviews?</em></h2>
   <p>Join 1,200+ businesses using ReviewBoostPRO to grow their reputation on autopilot.</p>
-  <div class="cta-actions">
-    <button class="btn-primary" onclick="showAuth('signup')">Start free 14-day trial →</button>
-    <button class="btn-sec">Talk to sales</button>
-  </div>
+  <div class="cta-actions"><button class="btn-primary" onclick="showAuth('signup')">Start free 14-day trial →</button><button class="btn-sec">Talk to sales</button></div>
   <div class="cta-note">No credit card required · Setup in 10 minutes · Cancel anytime</div>
 </section>
-
-<!-- FOOTER -->
 <footer>
   <div class="footer-top">
-    <div>
-      <div class="footer-brand"><div class="logo-dot"></div> ReviewBoostPRO</div>
-      <div class="footer-desc">Turn happy customers into Google reviews with WhatsApp. The smart review funnel for local businesses across India.</div>
-    </div>
-    <div class="footer-col"><h5>Product</h5><ul><li><a href="#how">How it works</a></li><li><a href="#features">Features</a></li><li><a href="#pricing">Pricing</a></li><li><a href="#">Changelog</a></li></ul></div>
-    <div class="footer-col"><h5>Company</h5><ul><li><a href="#">About</a></li><li><a href="#">Blog</a></li><li><a href="#">Careers</a></li><li><a href="#">Contact</a></li></ul></div>
-    <div class="footer-col"><h5>Support</h5><ul><li><a href="#faq-section">FAQ</a></li><li><a href="#">Documentation</a></li><li><a href="#">Privacy policy</a></li><li><a href="#">Terms of service</a></li></ul></div>
+    <div><div class="footer-brand"><div class="logo-dot"></div> ReviewBoostPRO</div><div class="footer-desc">Turn happy customers into Google reviews with WhatsApp. The smart review funnel for local businesses across India.</div></div>
+    <div class="footer-col"><h5>Product</h5><ul><li><a href="#how">How it works</a></li><li><a href="#features">Features</a></li><li><a href="#pricing">Pricing</a></li></ul></div>
+    <div class="footer-col"><h5>Company</h5><ul><li><a href="#">About</a></li><li><a href="#">Blog</a></li><li><a href="#">Contact</a></li></ul></div>
+    <div class="footer-col"><h5>Support</h5><ul><li><a href="#faq-section">FAQ</a></li><li><a href="#">Privacy policy</a></li><li><a href="#">Terms</a></li></ul></div>
   </div>
-  <div class="footer-bottom">
-    <div>© 2025 ReviewBoostPRO. All rights reserved. Made in India 🇮🇳</div>
-    <div class="footer-links"><a href="#">Twitter</a><a href="#">LinkedIn</a><a href="#">Instagram</a></div>
-  </div>
+  <div class="footer-bottom"><div>© 2025 ReviewBoostPRO. All rights reserved. Made in India 🇮🇳</div><div class="footer-links"><a href="#">Twitter</a><a href="#">LinkedIn</a><a href="#">Instagram</a></div></div>
 </footer>
-</div><!-- /screen-landing -->
+</div>
 
-<!-- ═══════════════════════════════════════
-     SCREEN 2: AUTH
-═══════════════════════════════════════ -->
+<!-- AUTH -->
 <div id="screen-auth" class="screen">
-  <div class="auth-grid-bg"></div>
-  <div class="auth-glow"></div>
+  <div class="auth-grid-bg"></div><div class="auth-glow"></div>
   <button class="auth-back" onclick="showLanding()">← Back</button>
   <div class="auth-card">
     <div class="auth-logo"><div class="logo-dot"></div> ReviewBoostPRO</div>
@@ -746,58 +406,27 @@ tr:hover td{background:rgba(34,197,94,.03);}
       <button class="auth-tab" id="tab-login" onclick="switchAuthTab('login')">Sign in</button>
       <button class="auth-tab active" id="tab-signup" onclick="switchAuthTab('signup')">Create account</button>
     </div>
-
-    <!-- SIGNUP FORM -->
     <div id="form-signup" class="auth-form">
       <div class="auth-error-banner" id="signup-error"></div>
-      <div class="form-group" id="fg-biz">
-        <label>Business name</label>
-        <input type="text" class="form-input" placeholder="e.g. SmileCare Dental Clinic" id="biz-name" oninput="clearFieldError('fg-biz')">
-        <span class="field-error">Please enter your business name.</span>
-      </div>
-      <div class="form-group" id="fg-owner">
-        <label>Your name</label>
-        <input type="text" class="form-input" placeholder="Dr. Priya Sharma" id="signup-owner" oninput="clearFieldError('fg-owner')">
-        <span class="field-error">Please enter your name.</span>
-      </div>
-      <div class="form-group" id="fg-email">
-        <label>Email address</label>
-        <input type="email" class="form-input" placeholder="you@yourbusiness.com" id="signup-email" oninput="clearFieldError('fg-email')">
-        <span class="field-error" id="fg-email-msg">Please enter a valid email address.</span>
-      </div>
-      <div class="form-group" id="fg-pass">
-        <label>Password</label>
-        <input type="password" class="form-input" placeholder="At least 6 characters" id="signup-pass" oninput="clearFieldError('fg-pass')">
-        <span class="field-error" id="fg-pass-msg">Password must be at least 6 characters.</span>
-      </div>
-      <button class="btn-auth" id="btn-signup" onclick="validateSignup()">Create account →</button>
+      <div class="form-group" id="fg-biz"><label>Business name</label><input type="text" class="form-input" placeholder="e.g. SmileCare Dental Clinic" id="biz-name" oninput="clearFieldError('fg-biz')"><span class="field-error">Please enter your business name.</span></div>
+      <div class="form-group" id="fg-owner"><label>Your name</label><input type="text" class="form-input" placeholder="Dr. Priya Sharma" id="signup-owner" oninput="clearFieldError('fg-owner')"><span class="field-error">Please enter your name.</span></div>
+      <div class="form-group" id="fg-email"><label>Email address</label><input type="email" class="form-input" placeholder="you@yourbusiness.com" id="signup-email" oninput="clearFieldError('fg-email')"><span class="field-error">Please enter a valid email.</span></div>
+      <div class="form-group" id="fg-pass"><label>Password</label><input type="password" class="form-input" placeholder="At least 6 characters" id="signup-pass" oninput="clearFieldError('fg-pass')"><span class="field-error">Password must be at least 6 characters.</span></div>
+      <button class="btn-auth" id="btn-signup" onclick="doSignup()">Create account →</button>
       <div class="auth-note">By signing up you agree to our <a href="#">Terms</a> &amp; <a href="#">Privacy Policy</a></div>
     </div>
-
-    <!-- LOGIN FORM -->
     <div id="form-login" class="auth-form" style="display:none">
       <div class="auth-error-banner" id="login-error"></div>
-      <div class="form-group" id="fg-login-email">
-        <label>Email address</label>
-        <input type="email" class="form-input" placeholder="you@yourbusiness.com" id="login-email" oninput="clearFieldError('fg-login-email')">
-        <span class="field-error">Please enter a valid email address.</span>
-      </div>
-      <div class="form-group" id="fg-login-pass">
-        <label>Password</label>
-        <input type="password" class="form-input" placeholder="Your password" id="login-pass" oninput="clearFieldError('fg-login-pass')">
-        <span class="field-error">Please enter your password.</span>
-      </div>
-      <button class="btn-auth" onclick="validateLogin()">Sign in →</button>
+      <div class="form-group" id="fg-login-email"><label>Email address</label><input type="email" class="form-input" placeholder="you@yourbusiness.com" id="login-email" oninput="clearFieldError('fg-login-email')"><span class="field-error">Please enter a valid email.</span></div>
+      <div class="form-group" id="fg-login-pass"><label>Password</label><input type="password" class="form-input" placeholder="Your password" id="login-pass" oninput="clearFieldError('fg-login-pass')"><span class="field-error">Please enter your password.</span></div>
+      <button class="btn-auth" onclick="doLogin()">Sign in →</button>
       <div class="auth-note"><a href="#">Forgot password?</a></div>
     </div>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════
-     SCREEN 3: DASHBOARD
-═══════════════════════════════════════ -->
+<!-- DASHBOARD -->
 <div id="screen-dashboard" class="screen">
-  <!-- SIDEBAR -->
   <div class="sidebar">
     <div class="sb-logo"><div class="logo-dot"></div> ReviewBoostPRO</div>
     <div class="sb-section">Main</div>
@@ -805,146 +434,83 @@ tr:hover td{background:rgba(34,197,94,.03);}
     <div class="sb-item" onclick="switchPanel('send')"><span class="sb-icon">💬</span> Send Reviews</div>
     <div class="sb-item notif" onclick="switchPanel('inbox')"><span class="sb-icon">📥</span> Feedback Inbox<div class="notif-dot"></div></div>
     <div class="sb-section">Manage</div>
-    <div class="sb-item" onclick="switchPanel('campaigns')"><span class="sb-icon">📣</span> Campaigns</div>
     <div class="sb-item" onclick="switchPanel('customers')"><span class="sb-icon">👥</span> Customers</div>
     <div class="sb-section">Account</div>
     <div class="sb-item" onclick="switchPanel('settings')"><span class="sb-icon">⚙️</span> Settings</div>
     <div class="sb-bottom">
       <div class="sb-user">
         <div class="sb-avatar" id="sb-avatar-text">BS</div>
-        <div><div class="sb-user-name" id="sb-user-name">Business Owner</div><div class="sb-user-plan">Growth Plan · 14 days left</div></div>
+        <div><div class="sb-user-name" id="sb-user-name">Business Owner</div><div class="sb-user-email" id="sb-user-email"></div></div>
       </div>
     </div>
   </div>
-
-  <!-- MAIN -->
   <div class="dash-main">
-
-    <!-- ── OVERVIEW PANEL ── -->
     <div class="dash-panel active" id="panel-overview">
       <div class="dash-header">
         <div><div class="dash-title">Good morning 👋</div><div class="dash-subtitle">Here's your review performance for the last 30 days.</div></div>
         <div class="dash-header-right">
           <button class="btn-sm" onclick="switchPanel('send')">+ Send Review Request</button>
+          <button class="btn-sm" style="color:var(--red);border-color:rgba(239,68,68,.2)" onclick="doSignOut()">Sign out</button>
         </div>
       </div>
       <div class="stats-grid">
-        <div class="stat-card"><div class="stat-label">💬 Messages Sent</div><div class="stat-value" id="stat-sent">0</div><div class="stat-change up">↑ 18% from last month</div></div>
-        <div class="stat-card"><div class="stat-label">👁️ Links Opened</div><div class="stat-value" id="stat-opened">0</div><div class="stat-change up">↑ 24% from last month</div></div>
-        <div class="stat-card"><div class="stat-label">⭐ Google Reviews</div><div class="stat-value" id="stat-reviews">0</div><div class="stat-change up">↑ 42% from last month</div></div>
-        <div class="stat-card"><div class="stat-label">😟 Private Feedback</div><div class="stat-value" id="stat-feedback">0</div><div class="stat-change down">2 unread</div></div>
+        <div class="stat-card"><div class="stat-label">💬 Messages Sent</div><div class="stat-value" id="stat-sent">0</div><div class="stat-change">from your dashboard</div></div>
+        <div class="stat-card"><div class="stat-label">👁️ Links Opened</div><div class="stat-value" id="stat-opened">0</div><div class="stat-change">customers tapped link</div></div>
+        <div class="stat-card"><div class="stat-label">⭐ Google Redirects</div><div class="stat-value" id="stat-reviews">0</div><div class="stat-change">sent to Google review</div></div>
+        <div class="stat-card"><div class="stat-label">😟 Private Feedback</div><div class="stat-value" id="stat-feedback">0</div><div class="stat-change">received privately</div></div>
       </div>
       <div class="grid-2">
         <div class="card">
           <div class="card-header"><div class="card-title">Messages sent (last 7 days)</div></div>
-          <div class="chart-bars" id="chart-bars">
-            <div class="bar-col" style="height:40%" title="Mon"></div>
-            <div class="bar-col" style="height:65%" title="Tue"></div>
-            <div class="bar-col" style="height:50%" title="Wed"></div>
-            <div class="bar-col" style="height:80%" title="Thu"></div>
-            <div class="bar-col" style="height:60%" title="Fri"></div>
-            <div class="bar-col" style="height:90%" title="Sat"></div>
-            <div class="bar-col" style="height:45%" title="Sun"></div>
-          </div>
+          <div class="chart-bars"><div class="bar-col" style="height:40%"></div><div class="bar-col" style="height:65%"></div><div class="bar-col" style="height:50%"></div><div class="bar-col" style="height:80%"></div><div class="bar-col" style="height:60%"></div><div class="bar-col" style="height:90%"></div><div class="bar-col" style="height:45%"></div></div>
           <div class="bar-labels"><div class="bar-lbl">Mon</div><div class="bar-lbl">Tue</div><div class="bar-lbl">Wed</div><div class="bar-lbl">Thu</div><div class="bar-lbl">Fri</div><div class="bar-lbl">Sat</div><div class="bar-lbl">Sun</div></div>
         </div>
         <div class="card">
           <div class="card-header"><div class="card-title">Conversion funnel</div></div>
           <div style="margin-top:.5rem">
-            <div style="display:flex;justify-content:space-between;font-size:.8rem;color:var(--mid);margin-bottom:.4rem"><span>Sent → Opened</span><span id="conv1">0%</span></div>
-            <div style="background:rgba(255,255,255,.06);border-radius:6px;height:8px;margin-bottom:.75rem"><div id="conv1-bar" style="height:8px;border-radius:6px;background:linear-gradient(90deg,var(--green),var(--green-l));width:0%;transition:width 1s .5s"></div></div>
-            <div style="display:flex;justify-content:space-between;font-size:.8rem;color:var(--mid);margin-bottom:.4rem"><span>Opened → Rated</span><span id="conv2">0%</span></div>
-            <div style="background:rgba(255,255,255,.06);border-radius:6px;height:8px;margin-bottom:.75rem"><div id="conv2-bar" style="height:8px;border-radius:6px;background:linear-gradient(90deg,var(--blue),#60a5fa);width:0%;transition:width 1s .7s"></div></div>
-            <div style="display:flex;justify-content:space-between;font-size:.8rem;color:var(--mid);margin-bottom:.4rem"><span>Rated 4–5 → Google</span><span id="conv3">0%</span></div>
-            <div style="background:rgba(255,255,255,.06);border-radius:6px;height:8px"><div id="conv3-bar" style="height:8px;border-radius:6px;background:linear-gradient(90deg,var(--amber),#fcd34d);width:0%;transition:width 1s .9s"></div></div>
+            <div style="display:flex;justify-content:space-between;font-size:.8rem;color:var(--dash-mid);margin-bottom:.4rem"><span>Sent → Opened</span><span id="conv1">0%</span></div>
+            <div style="background:rgba(0,0,0,.06);border-radius:6px;height:8px;margin-bottom:.75rem"><div id="conv1-bar" style="height:8px;border-radius:6px;background:linear-gradient(90deg,var(--green),var(--green-l));width:0%;transition:width 1s .5s"></div></div>
+            <div style="display:flex;justify-content:space-between;font-size:.8rem;color:var(--dash-mid);margin-bottom:.4rem"><span>Opened → Rated</span><span id="conv2">0%</span></div>
+            <div style="background:rgba(0,0,0,.06);border-radius:6px;height:8px;margin-bottom:.75rem"><div id="conv2-bar" style="height:8px;border-radius:6px;background:linear-gradient(90deg,var(--blue),#60a5fa);width:0%;transition:width 1s .7s"></div></div>
+            <div style="display:flex;justify-content:space-between;font-size:.8rem;color:var(--dash-mid);margin-bottom:.4rem"><span>Rated 4–5 → Google</span><span id="conv3">0%</span></div>
+            <div style="background:rgba(0,0,0,.06);border-radius:6px;height:8px"><div id="conv3-bar" style="height:8px;border-radius:6px;background:linear-gradient(90deg,var(--amber),#fcd34d);width:0%;transition:width 1s .9s"></div></div>
           </div>
         </div>
       </div>
       <div class="card">
-        <div class="card-header"><div class="card-title">Recent activity</div><button class="btn-sm" onclick="switchPanel('send')">+ New send</button></div>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Customer</th><th>Phone</th><th>Sent</th><th>Status</th><th>Rating</th><th>Action</th></tr></thead>
-            <tbody id="activity-table"><tr><td colspan="6" style="text-align:center;color:var(--dim);padding:2rem">No messages sent yet. <a href="#" onclick="switchPanel('send');return false" style="color:var(--green-l)">Send your first one →</a></td></tr></tbody>
-          </table>
-        </div>
+        <div class="card-header"><div class="card-title">Recent sends</div><button class="btn-sm" onclick="switchPanel('send')">+ New send</button></div>
+        <div class="table-wrap"><table><thead><tr><th>Customer</th><th>Phone</th><th>Sent</th><th>Status</th></tr></thead><tbody id="activity-table"><tr><td colspan="4" style="text-align:center;color:var(--dash-dim);padding:2rem">No messages sent yet. <a href="#" onclick="switchPanel('send');return false" style="color:var(--green-d)">Send your first one →</a></td></tr></tbody></table></div>
       </div>
     </div>
-
-    <!-- ── SEND PANEL ── -->
     <div class="dash-panel" id="panel-send">
-      <div class="dash-header">
-        <div><div class="dash-title">Send Review Request</div><div class="dash-subtitle">Message sends from <strong>your WhatsApp</strong> — no API, no third party.</div></div>
-      </div>
-
-      <!-- HOW IT WORKS STEPS -->
-      <div style="display:flex;gap:.75rem;margin-bottom:1.25rem;flex-wrap:wrap;">
-        <div style="flex:1;min-width:160px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem;display:flex;align-items:flex-start;gap:.6rem;">
-          <div style="width:22px;height:22px;border-radius:50%;background:var(--green);color:#000;font-size:.7rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</div>
-          <div><div style="font-size:.82rem;font-weight:600;margin-bottom:.2rem;">Enter details</div><div style="font-size:.75rem;color:var(--mid);">Type customer name &amp; WhatsApp number below.</div></div>
-        </div>
-        <div style="flex:1;min-width:160px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem;display:flex;align-items:flex-start;gap:.6rem;">
-          <div style="width:22px;height:22px;border-radius:50%;background:var(--green);color:#000;font-size:.7rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</div>
-          <div><div style="font-size:.82rem;font-weight:600;margin-bottom:.2rem;">Click the green button</div><div style="font-size:.75rem;color:var(--mid);">WhatsApp opens on your phone/browser with message pre-typed.</div></div>
-        </div>
-        <div style="flex:1;min-width:160px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem;display:flex;align-items:flex-start;gap:.6rem;">
-          <div style="width:22px;height:22px;border-radius:50%;background:var(--green);color:#000;font-size:.7rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</div>
-          <div><div style="font-size:.82rem;font-weight:600;margin-bottom:.2rem;">Hit Send on WhatsApp</div><div style="font-size:.75rem;color:var(--mid);">Message goes from <strong style="color:var(--white)">your number</strong> to the customer. Done!</div></div>
-        </div>
-        <div style="flex:1;min-width:160px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem;display:flex;align-items:flex-start;gap:.6rem;">
-          <div style="width:22px;height:22px;border-radius:50%;background:var(--green);color:#000;font-size:.7rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">4</div>
-          <div><div style="font-size:.82rem;font-weight:600;margin-bottom:.2rem;">Customer taps the link</div><div style="font-size:.75rem;color:var(--mid);">4–5 stars → Google. 1–3 stars → private feedback to you.</div></div>
-        </div>
-      </div>
-
-      <!-- YOUR WHATSAPP REMINDER BANNER -->
-      <div style="background:rgba(37,211,102,.06);border:1px solid rgba(37,211,102,.18);border-radius:10px;padding:.85rem 1.1rem;margin-bottom:1rem;display:flex;align-items:center;gap:.75rem;font-size:.83rem;color:rgba(255,255,255,.8);">
+      <div class="dash-header"><div><div class="dash-title">Send Review Request</div><div class="dash-subtitle">Message sends from <strong>your WhatsApp</strong> — no API needed.</div></div></div>
+      <div style="background:rgba(37,211,102,.06);border:1px solid rgba(37,211,102,.18);border-radius:10px;padding:.85rem 1.1rem;margin-bottom:1rem;display:flex;align-items:center;gap:.75rem;font-size:.83rem;color:var(--dash-text);">
         <span style="font-size:1.2rem;">📱</span>
-        <span>This message will be sent <strong>from your own WhatsApp number</strong> (your business phone). ReviewBoostPRO does not send on your behalf — you click Send manually in WhatsApp.</span>
+        <span>This message sends <strong>from your own WhatsApp number</strong> — you click Send manually in WhatsApp.</span>
       </div>
-
-      <!-- NO GOOGLE LINK WARNING -->
-
-
       <div class="send-form">
-        <div style="font-size:.88rem;font-weight:600;margin-bottom:1rem;color:rgba(255,255,255,.7)">📲 New message</div>
+        <div style="font-size:.88rem;font-weight:600;margin-bottom:1rem;color:var(--dash-mid)">📲 New message</div>
         <div class="send-form-grid">
-          <div class="form-group-inline">
-            <label>Customer name</label>
-            <input type="text" class="input-field" id="cust-name" placeholder="e.g. Priya Sharma" oninput="updatePreview()">
-          </div>
-          <div class="form-group-inline">
-            <label>WhatsApp number (with country code)</label>
-            <input type="text" class="input-field" id="cust-phone" placeholder="+91 98765 43210" oninput="updatePreview()">
-          </div>
-          <div class="form-group-inline">
-            <label>&nbsp;</label>
+          <div class="form-group-inline"><label>Customer name</label><input type="text" class="input-field" id="cust-name" placeholder="e.g. Priya Sharma" oninput="updatePreview()"></div>
+          <div class="form-group-inline"><label>WhatsApp number (with country code)</label><input type="text" class="input-field" id="cust-phone" placeholder="+91 98765 43210" oninput="updatePreview()"></div>
+          <div class="form-group-inline"><label>&nbsp;</label>
             <div style="display:flex;flex-direction:column;gap:.4rem;">
-              <button class="btn-whatsapp" onclick="sendWhatsApp()">💬 Open in WhatsApp & Send</button>
-              <button style="background:none;border:none;font-size:.72rem;color:var(--green-d);text-decoration:underline;padding:0;text-align:center;" onclick="testWhatsAppLink()">Test link first (opens preview)</button>
+              <button class="btn-whatsapp" onclick="sendWhatsApp()">💬 Open in WhatsApp &amp; Send</button>
+              <button style="background:none;border:none;font-size:.72rem;color:var(--green-d);text-decoration:underline;padding:0;" onclick="testWhatsApp()">Test link first (opens preview)</button>
             </div>
           </div>
         </div>
-
-        <!-- FALLBACK LINK -->
         <div id="wa-fallback" style="display:none;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);border-radius:8px;padding:.65rem 1rem;font-size:.82rem;color:var(--dash-text);margin-top:.5rem;"></div>
-
-        <!-- PREVIEW -->
         <div class="wa-preview">
           <div class="wa-preview-header">💚 WhatsApp message preview — sends from your number</div>
-          <div class="wa-bubble">
-            <span id="wa-msg-preview">Hi <em>Customer</em> 👋<br><br>Thank you for visiting <strong id="biz-name-preview">Your Business</strong>! We hope you had a great experience.<br><br>Could you spare 30 seconds to rate us? It means the world to small businesses like ours! 🙏<br><br>👉 <span class="wa-link" id="wa-link-preview">paste your Google Review link below ↓</span></span>
-            <div class="wa-time">just now · ✓✓</div>
-          </div>
+          <div class="wa-bubble"><span id="wa-msg-preview">Hi <em>Customer</em> 👋<br><br>Thank you for visiting <strong>Your Business</strong>!<br><br>Could you spare 30 seconds to rate us? 🙏<br><br>👉 <span class="wa-link">review link</span></span><div class="wa-time">just now · ✓✓</div></div>
         </div>
       </div>
-
-      <!-- TEMPLATE SETTINGS -->
       <div class="card">
         <div class="card-header"><div class="card-title">⚙️ Message template</div><button class="btn-sm green" onclick="saveTemplate()">Save changes</button></div>
         <div class="form-group" style="margin-bottom:1.25rem">
-          <label style="font-size:.8rem;color:var(--mid);display:block;margin-bottom:.4rem">Message text (use {name} for customer name)</label>
-          <textarea class="textarea-field" id="msg-template" rows="4">Hi {name} 👋
+          <label style="font-size:.8rem;color:var(--dash-mid);display:block;margin-bottom:.4rem">Message text (use {name}, {business}, {review_link})</label>
+          <textarea class="textarea-field" id="msg-template" rows="5">Hi {name} 👋
 
 Thank you for visiting {business}! We hope you had a great experience.
 
@@ -952,134 +518,57 @@ Could you spare 30 seconds to rate us? It means the world to small businesses li
 
 👉 {review_link}</textarea>
         </div>
-
-        <div class="form-group" style="margin-bottom:.5rem">
-          <label style="font-size:.8rem;color:var(--mid);display:block;margin-bottom:.4rem">Your Google Review link <span style="color:var(--red)">*</span></label>
-          <input type="text" class="input-field" id="google-review-link" placeholder="https://g.page/your-business/review" value="" oninput="onGoogleLinkInput()">
-          <div style="font-size:.75rem;color:var(--dim);margin-top:.4rem;">Find this in Google Business Profile → Get more reviews → Share review form. Customers who rate 4-5⭐ are sent here automatically.</div>
+        <div class="form-group">
+          <label style="font-size:.8rem;color:var(--dash-mid);display:block;margin-bottom:.4rem">Your Google Review link <span style="color:var(--red)">*</span></label>
+          <input type="text" class="input-field" id="google-review-link" placeholder="https://g.page/your-business/review" oninput="onGoogleLinkInput()">
+          <div style="font-size:.75rem;color:var(--dash-dim);margin-top:.4rem;">Find this in Google Business Profile → Get more reviews → Share review form. 4-5 star customers are sent here automatically.</div>
         </div>
       </div>
-
-      <!-- RECENT SENDS -->
       <div class="card" style="margin-top:1rem">
         <div class="card-header"><div class="card-title">Recent sends</div></div>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Customer</th><th>Phone</th><th>Sent at</th><th>Status</th></tr></thead>
-            <tbody id="send-table"><tr><td colspan="4" style="text-align:center;color:var(--dim);padding:1.5rem">No messages sent yet.</td></tr></tbody>
-          </table>
-        </div>
+        <div class="table-wrap"><table><thead><tr><th>Customer</th><th>Phone</th><th>Sent at</th><th>Status</th></tr></thead><tbody id="send-table"><tr><td colspan="4" style="text-align:center;color:var(--dash-dim);padding:1.5rem">No messages sent yet.</td></tr></tbody></table></div>
       </div>
     </div>
-
-    <!-- ── FEEDBACK INBOX PANEL ── -->
     <div class="dash-panel" id="panel-inbox">
-      <div class="dash-header">
-        <div><div class="dash-title">Feedback Inbox</div><div class="dash-subtitle">Private feedback from customers who rated 1–3 stars. Resolve before it becomes public.</div></div>
-      </div>
-      <div class="card">
-        <div id="inbox-list">
-          <div style="border:1px solid var(--border);border-radius:10px;padding:1.25rem;margin-bottom:.75rem;border-left:3px solid var(--red)">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem">
-              <div style="font-size:.88rem;font-weight:600">Rahul M. · ⭐⭐ (2 stars)</div>
-              <div style="display:flex;gap:.5rem"><button class="btn-sm">Mark resolved</button><button class="btn-sm green">Reply on WhatsApp</button></div>
-            </div>
-            <div style="font-size:.85rem;color:var(--mid);line-height:1.6">"The waiting time was too long. Waited 45 minutes for my appointment. Please improve this."</div>
-            <div style="font-size:.73rem;color:var(--dim);margin-top:.5rem">Received 2 hours ago</div>
-          </div>
-          <div style="border:1px solid var(--border);border-radius:10px;padding:1.25rem;margin-bottom:.75rem;border-left:3px solid var(--amber)">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem">
-              <div style="font-size:.88rem;font-weight:600">Kavitha R. · ⭐⭐⭐ (3 stars)</div>
-              <div style="display:flex;gap:.5rem"><button class="btn-sm">Mark resolved</button><button class="btn-sm green">Reply on WhatsApp</button></div>
-            </div>
-            <div style="font-size:.85rem;color:var(--mid);line-height:1.6">"Service was okay but the staff was a bit rude. The doctor was great though!"</div>
-            <div style="font-size:.73rem;color:var(--dim);margin-top:.5rem">Received yesterday</div>
-          </div>
-          <div id="inbox-dynamic"></div>
-        </div>
-      </div>
+      <div class="dash-header"><div><div class="dash-title">Feedback Inbox</div><div class="dash-subtitle">Private feedback from customers who rated 1–3 stars.</div></div></div>
+      <div class="card"><div id="inbox-list"><div id="inbox-dynamic"><div style="text-align:center;color:var(--dash-dim);padding:2rem">No feedback received yet. It will appear here when customers submit 1-3 star ratings.</div></div></div></div>
     </div>
-
-    <!-- ── CAMPAIGNS PANEL ── -->
-    <div class="dash-panel" id="panel-campaigns">
-      <div class="dash-header">
-        <div><div class="dash-title">Campaigns</div><div class="dash-subtitle">Track your review request campaigns.</div></div>
-        <button class="btn-sm green">+ New Campaign</button>
-      </div>
-      <div class="card">
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Campaign</th><th>Date</th><th>Sent</th><th>Opened</th><th>Reviews</th><th>Status</th></tr></thead>
-            <tbody>
-              <tr><td>Post-Visit Follow-up</td><td>28 Mar 2025</td><td>45</td><td>31</td><td>12</td><td><span class="badge sent">Active</span></td></tr>
-              <tr><td>Monthly Check-in</td><td>15 Mar 2025</td><td>89</td><td>67</td><td>28</td><td><span class="badge sent">Active</span></td></tr>
-              <tr><td>New Patient Welcome</td><td>1 Mar 2025</td><td>34</td><td>22</td><td>9</td><td><span class="badge opened">Paused</span></td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── CUSTOMERS PANEL ── -->
     <div class="dash-panel" id="panel-customers">
-      <div class="dash-header">
-        <div><div class="dash-title">Customers</div><div class="dash-subtitle">Your customer list.</div></div>
-        <button class="btn-sm green" onclick="switchPanel('send')">+ Add &amp; Send</button>
-      </div>
-      <div class="card">
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Name</th><th>Phone</th><th>Sent</th><th>Rating</th><th>Last contact</th></tr></thead>
-            <tbody id="customers-table">
-              <tr><td colspan="5" style="text-align:center;color:var(--dim);padding:2rem">No customers added yet.</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <div class="dash-header"><div><div class="dash-title">Customers</div><div class="dash-subtitle">Your customer list.</div></div><button class="btn-sm green" onclick="switchPanel('send')">+ Add &amp; Send</button></div>
+      <div class="card"><div class="table-wrap"><table><thead><tr><th>Name</th><th>Phone</th><th>Sent</th><th>Last contact</th></tr></thead><tbody id="customers-table"><tr><td colspan="4" style="text-align:center;color:var(--dash-dim);padding:2rem">No customers yet.</td></tr></tbody></table></div></div>
     </div>
-
-    <!-- ── SETTINGS PANEL ── -->
     <div class="dash-panel" id="panel-settings">
-      <div class="dash-header">
-        <div><div class="dash-title">Settings</div><div class="dash-subtitle">Configure your ReviewBoostPRO account.</div></div>
-      </div>
+      <div class="dash-header"><div><div class="dash-title">Settings</div><div class="dash-subtitle">Configure your ReviewBoostPRO account.</div></div></div>
       <div class="grid-2">
         <div class="card">
           <div class="card-header"><div class="card-title">Business Profile</div><button class="btn-sm green" onclick="saveSettings()">Save</button></div>
           <div style="display:flex;flex-direction:column;gap:.85rem">
-            <div class="form-group"><label style="font-size:.78rem;color:var(--mid);display:block;margin-bottom:.3rem">Business name</label><input type="text" class="input-field" id="settings-biz" placeholder="Your Business Name" value="My Business"></div>
-            <div class="form-group"><label style="font-size:.78rem;color:var(--mid);display:block;margin-bottom:.3rem">Owner name</label><input type="text" class="input-field" placeholder="Your Name"></div>
-            <div class="form-group"><label style="font-size:.78rem;color:var(--mid);display:block;margin-bottom:.3rem">Business type</label><select class="input-field"><option>Clinic / Hospital</option><option>Boutique / Retail</option><option>Restaurant / Café</option><option>Salon / Spa</option><option>Pharmacy</option><option>Other</option></select></div>
-            <div class="form-group"><label style="font-size:.78rem;color:var(--mid);display:block;margin-bottom:.3rem">Google Review URL</label><input type="text" class="input-field" id="settings-google-link" placeholder="https://g.page/your-business/review"></div>
+            <div class="form-group"><label style="font-size:.78rem;color:var(--dash-mid);display:block;margin-bottom:.3rem">Business name</label><input type="text" class="input-field" id="settings-biz" placeholder="Your Business Name"></div>
+            <div class="form-group"><label style="font-size:.78rem;color:var(--dash-mid);display:block;margin-bottom:.3rem">Business type</label><select class="input-field"><option>Clinic / Hospital</option><option>Boutique / Retail</option><option>Restaurant / Cafe</option><option>Salon / Spa</option><option>Pharmacy</option><option>Other</option></select></div>
+            <div class="form-group"><label style="font-size:.78rem;color:var(--dash-mid);display:block;margin-bottom:.3rem">Google Review URL</label><input type="text" class="input-field" id="settings-google-link" placeholder="https://g.page/your-business/review"></div>
           </div>
         </div>
         <div class="card">
           <div class="card-header"><div class="card-title">Notifications</div></div>
           <div class="settings-row"><div><div class="settings-key">New feedback alert</div><div class="settings-val">Get notified when 1–3 star feedback arrives</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
           <div class="settings-row"><div><div class="settings-key">Weekly report</div><div class="settings-val">Summary email every Monday</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
-          <div class="settings-row"><div><div class="settings-key">New Google review</div><div class="settings-val">Notify when a new review is detected</div></div><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
-          <div style="margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--border)">
-            <div style="font-size:.88rem;font-weight:600;margin-bottom:.5rem">Danger zone</div>
-            <button class="btn-sm" style="color:var(--red);border-color:rgba(239,68,68,.2)" onclick="showLanding()">← Back to landing page</button>
+          <div style="margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--dash-border)">
+            <button class="btn-sm" style="color:var(--red);border-color:rgba(239,68,68,.2)" onclick="doSignOut()">Sign out</button>
           </div>
         </div>
       </div>
     </div>
+  </div>
+</div>
 
-  </div><!-- /dash-main -->
-</div><!-- /screen-dashboard -->
-
-<!-- ═══════════════════════════════════════
-     SCREEN 4: REVIEW FUNNEL
-═══════════════════════════════════════ -->
+<!-- REVIEW FUNNEL -->
 <div id="screen-funnel" class="screen">
-  <div class="auth-grid-bg"></div>
-  <div class="auth-glow"></div>
+  <div class="auth-grid-bg"></div><div class="auth-glow"></div>
   <div class="funnel-card">
-    <div class="funnel-biz" style="font-size:.9rem;font-weight:600;color:rgba(255,255,255,.7);margin-bottom:.5rem;"><span id="funnel-biz-name">My Business</span></div>
+    <div style="font-size:.9rem;font-weight:600;color:rgba(255,255,255,.7);margin-bottom:.75rem;"><span id="funnel-biz-name">My Business</span></div>
     <div class="funnel-h">How was your visit?</div>
     <div class="funnel-sub">We'd love to hear about your experience with us.</div>
-    <div class="star-row" id="star-row">
+    <div class="star-row">
       <button class="star-btn" onclick="selectStar(1)">⭐</button>
       <button class="star-btn" onclick="selectStar(2)">⭐</button>
       <button class="star-btn" onclick="selectStar(3)">⭐</button>
@@ -1087,22 +576,18 @@ Could you spare 30 seconds to rate us? It means the world to small businesses li
       <button class="star-btn" onclick="selectStar(5)">⭐</button>
     </div>
     <div class="star-label" id="star-label">Tap a star to rate</div>
-    <div id="star-hint" style="font-size:.78rem;color:rgba(255,255,255,.4);margin-bottom:.75rem;min-height:1em;"></div>
+    <div id="star-hint" style="font-size:.78rem;margin-bottom:.75rem;min-height:1.2em;"></div>
     <button class="btn-funnel disabled" id="funnel-btn" onclick="submitRating()" style="display:none">Continue →</button>
-
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════
-     SCREEN 5: PRIVATE FEEDBACK
-═══════════════════════════════════════ -->
+<!-- FEEDBACK -->
 <div id="screen-feedback" class="screen">
   <div class="auth-grid-bg"></div>
   <div class="feedback-card">
     <div class="feedback-icon">🙏</div>
     <div class="feedback-h">We're sorry to hear that</div>
     <div class="feedback-sub">We'd love to make things right. What could we have done better?</div>
-    <div id="feedback-biz-name" style="font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:.5rem;margin-top:-.5rem;"></div>
     <div class="feedback-tags" id="feedback-tags">
       <button class="tag-btn" onclick="toggleTag(this)">⏱️ Long wait time</button>
       <button class="tag-btn" onclick="toggleTag(this)">😐 Staff attitude</button>
@@ -1113,660 +598,522 @@ Could you spare 30 seconds to rate us? It means the world to small businesses li
     </div>
     <textarea class="textarea-field" placeholder="Tell us more... (optional)" rows="4" id="feedback-text"></textarea>
     <button class="btn-funnel" style="margin-top:1rem" onclick="submitFeedback()">Submit feedback →</button>
-    <div class="funnel-privacy" style="margin-top:.75rem">🙏 Thank you for helping us improve.</div>
+    <div style="font-size:.75rem;color:var(--dim);margin-top:.75rem;">🙏 Thank you for helping us improve.</div>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════
-     SCREEN 6: THANK YOU
-═══════════════════════════════════════ -->
+<!-- THANK YOU -->
 <div id="screen-thanks" class="screen">
-  <div class="auth-grid-bg" style="pointer-events:none"></div>
-  <div style="width:100%;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:1.5rem;">
-    <div class="funnel-card" style="text-align:center;max-width:440px;width:100%;">
-      <div style="font-size:3rem;margin-bottom:1rem">🎉</div>
-      <div class="funnel-h">Thank you!</div>
-      <div class="funnel-sub" id="thanks-msg">Thank you for sharing!</div>
-      <div style="margin-top:1.5rem;font-size:.85rem;color:rgba(255,255,255,.4)">You may close this tab.</div>
-    </div>
+  <div class="auth-grid-bg" style="pointer-events:none;position:fixed;inset:0;"></div>
+  <div class="funnel-card" style="text-align:center;max-width:440px;width:100%;position:relative;z-index:1;margin:1rem;">
+    <div style="font-size:3rem;margin-bottom:1rem">🎉</div>
+    <div class="funnel-h">Thank you!</div>
+    <div class="funnel-sub" id="thanks-msg">Thank you for sharing!</div>
+    <div style="margin-top:1.5rem;font-size:.85rem;color:rgba(255,255,255,.4)">You may close this tab.</div>
   </div>
 </div>
 
 <script>
-// ═══════════════ EARLY URL CHECK ═══════════════
-// Hide page immediately to prevent flash of wrong screen
-document.documentElement.style.visibility='hidden';
+// ═══ SUPABASE CONFIG ═══
+var SUPA_URL = 'https://cauqeiyzxyvpetntplkz.supabase.co';
+var SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNhdXFlaXl6eHl2cGV0bnRwbGt6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NzU5MjksImV4cCI6MjA5MDU1MTkyOX0.MSG8ThadxzV7CMcT4gl9Xj1lFdmTEKV--MB-JtBhegc';
+var sb = null;
 
-// ═══════════════ STATE ═══════════════
+// ═══ HIDE PAGE UNTIL READY ═══
+document.documentElement.style.visibility = 'hidden';
+
+// ═══ STATE ═══
 var appState = {
-  bizName: 'My Business',
-  googleLink: 'https://g.page/your-business/review',
-  funnelUrl: 'https://vjvinayakam.github.io/reviewboostpro/?review=true',
-  messageTemplate: "Hi {name} 👋\n\nThank you for visiting {business}! We hope you had a great experience.\n\nCould you spare 30 seconds to rate us? It means the world to small businesses like ours! 🙏\n\n👉 {review_link}",
-  sends: [],
-  customers: [],
-  stats: { sent: 0, opened: 0, reviews: 0, feedback: 0 },
-  selectedStar: 0
+  bizName: 'My Business', googleLink: '',
+  messageTemplate: "Hi {name} \uD83D\uDC4B\n\nThank you for visiting {business}! We hope you had a great experience.\n\nCould you spare 30 seconds to rate us? It means the world to small businesses like ours! \uD83D\uDE4F\n\n\uD83D\uDC49 {review_link}",
+  sends: [], customers: [], stats: { sent:0, opened:0, reviews:0, feedback:0 },
+  selectedStar: 0, currentUser: null, currentSendId: null
 };
-
-// Try to load from localStorage
 try {
-  var saved = localStorage.getItem('rbp_state');
-  if (saved) {
-    var parsed = JSON.parse(saved);
-    appState = Object.assign(appState, parsed);
-  }
+  var _sv = localStorage.getItem('rbp_state');
+  if(_sv) { var _ps = JSON.parse(_sv); appState = Object.assign(appState, _ps); }
 } catch(e) {}
 
-// URL routing handled by initApp()
-
 function saveState() {
-  try { localStorage.setItem('rbp_state', JSON.stringify(appState)); } catch(e) {}
+  try {
+    localStorage.setItem('rbp_state', JSON.stringify({
+      bizName: appState.bizName, googleLink: appState.googleLink,
+      messageTemplate: appState.messageTemplate,
+      sends: appState.sends.slice(-50), customers: appState.customers.slice(-50),
+      stats: appState.stats
+    }));
+  } catch(e) {}
 }
 
-// ═══════════════ INIT — decide which screen to show ═══════════════
+// ═══ INIT ═══
 function initApp() {
+  // Init Supabase
+  if(window.supabase && window.supabase.createClient) {
+    sb = window.supabase.createClient(SUPA_URL, SUPA_KEY);
+  }
+
   var params = new URLSearchParams(window.location.search);
   if(params.get('review') === 'true') {
-    // Customer clicked review link — show funnel immediately
-    document.querySelectorAll('.screen').forEach(function(s){
-      s.classList.remove('active');
-      s.style.display = '';
-    });
-    document.querySelectorAll('.screen').forEach(function(s){
-      s.classList.remove('active');
-      s.style.display = 'none';
-    });
-    var funnel = document.getElementById('screen-funnel');
-    funnel.classList.add('active');
-    funnel.style.display = 'flex';
-    // set business name from state
+    // Customer review flow
+    var sendId = params.get('sid') || null;
+    var bizParam = params.get('biz') || null;
+    appState.currentSendId = sendId;
+    if(bizParam) appState.bizName = decodeURIComponent(bizParam);
+    trackEvent('opened', sendId);
+    showScreen('screen-funnel');
     var bn = document.getElementById('funnel-biz-name');
     if(bn) bn.textContent = appState.bizName || 'My Business';
-    var fbn = document.getElementById('feedback-biz-name');
-    if(fbn) fbn.textContent = appState.bizName || 'My Business';
-    // reset star state
     appState.selectedStar = 0;
-    document.querySelectorAll('.star-btn').forEach(function(s){ s.classList.remove('active'); });
-    var lbl = document.getElementById('star-label');
-    if(lbl) lbl.textContent = 'Tap a star to rate';
-    var fbtn = document.getElementById('funnel-btn');
-    if(fbtn){ fbtn.classList.add('disabled'); }
-    // make page visible
+    var sl = document.getElementById('star-label'); if(sl) sl.textContent = 'Tap a star to rate';
+    var sh = document.getElementById('star-hint'); if(sh) sh.textContent = '';
+    var fb = document.getElementById('funnel-btn'); if(fb) { fb.classList.add('disabled'); fb.style.display = 'none'; }
     document.documentElement.style.visibility = 'visible';
-  } else {
-    // Normal visit — show landing page
-    document.querySelectorAll('.screen').forEach(function(s){
-      s.style.display = 'none';
+    return;
+  }
+
+  // Check if logged in
+  if(sb) {
+    sb.auth.getSession().then(function(res) {
+      var session = res.data && res.data.session;
+      if(session) {
+        appState.currentUser = session.user;
+        loadAndGoToDashboard();
+      } else {
+        showScreen('screen-landing');
+        document.documentElement.style.visibility = 'visible';
+      }
+    }).catch(function() {
+      showScreen('screen-landing');
+      document.documentElement.style.visibility = 'visible';
     });
-    var landing = document.getElementById('screen-landing');
-    landing.classList.add('active');
-    landing.style.display = 'block';
+  } else {
+    showScreen('screen-landing');
     document.documentElement.style.visibility = 'visible';
   }
 }
 
-// Run init as soon as DOM is ready
+// Wait for supabase CDN to load
 if(document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initApp);
+  document.addEventListener('DOMContentLoaded', function() { setTimeout(initApp, 50); });
 } else {
-  initApp();
+  setTimeout(initApp, 50);
 }
 
-// ═══════════════ CURSOR ═══════════════
-var cur = document.getElementById('cur');
-var curR = document.getElementById('curR');
-var mx=0,my=0,rx=0,ry=0;
-document.addEventListener('mousemove', function(e) {
-  mx=e.clientX; my=e.clientY;
-  cur.style.left=mx+'px'; cur.style.top=my+'px';
-});
-(function tick(){
-  rx+=(mx-rx)*.13; ry+=(my-ry)*.13;
-  curR.style.left=rx+'px'; curR.style.top=ry+'px';
-  requestAnimationFrame(tick);
-})();
-document.addEventListener('mouseover', function(e) {
-  if(e.target.tagName==='BUTTON'||e.target.tagName==='A'||e.target.closest('.feat-card')||e.target.closest('.plan-card')||e.target.closest('.step-card')){
-    cur.style.width='18px'; cur.style.height='18px';
-    curR.style.width='52px'; curR.style.height='52px';
-  }
-});
-document.addEventListener('mouseout', function(e){
-  cur.style.width='10px'; cur.style.height='10px';
-  curR.style.width='36px'; curR.style.height='36px';
-});
-
-// ═══════════════ SCREEN ROUTING ═══════════════
-function showScreen(id) {
-  // Hide every screen completely
-  document.querySelectorAll('.screen').forEach(function(s){
-    s.classList.remove('active');
-    s.style.display = 'none';
+// ═══ SUPABASE FUNCTIONS ═══
+async function doSignup() {
+  var biz = document.getElementById('biz-name').value.trim();
+  var owner = document.getElementById('signup-owner').value.trim();
+  var email = document.getElementById('signup-email').value.trim();
+  var pass = document.getElementById('signup-pass').value;
+  var err = document.getElementById('signup-error');
+  var valid = true;
+  ['fg-biz','fg-owner','fg-email','fg-pass'].forEach(function(id) {
+    var el = document.getElementById(id); if(el) el.classList.remove('has-error');
   });
-  // Show only the target
-  var target = document.getElementById(id);
-  if(target){
-    target.classList.add('active');
-    // Use correct display type
-    if(id === 'screen-dashboard'){
-      target.style.display = 'flex';
-    } else if(id === 'screen-landing'){
-      target.style.display = 'block';
-    } else {
-      target.style.display = 'flex';
+  err.style.display = 'none';
+  if(!biz) { setFieldError('fg-biz','Please enter your business name.'); valid=false; }
+  if(!owner) { setFieldError('fg-owner','Please enter your name.'); valid=false; }
+  if(!email||!isValidEmail(email)) { setFieldError('fg-email','Please enter a valid email.'); valid=false; }
+  if(!pass||pass.length<6) { setFieldError('fg-pass','Password must be at least 6 characters.'); valid=false; }
+  if(!valid) { err.textContent='Please fix the errors above.'; err.style.display='block'; return; }
+
+  var btn = document.getElementById('btn-signup');
+  btn.textContent = 'Creating account...'; btn.style.opacity='.7'; btn.style.pointerEvents='none';
+
+  if(sb) {
+    var result = await sb.auth.signUp({ email: email, password: pass, options: { data: { full_name: owner } } });
+    if(result.error) {
+      err.textContent = result.error.message; err.style.display='block';
+      btn.textContent='Create account →'; btn.style.opacity='1'; btn.style.pointerEvents='auto';
+      return;
+    }
+    if(result.data && result.data.user) {
+      await sb.from('profiles').upsert({ id: result.data.user.id, business_name: biz, owner_name: owner });
     }
   }
-  window.scrollTo(0,0);
-}
-function showLanding() { showScreen('screen-landing'); }
-function showAuth(tab) { showScreen('screen-auth'); switchAuthTab(tab); }
-function showFunnel() {
-  showScreen('screen-funnel');
-  document.getElementById('funnel-biz-name').textContent = appState.bizName || 'My Business';
-  var fbn2 = document.getElementById('feedback-biz-name');
-  if(fbn2) fbn2.textContent = appState.bizName || '';
-  appState.selectedStar = 0;
-  document.querySelectorAll('.star-btn').forEach(function(s){ s.classList.remove('active'); });
-  document.getElementById('star-label').textContent = 'Tap a star to rate';
-  var btn = document.getElementById('funnel-btn');
-  if(btn){ btn.style.opacity='.4'; btn.style.pointerEvents='none'; }
-}
-function goToDashboard() {
-  var n = document.getElementById('biz-name');
-  if(n && n.value) appState.bizName = n.value;
-  showScreen('screen-dashboard');
-  updateDashboard();
+
+  appState.bizName = biz; saveState();
+  var formEl = document.getElementById('form-signup');
+  formEl.innerHTML = '';
+  var successDiv = document.createElement('div');
+  successDiv.style.cssText = 'background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:8px;padding:1.25rem;font-size:.88rem;line-height:1.8;color:var(--green-l);text-align:center;';
+  successDiv.innerHTML = '<strong>Check your inbox!</strong><br>We sent a confirmation link to<br><strong>' + email + '</strong><br><br>Click the link to activate, then sign in below.';
+  var goBtn = document.createElement('button');
+  goBtn.className = 'btn-auth'; goBtn.style.marginTop = '.75rem';
+  goBtn.textContent = 'Go to Sign in';
+  goBtn.addEventListener('click', function() { switchAuthTab('login'); });
+  formEl.appendChild(successDiv); formEl.appendChild(goBtn);
 }
 
-function switchAuthTab(tab) {
-  document.getElementById('tab-login').classList.toggle('active', tab==='login');
-  document.getElementById('tab-signup').classList.toggle('active', tab==='signup');
-  document.getElementById('form-login').style.display = tab==='login'?'flex':'none';
-  document.getElementById('form-signup').style.display = tab==='signup'?'flex':'none';
+async function doLogin() {
+  var email = document.getElementById('login-email').value.trim();
+  var pass = document.getElementById('login-pass').value;
+  var err = document.getElementById('login-error');
+  var valid = true;
+  ['fg-login-email','fg-login-pass'].forEach(function(id) {
+    var el = document.getElementById(id); if(el) el.classList.remove('has-error');
+  });
+  err.style.display = 'none';
+  if(!email||!isValidEmail(email)) { setFieldError('fg-login-email','Please enter a valid email.'); valid=false; }
+  if(!pass) { setFieldError('fg-login-pass','Please enter your password.'); valid=false; }
+  else if(pass.length<6) { setFieldError('fg-login-pass','Password must be at least 6 characters.'); valid=false; }
+  if(!valid) { err.textContent='Please check your email and password.'; err.style.display='block'; return; }
+
+  var btn = document.querySelector('#form-login .btn-auth');
+  btn.textContent = 'Signing in...'; btn.style.opacity='.7'; btn.style.pointerEvents='none';
+
+  if(sb) {
+    var result = await sb.auth.signInWithPassword({ email: email, password: pass });
+    if(result.error) {
+      err.textContent = result.error.message; err.style.display='block';
+      btn.textContent='Sign in →'; btn.style.opacity='1'; btn.style.pointerEvents='auto';
+      return;
+    }
+    appState.currentUser = result.data.user;
+    await loadAndGoToDashboard();
+  } else {
+    appState.bizName = email.split('@')[0];
+    goToDashboard();
+  }
+}
+
+async function doSignOut() {
+  if(sb) await sb.auth.signOut();
+  appState.currentUser = null;
+  localStorage.removeItem('rbp_state');
+  showLanding();
+}
+
+async function loadAndGoToDashboard() {
+  if(sb && appState.currentUser) {
+    var r = await sb.from('profiles').select('*').eq('id', appState.currentUser.id).single();
+    if(r.data) {
+      appState.bizName = r.data.business_name || 'My Business';
+      appState.googleLink = r.data.google_review_url || '';
+      if(r.data.message_template) appState.messageTemplate = r.data.message_template;
+      saveState();
+    }
+    await loadStats();
+  }
+  goToDashboard();
+}
+
+async function loadStats() {
+  if(!sb || !appState.currentUser) return;
+  var uid = appState.currentUser.id;
+  var s = await sb.from('sends').select('*').eq('user_id', uid).order('sent_at',{ascending:false}).limit(50);
+  var e = await sb.from('events').select('*').eq('user_id', uid);
+  var f = await sb.from('feedback').select('*').eq('user_id', uid).order('received_at',{ascending:false}).limit(20);
+  if(s.data) {
+    appState.sends = s.data.map(function(x) {
+      return { id:x.id, name:x.customer_name, phone:x.customer_phone,
+        time: new Date(x.sent_at).toLocaleString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}),
+        status:x.status, rating:x.rating||0 };
+    });
+    appState.stats.sent = s.data.length;
+  }
+  if(e.data) {
+    appState.stats.opened = e.data.filter(function(x){return x.event_type==='opened';}).length;
+    appState.stats.reviews = e.data.filter(function(x){return x.event_type==='google_redirect';}).length;
+    appState.stats.feedback = e.data.filter(function(x){return x.event_type==='feedback_submitted';}).length;
+  }
+  if(f.data && f.data.length > 0) renderInbox(f.data);
+}
+
+function renderInbox(items) {
+  var d = document.getElementById('inbox-dynamic'); if(!d) return;
+  d.innerHTML = '';
+  items.forEach(function(item) {
+    var bc = item.rating <= 2 ? '#ef4444' : '#f59e0b';
+    var tags = item.tags ? item.tags.join(', ') : '';
+    var time = new Date(item.received_at).toLocaleString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+    var div = document.createElement('div');
+    div.style.cssText = 'border:1px solid rgba(0,0,0,.08);border-radius:10px;padding:1.25rem;margin-bottom:.75rem;border-left:3px solid '+bc+';background:#fff';
+    div.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem">'+
+      '<div style="font-size:.88rem;font-weight:600;color:#111">'+item.rating+' star'+(item.rating>1?'s':'')+' — private feedback</div>'+
+      '<button class="btn-sm">Mark resolved</button></div>'+
+      '<div style="font-size:.85rem;color:#4a6b4a;line-height:1.6">'+(tags?'Tags: '+tags+'<br>':'')+(item.message||'No additional comments.')+'</div>'+
+      '<div style="font-size:.73rem;color:#8da08d;margin-top:.5rem">Received '+time+'</div>';
+    div.querySelector('.btn-sm').addEventListener('click', function() {
+      div.style.opacity='0.4';
+      if(sb) sb.from('feedback').update({resolved:true}).eq('id',item.id);
+    });
+    d.appendChild(div);
+  });
+}
+
+async function saveProfileToSupabase() {
+  if(!sb || !appState.currentUser) return;
+  await sb.from('profiles').upsert({
+    id: appState.currentUser.id,
+    business_name: appState.bizName,
+    google_review_url: appState.googleLink,
+    message_template: appState.messageTemplate
+  });
+}
+
+// ═══ EVENT TRACKING ═══
+async function trackEvent(type, sendId, rating) {
+  if(!sb) return;
+  try {
+    var payload = { event_type: type };
+    if(sendId) payload.send_id = sendId;
+    if(rating) payload.rating = rating;
+    if(appState.currentUser) {
+      payload.user_id = appState.currentUser.id;
+    } else if(sendId) {
+      var r = await sb.from('sends').select('user_id').eq('id',sendId).single();
+      if(r.data) payload.user_id = r.data.user_id;
+    }
+    await sb.from('events').insert(payload);
+  } catch(e) {}
+}
+
+// ═══ CURSOR ═══
+var cur=document.getElementById('cur'), curR=document.getElementById('curR');
+var mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',function(e){mx=e.clientX;my=e.clientY;if(cur){cur.style.left=mx+'px';cur.style.top=my+'px';}});
+(function tick(){rx+=(mx-rx)*.13;ry+=(my-ry)*.13;if(curR){curR.style.left=rx+'px';curR.style.top=ry+'px';}requestAnimationFrame(tick);})();
+
+// ═══ SCREENS ═══
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');s.style.display='none';});
+  var t=document.getElementById(id);
+  if(t){t.classList.add('active');t.style.display=(id==='screen-dashboard')?'flex':(id==='screen-landing')?'block':'flex';}
+  window.scrollTo(0,0);
+}
+function showLanding(){showScreen('screen-landing');}
+function showAuth(tab){showScreen('screen-auth');switchAuthTab(tab);}
+function showFunnel(){
+  showScreen('screen-funnel');
+  document.getElementById('funnel-biz-name').textContent=appState.bizName||'My Business';
+  appState.selectedStar=0;
+  document.querySelectorAll('.star-btn').forEach(function(s){s.classList.remove('active');});
+  document.getElementById('star-label').textContent='Tap a star to rate';
+  var h=document.getElementById('star-hint');if(h)h.textContent='';
+  var b=document.getElementById('funnel-btn');if(b){b.classList.add('disabled');b.style.display='none';}
+}
+function goToDashboard(){
+  showScreen('screen-dashboard');
+  updateDashboard();
+  document.documentElement.style.visibility='visible';
+}
+function switchAuthTab(tab){
+  document.getElementById('tab-login').classList.toggle('active',tab==='login');
+  document.getElementById('tab-signup').classList.toggle('active',tab==='signup');
+  document.getElementById('form-login').style.display=tab==='login'?'flex':'none';
+  document.getElementById('form-signup').style.display=tab==='signup'?'flex':'none';
   document.querySelectorAll('.form-group.has-error').forEach(function(g){g.classList.remove('has-error');});
   document.querySelectorAll('.auth-error-banner').forEach(function(b){b.style.display='none';});
 }
+function clearFieldError(id){var el=document.getElementById(id);if(el)el.classList.remove('has-error');}
+function setFieldError(id,msg){var el=document.getElementById(id);if(!el)return;el.classList.add('has-error');if(msg){var m=el.querySelector('.field-error');if(m)m.textContent=msg;}}
+function isValidEmail(e){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e.trim());}
 
-function clearFieldError(id){
-  var el=document.getElementById(id);
-  if(el) el.classList.remove('has-error');
-}
+// ═══ SCROLL REVEAL ═══
+var obs=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}});},{threshold:.08});
+document.querySelectorAll('.reveal').forEach(function(el){obs.observe(el);});
+function toggleFaq(el){var was=el.classList.contains('open');document.querySelectorAll('.faq-item').forEach(function(f){f.classList.remove('open');});if(!was)el.classList.add('open');}
+window.addEventListener('scroll',function(){var nav=document.getElementById('main-nav');if(nav)nav.style.background=window.scrollY>50?'rgba(8,12,8,0.98)':'rgba(8,12,8,0.85)';});
 
-function setFieldError(id,msg){
-  var el=document.getElementById(id);
-  if(!el) return;
-  el.classList.add('has-error');
-  if(msg){var m=el.querySelector('.field-error');if(m) m.textContent=msg;}
-}
-
-function isValidEmail(email){
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
-}
-
-function validateSignup(){
-  var biz   = document.getElementById('biz-name').value.trim();
-  var owner = document.getElementById('signup-owner').value.trim();
-  var email = document.getElementById('signup-email').value.trim();
-  var pass  = document.getElementById('signup-pass').value;
-  var errBanner = document.getElementById('signup-error');
-  var valid = true;
-
-  ['fg-biz','fg-owner','fg-email','fg-pass'].forEach(function(id){
-    var el=document.getElementById(id);if(el)el.classList.remove('has-error');
-  });
-  errBanner.style.display='none';
-
-  if(!biz){setFieldError('fg-biz','Please enter your business name.');valid=false;}
-  if(!owner){setFieldError('fg-owner','Please enter your name.');valid=false;}
-  if(!email||!isValidEmail(email)){setFieldError('fg-email','Please enter a valid email (e.g. you@business.com).');valid=false;}
-  if(!pass||pass.length<6){setFieldError('fg-pass','Password must be at least 6 characters.');valid=false;}
-
-  if(!valid){
-    errBanner.textContent='Please fix the errors above before continuing.';
-    errBanner.style.display='block';
-    return;
-  }
-
-  var btn=document.getElementById('btn-signup');
-  btn.textContent='Creating account…';
-  btn.style.opacity='.7';
-  btn.style.pointerEvents='none';
-
-  // store details for reset
-  appState._pendingBiz=biz; appState._pendingOwner=owner; appState._pendingEmail=email;
-
-  setTimeout(function(){
-    document.getElementById('form-signup').innerHTML=
-      '<div class="auth-success-banner" style="display:block;font-size:.88rem;padding:1.25rem;line-height:1.8">' +
-      '📧 <strong>Check your inbox!</strong><br>' +
-      'We sent a confirmation link to<br><strong>' + email + '</strong><br><br>' +
-      'Click the link to activate your account, then sign in below.</div>' +
-      '<button class="btn-auth" onclick="switchAuthTab(\'login\')">Go to Sign in →</button>' +
-      '<div style="text-align:center;margin-top:.85rem;font-size:.8rem;color:var(--dim)">' +
-      'Wrong email? <a href="#" onclick="resetSignupForm();return false;" style="color:var(--green-l);text-decoration:underline">Go back and fix it</a></div>';
-    appState.bizName=biz;
-    saveState();
-  },1200);
-}
-
-function resetSignupForm(){
-  var biz=appState._pendingBiz||'';
-  var owner=appState._pendingOwner||'';
-  var email=appState._pendingEmail||'';
-  var el=document.getElementById('form-signup');
-  if(!el) return;
-  // Build form parts separately to avoid escaping issues
-  var errDiv='<div class="auth-error-banner" id="signup-error" style="display:block">Looks like there was a typo. Please correct your email and try again.</div>';
-  var bizDiv='<div class="form-group" id="fg-biz"><label>Business name</label><input type="text" class="form-input" placeholder="e.g. SmileCare Dental Clinic" id="biz-name" value="'+biz+'"><span class="field-error">Please enter your business name.</span></div>';
-  var ownerDiv='<div class="form-group" id="fg-owner"><label>Your name</label><input type="text" class="form-input" placeholder="Dr. Priya Sharma" id="signup-owner" value="'+owner+'"><span class="field-error">Please enter your name.</span></div>';
-  var emailDiv='<div class="form-group" id="fg-email"><label>Email address</label><input type="email" class="form-input" placeholder="you@yourbusiness.com" id="signup-email" value="'+email+'"><span class="field-error">Please enter a valid email address.</span></div>';
-  var passDiv='<div class="form-group" id="fg-pass"><label>Password</label><input type="password" class="form-input" placeholder="At least 6 characters" id="signup-pass"><span class="field-error">Password must be at least 6 characters.</span></div>';
-  var btnDiv='<button class="btn-auth" id="btn-signup" onclick="validateSignup()">Create account →</button>';
-  var noteDiv='<div class="auth-note">By signing up you agree to our <a href="#">Terms</a> &amp; <a href="#">Privacy Policy</a></div>';
-  el.innerHTML = errDiv+bizDiv+ownerDiv+emailDiv+passDiv+btnDiv+noteDiv;
-  setTimeout(function(){
-    var ef=document.getElementById('signup-email');
-    if(ef){ef.focus();ef.select();}
-  },50);
-}
-
-function validateLogin(){
-  var email=document.getElementById('login-email').value.trim();
-  var pass=document.getElementById('login-pass').value;
-  var errBanner=document.getElementById('login-error');
-  var valid=true;
-
-  ['fg-login-email','fg-login-pass'].forEach(function(id){
-    var el=document.getElementById(id);if(el)el.classList.remove('has-error');
-  });
-  errBanner.style.display='none';
-
-  if(!email||!isValidEmail(email)){setFieldError('fg-login-email','Please enter a valid email address.');valid=false;}
-  if(!pass){setFieldError('fg-login-pass','Please enter your password.');valid=false;}
-  else if(pass.length<6){setFieldError('fg-login-pass','Password must be at least 6 characters.');valid=false;}
-
-  if(!valid){
-    errBanner.textContent='Please check your email and password.';
-    errBanner.style.display='block';
-    return;
-  }
-
-  var btn=document.querySelector('#form-login .btn-auth');
-  btn.textContent='Signing in…';
-  btn.style.opacity='.7';
-  btn.style.pointerEvents='none';
-  setTimeout(function(){goToDashboard();},900);
-}
-
-// ═══════════════ SCROLL REVEAL ═══════════════
-var obs = new IntersectionObserver(function(entries){
-  entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('visible'); obs.unobserve(e.target); }});
-},{threshold:.08});
-document.querySelectorAll('.reveal').forEach(function(el){ obs.observe(el); });
-
-// FAQ
-function toggleFaq(el) {
-  var was = el.classList.contains('open');
-  document.querySelectorAll('.faq-item').forEach(function(f){ f.classList.remove('open'); });
-  if(!was) el.classList.add('open');
-}
-
-// Nav scroll
-window.addEventListener('scroll', function(){
-  var nav = document.getElementById('main-nav');
-  if(nav) nav.style.background = window.scrollY>50?'rgba(8,12,8,0.98)':'rgba(8,12,8,0.85)';
-});
-
-// ═══════════════ DASHBOARD ═══════════════
-function switchPanel(name) {
-  document.querySelectorAll('.dash-panel').forEach(function(p){ p.classList.remove('active'); });
-  document.querySelectorAll('.sb-item').forEach(function(i){ i.classList.remove('active'); });
+// ═══ DASHBOARD ═══
+function switchPanel(name){
+  document.querySelectorAll('.dash-panel').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.sb-item').forEach(function(i){i.classList.remove('active');});
   document.getElementById('panel-'+name).classList.add('active');
-  var map = {overview:0,send:1,inbox:2,campaigns:4,customers:5,settings:7};
-  var items = document.querySelectorAll('.sb-item');
-  if(items[map[name]]) items[map[name]].classList.add('active');
-  if(name==='overview') animateStats();
-  // always scroll main content back to top
-  var main = document.querySelector('.dash-main');
-  if(main) main.scrollTo({top:0, behavior:'smooth'});
+  var map={overview:0,send:1,inbox:2,customers:3,settings:5};
+  var items=document.querySelectorAll('.sb-item');
+  if(items[map[name]])items[map[name]].classList.add('active');
+  if(name==='overview')animateStats();
+  var main=document.querySelector('.dash-main');if(main)main.scrollTo({top:0,behavior:'smooth'});
 }
-
-function animateStats() {
-  animateNum('stat-sent', appState.stats.sent);
-  animateNum('stat-opened', appState.stats.opened);
-  animateNum('stat-reviews', appState.stats.reviews);
-  animateNum('stat-feedback', appState.stats.feedback);
+function animateStats(){
+  animateNum('stat-sent',appState.stats.sent);animateNum('stat-opened',appState.stats.opened);
+  animateNum('stat-reviews',appState.stats.reviews);animateNum('stat-feedback',appState.stats.feedback);
   setTimeout(function(){
-    var s=appState.stats, opened=s.sent?Math.round(s.opened/s.sent*100):0;
-    var rated=s.opened?Math.round((s.reviews+s.feedback)/s.opened*100):0;
-    var tog=s.reviews+s.feedback?Math.round(s.reviews/(s.reviews+s.feedback)*100):0;
-    setConv(opened,rated,tog);
-  }, 200);
+    var s=appState.stats;
+    setConv(s.sent?Math.round(s.opened/s.sent*100):0,s.opened?Math.round((s.reviews+s.feedback)/s.opened*100):0,s.reviews+s.feedback?Math.round(s.reviews/(s.reviews+s.feedback)*100):0);
+  },200);
 }
-
-function animateNum(id, target) {
-  var el = document.getElementById(id);
-  if(!el) return;
-  var start=0, dur=800, startTime=null;
-  function step(ts) {
-    if(!startTime) startTime=ts;
-    var p=Math.min((ts-startTime)/dur,1);
-    el.textContent = Math.round(p*target);
-    if(p<1) requestAnimationFrame(step);
-  }
+function animateNum(id,target){
+  var el=document.getElementById(id);if(!el)return;
+  var dur=800,startTime=null;
+  function step(ts){if(!startTime)startTime=ts;var p=Math.min((ts-startTime)/dur,1);el.textContent=Math.round(p*target);if(p<1)requestAnimationFrame(step);}
   requestAnimationFrame(step);
 }
-
 function setConv(c1,c2,c3){
-  document.getElementById('conv1').textContent=c1+'%';
-  document.getElementById('conv2').textContent=c2+'%';
-  document.getElementById('conv3').textContent=c3+'%';
-  document.getElementById('conv1-bar').style.width=c1+'%';
-  document.getElementById('conv2-bar').style.width=c2+'%';
-  document.getElementById('conv3-bar').style.width=c3+'%';
+  ['conv1','conv2','conv3'].forEach(function(id,i){var v=[c1,c2,c3][i];document.getElementById(id).textContent=v+'%';document.getElementById(id+'-bar').style.width=v+'%';});
 }
-
-function updateDashboard() {
-  document.getElementById('sb-user-name').textContent = appState.bizName;
-  var initials = appState.bizName.split(' ').map(function(w){return w[0];}).slice(0,2).join('').toUpperCase();
-  document.getElementById('sb-avatar-text').textContent = initials;
-  renderActivityTable();
-  renderSendTable();
-  renderCustomersTable();
-  animateStats();
-  // restore saved google link into field & update preview
+function updateDashboard(){
+  document.getElementById('sb-user-name').textContent=appState.bizName;
+  var initials=appState.bizName.split(' ').map(function(w){return w[0];}).slice(0,2).join('').toUpperCase();
+  document.getElementById('sb-avatar-text').textContent=initials;
+  var emailEl=document.getElementById('sb-user-email');
+  if(emailEl&&appState.currentUser)emailEl.textContent=appState.currentUser.email||'';
+  renderTables();animateStats();
   setTimeout(function(){
-    var glEl = document.getElementById('google-review-link');
-    if(glEl && appState.googleLink) glEl.value = appState.googleLink;
-
-    var mtEl = document.getElementById('msg-template');
-    if(mtEl && appState.messageTemplate) mtEl.value = appState.messageTemplate;
+    var gl=document.getElementById('google-review-link');if(gl&&appState.googleLink)gl.value=appState.googleLink;
+    var sb2=document.getElementById('settings-biz');if(sb2)sb2.value=appState.bizName;
+    var sg=document.getElementById('settings-google-link');if(sg&&appState.googleLink)sg.value=appState.googleLink;
+    var mt=document.getElementById('msg-template');if(mt&&appState.messageTemplate)mt.value=appState.messageTemplate;
     updatePreview();
-  }, 50);
+  },50);
 }
-
-function renderActivityTable() {
-  var tbody = document.getElementById('activity-table');
-  if(appState.sends.length===0){ tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--dim);padding:2rem">No messages sent yet. <a href="#" onclick="switchPanel(\'send\');return false" style="color:var(--green-l)">Send your first one →</a></td></tr>'; return; }
-  tbody.innerHTML = appState.sends.slice(-10).reverse().map(function(s){
-    var statusClass = s.status==='Sent'?'sent':s.status==='Opened'?'opened':'reviewed';
-    var rating = s.rating ? '★'.repeat(s.rating)+'☆'.repeat(5-s.rating) : '—';
-    return '<tr><td>'+s.name+'</td><td>'+s.phone+'</td><td>'+s.time+'</td><td><span class="badge '+statusClass+'">'+s.status+'</span></td><td style="color:var(--amber)">'+rating+'</td><td><button class="btn-sm" onclick="simulateOpen(\''+s.id+'\')">Simulate open</button></td></tr>';
-  }).join('');
-}
-
-function renderSendTable() {
-  var tbody = document.getElementById('send-table');
-  if(appState.sends.length===0){ tbody.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--dim);padding:1.5rem">No messages sent yet.</td></tr>'; return; }
-  tbody.innerHTML = appState.sends.slice(-8).reverse().map(function(s){
-    var statusClass = s.status==='Sent'?'sent':s.status==='Opened'?'opened':'reviewed';
-    return '<tr><td>'+s.name+'</td><td>'+s.phone+'</td><td>'+s.time+'</td><td><span class="badge '+statusClass+'">'+s.status+'</span></td></tr>';
-  }).join('');
-}
-
-function renderCustomersTable() {
-  var tbody = document.getElementById('customers-table');
-  if(appState.customers.length===0){ tbody.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--dim);padding:2rem">No customers added yet.</td></tr>'; return; }
-  tbody.innerHTML = appState.customers.slice().reverse().map(function(c){
-    var rating = c.rating ? '★'.repeat(c.rating) : '—';
-    return '<tr><td>'+c.name+'</td><td>'+c.phone+'</td><td>1</td><td style="color:var(--amber)">'+rating+'</td><td>'+c.time+'</td></tr>';
-  }).join('');
-}
-
-// ═══════════════ WHATSAPP SEND ═══════════════
-function sendWhatsApp() {
-  var name = document.getElementById('cust-name').value.trim();
-  var rawPhone = document.getElementById('cust-phone').value.trim();
-  var phone = rawPhone.replace(/\D/g,'');
-
-  if(!name){
-    showToast('⚠️ Please enter the customer name');
-    document.getElementById('cust-name').focus();
-    return;
+function renderTables(){
+  var at=document.getElementById('activity-table');
+  if(at){
+    if(!appState.sends||appState.sends.length===0){at.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--dash-dim);padding:2rem">No messages sent yet. <a href="#" onclick="switchPanel(\'send\');return false" style="color:var(--green-d)">Send your first one</a></td></tr>';}
+    else{at.innerHTML=appState.sends.slice(-10).reverse().map(function(s){var sc=s.status==='Sent'?'sent':s.status==='Opened'?'opened':'reviewed';return '<tr><td>'+s.name+'</td><td>'+s.phone+'</td><td>'+s.time+'</td><td><span class="badge '+sc+'">'+s.status+'</span></td></tr>';}).join('');}
   }
-  if(!rawPhone || phone.length < 7){
-    showToast('⚠️ Please enter a valid WhatsApp number with country code');
-    document.getElementById('cust-phone').focus();
-    return;
+  var st=document.getElementById('send-table');
+  if(st){
+    if(!appState.sends||appState.sends.length===0){st.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--dash-dim);padding:1.5rem">No messages sent yet.</td></tr>';}
+    else{st.innerHTML=appState.sends.slice(-8).reverse().map(function(s){var sc=s.status==='Sent'?'sent':s.status==='Opened'?'opened':'reviewed';return '<tr><td>'+s.name+'</td><td>'+s.phone+'</td><td>'+s.time+'</td><td><span class="badge '+sc+'">'+s.status+'</span></td></tr>';}).join('');}
+  }
+  var ct=document.getElementById('customers-table');
+  if(ct){
+    if(!appState.customers||appState.customers.length===0){ct.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--dash-dim);padding:2rem">No customers yet.</td></tr>';}
+    else{ct.innerHTML=appState.customers.slice().reverse().map(function(c){return '<tr><td>'+c.name+'</td><td>'+c.phone+'</td><td>1</td><td>'+c.time+'</td></tr>';}).join('');}
+  }
+}
+
+// ═══ WHATSAPP SEND ═══
+async function sendWhatsApp(){
+  var name=document.getElementById('cust-name').value.trim();
+  var rawPhone=document.getElementById('cust-phone').value.trim();
+  var phone=rawPhone.replace(/\D/g,'');
+  if(!name){showToast('Please enter the customer name');document.getElementById('cust-name').focus();return;}
+  if(!rawPhone||phone.length<7){showToast('Please enter a valid WhatsApp number with country code');document.getElementById('cust-phone').focus();return;}
+
+  var sendId=null;
+  if(sb&&appState.currentUser){
+    var r=await sb.from('sends').insert({user_id:appState.currentUser.id,customer_name:name,customer_phone:phone,status:'Sent'}).select().single();
+    if(r.data)sendId=r.data.id;
   }
 
-  // Auto-generate funnel URL from current page — always correct
-  var reviewLink = 'https://vjvinayakam.github.io/reviewboostpro/?review=true';
-  var template = document.getElementById('msg-template').value || appState.messageTemplate;
-  var msg = template
-    .replace(/{name}/g, name)
-    .replace(/{business}/g, appState.bizName)
-    .replace(/{review_link}/g, reviewLink);
+  var reviewLink='https://vjvinayakam.github.io/reviewboostpro/?review=true';
+  if(sendId)reviewLink+='&sid='+sendId;
+  reviewLink+='&biz='+encodeURIComponent(appState.bizName);
 
-  var waUrl = 'https://wa.me/'+phone+'?text='+encodeURIComponent(msg);
-  var a = document.createElement('a');
-  a.href = waUrl; a.target = '_blank'; a.rel = 'noopener';
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  var template=document.getElementById('msg-template').value||appState.messageTemplate;
+  var msg=template.replace(/{name}/g,name).replace(/{business}/g,appState.bizName).replace(/{review_link}/g,reviewLink);
+  var waUrl='https://wa.me/'+phone+'?text='+encodeURIComponent(msg);
+  var a=document.createElement('a');a.href=waUrl;a.target='_blank';a.rel='noopener';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
 
-  var fallbackDiv = document.getElementById('wa-fallback');
-  if(fallbackDiv){
-    fallbackDiv.innerHTML = '🔗 WhatsApp not opening? <a href="'+waUrl+'" target="_blank" rel="noopener" style="color:var(--green-d);font-weight:600;text-decoration:underline;">Click here to open manually</a>';
-    fallbackDiv.style.display = 'block';
-  }
+  var fb=document.getElementById('wa-fallback');
+  if(fb){fb.innerHTML='WhatsApp not opening? <a href="'+waUrl+'" target="_blank" style="color:var(--green-d);font-weight:600;text-decoration:underline;">Click here</a>';fb.style.display='block';}
 
-  var id = 'send_'+Date.now();
-  var now = new Date();
-  var timeStr = now.getHours()+':'+String(now.getMinutes()).padStart(2,'0')+', '+now.toLocaleDateString('en-IN',{day:'numeric',month:'short'});
-  appState.sends.push({id:id, name:name, phone:phone, time:timeStr, status:'Sent', rating:0});
-  appState.customers.push({name:name, phone:phone, time:timeStr, rating:0});
+  var now=new Date();
+  var ts=now.getHours()+':'+String(now.getMinutes()).padStart(2,'0')+', '+now.toLocaleDateString('en-IN',{day:'numeric',month:'short'});
+  appState.sends.push({id:sendId||'local_'+Date.now(),name:name,phone:phone,time:ts,status:'Sent',rating:0});
+  appState.customers.push({name:name,phone:phone,time:ts});
   appState.stats.sent++;
-  saveState();
-  renderSendTable(); renderActivityTable(); renderCustomersTable(); animateStats();
-  document.getElementById('cust-name').value='';
-  document.getElementById('cust-phone').value='';
+  saveState();renderTables();animateStats();
+  document.getElementById('cust-name').value='';document.getElementById('cust-phone').value='';
   updatePreview();
-  showToast('✅ WhatsApp opened! Hit send on your phone.');
+  showToast('WhatsApp opened! Hit send on your phone.');
 }
 
-function testWhatsAppLink() {
-  var rawPhone = document.getElementById('cust-phone').value.trim();
-  var phone = rawPhone.replace(/\D/g,'');
-  var name = document.getElementById('cust-name').value.trim() || 'Test Customer';
-  if(!phone || phone.length < 7){
-    showToast('⚠️ Enter a phone number first to test');
-    document.getElementById('cust-phone').focus();
-    return;
-  }
-  var reviewLink = 'https://vjvinayakam.github.io/reviewboostpro/?review=true';
-  var template = document.getElementById('msg-template') ? document.getElementById('msg-template').value : appState.messageTemplate;
-  var msg = template
-    .replace(/{name}/g, name)
-    .replace(/{business}/g, appState.bizName)
-    .replace(/{review_link}/g, reviewLink);
-  var waUrl = 'https://wa.me/'+phone+'?text='+encodeURIComponent(msg);
-  showToast('✅ Opening WhatsApp — check your phone/browser!');
-  var a = document.createElement('a');
-  a.href = waUrl; a.target = '_blank'; a.rel = 'noopener';
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+function testWhatsApp(){
+  var rawPhone=document.getElementById('cust-phone').value.trim();
+  var phone=rawPhone.replace(/\D/g,'');
+  var name=document.getElementById('cust-name').value.trim()||'Test Customer';
+  if(!phone||phone.length<7){showToast('Enter a phone number first');return;}
+  var reviewLink='https://vjvinayakam.github.io/reviewboostpro/?review=true&biz='+encodeURIComponent(appState.bizName);
+  var template=document.getElementById('msg-template')?document.getElementById('msg-template').value:appState.messageTemplate;
+  var msg=template.replace(/{name}/g,name).replace(/{business}/g,appState.bizName).replace(/{review_link}/g,reviewLink);
+  var waUrl='https://wa.me/'+phone+'?text='+encodeURIComponent(msg);
+  var a=document.createElement('a');a.href=waUrl;a.target='_blank';a.rel='noopener';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
 }
 
-function simulateOpen(id) {
-  var send = appState.sends.find(function(s){ return s.id===id; });
-  if(send && send.status==='Sent'){
-    send.status='Opened';
-    appState.stats.opened++;
-    saveState();
-    renderActivityTable();
-    animateStats();
-    showToast('Marked as opened');
-  }
+function onGoogleLinkInput(){appState.googleLink=document.getElementById('google-review-link').value.trim();}
+
+function updatePreview(){
+  var name=document.getElementById('cust-name')?document.getElementById('cust-name').value||'Customer':'Customer';
+  var template=document.getElementById('msg-template')?document.getElementById('msg-template').value:appState.messageTemplate;
+  var reviewLink='https://vjvinayakam.github.io/reviewboostpro/?review=true';
+  var msg=template.replace(/{name}/g,'<em>'+name+'</em>').replace(/{business}/g,'<strong>'+appState.bizName+'</strong>').replace(/{review_link}/g,'<span class="wa-link">'+reviewLink+'</span>');
+  var el=document.getElementById('wa-msg-preview');if(el)el.innerHTML=msg.replace(/\n/g,'<br>');
 }
 
-
-
-function onGoogleLinkInput() {
-  var val = document.getElementById('google-review-link').value.trim();
-  appState.googleLink = val;
+async function saveTemplate(){
+  var t=document.getElementById('msg-template');var g=document.getElementById('google-review-link');
+  if(t)appState.messageTemplate=t.value;if(g)appState.googleLink=g.value.trim();
+  saveState();await saveProfileToSupabase();showToast('Template saved!');
 }
 
-function updatePreview() {
-  var name = document.getElementById('cust-name').value || 'Customer';
-  var template = document.getElementById('msg-template') ? document.getElementById('msg-template').value : appState.messageTemplate;
-  var reviewLink = 'https://vjvinayakam.github.io/reviewboostpro/?review=true';
-  var linkDisplay = reviewLink;
-  var msg = template
-    .replace(/{name}/g,'<em>'+name+'</em>')
-    .replace(/{business}/g,'<strong>'+appState.bizName+'</strong>')
-    .replace(/{review_link}/g,'<span class="wa-link">'+linkDisplay+'</span>');
-  var el = document.getElementById('wa-msg-preview');
-  if(el) el.innerHTML = msg.replace(/\n/g,'<br>');
-  var bn = document.getElementById('biz-name-preview');
-  if(bn) bn.textContent = appState.bizName;
-  // show/hide warning banner
-  var warn = document.getElementById('no-google-link-warn');
-  if(warn) warn.style.display = reviewLink ? 'none' : 'flex';
+async function saveSettings(){
+  var b=document.getElementById('settings-biz');var g=document.getElementById('settings-google-link');
+  if(b&&b.value)appState.bizName=b.value;if(g&&g.value)appState.googleLink=g.value.trim();
+  saveState();await saveProfileToSupabase();updateDashboard();showToast('Settings saved!');
 }
 
-function saveTemplate() {
-  var t = document.getElementById('msg-template');
-  var g = document.getElementById('google-review-link');
-  if(t) appState.messageTemplate = t.value;
-  if(g) appState.googleLink = g.value;
-  saveState();
-  showToast('Template saved!');
-}
-
-function saveSettings() {
-  var b = document.getElementById('settings-biz');
-  var g = document.getElementById('settings-google-link');
-  if(b&&b.value) appState.bizName = b.value;
-  if(g&&g.value) appState.googleLink = g.value;
-  saveState();
-  updateDashboard();
-  showToast('Settings saved!');
-}
-
-// ═══════════════ REVIEW FUNNEL ═══════════════
-function selectStar(n) {
-  appState.selectedStar = n;
-  var stars = document.querySelectorAll('.star-btn');
-  stars.forEach(function(s,i){ s.classList.toggle('active', i<n); });
-  var labels = ['','Terrible 😞','Poor 😕','Okay 😐','Good 😊','Excellent! 🤩'];
-  document.getElementById('star-label').textContent = labels[n];
-  var hint = document.getElementById('star-hint');
+// ═══ REVIEW FUNNEL ═══
+function selectStar(n){
+  appState.selectedStar=n;
+  document.querySelectorAll('.star-btn').forEach(function(s,i){s.classList.toggle('active',i<n);});
+  var labels=['','Terrible','Poor','Okay','Good','Excellent!'];
+  document.getElementById('star-label').textContent=labels[n];
+  var hint=document.getElementById('star-hint');
   if(hint){
-    if(n >= 4){
-      hint.textContent = '✨ Taking you to Google...';
-      hint.style.color = 'rgba(74,222,128,.8)';
-    } else {
-      hint.textContent = '💛 We value your feedback and will use it to improve';
-      hint.style.color = 'rgba(255,200,100,.8)';
-    }
+    if(n>=4){hint.textContent='Taking you to Google...';hint.style.color='rgba(74,222,128,.8)';}
+    else{hint.textContent='We value your feedback and will use it to improve';hint.style.color='rgba(255,200,100,.8)';}
   }
-  var btn = document.getElementById('funnel-btn');
+  var btn=document.getElementById('funnel-btn');
   if(btn){
-    if(n >= 4){
-      btn.classList.add('disabled');
-      btn.style.display = 'none';
-    } else {
-      btn.classList.remove('disabled');
-      btn.style.display = 'block';
-    }
+    if(n>=4){btn.classList.add('disabled');btn.style.display='none';}
+    else{btn.classList.remove('disabled');btn.style.display='block';}
   }
-  // 4-5 stars: redirect immediately, no need to click Continue
-  if(n >= 4){
-    setTimeout(function(){ submitRating(); }, 800);
-  }
-}
-
-function submitRating() {
-  var n = appState.selectedStar;
-  if(!n) return;
-
-  if(n <= 3) {
-    // 1-3 stars → show ONLY the private feedback form, hide everything else
-    showScreen('screen-feedback');
-  } else {
-    // 4-5 stars → go straight to Google Review page
-    appState.stats.reviews++;
-    if(appState.sends.length > 0){
-      var last = appState.sends[appState.sends.length-1];
-      last.status='Reviewed'; last.rating=n;
-    }
-    saveState();
-
-    // Read Google link from localStorage (saved when business owner set it in dashboard)
-    var googleLink = '';
-    try {
-      var st = localStorage.getItem('rbp_state');
-      if(st){ var parsed = JSON.parse(st); googleLink = (parsed.googleLink || '').trim(); }
-    } catch(e){}
-    // Fallback to appState
-    if(!googleLink) googleLink = (appState.googleLink || '').trim();
-    
-    var isRealLink = googleLink && 
-      googleLink !== 'https://g.page/your-business/review' && 
-      googleLink.indexOf('http') === 0 &&
-      googleLink.length > 15;
-
-    if(isRealLink){
-      // Go straight to Google — no intermediate page
-      window.location.href = googleLink;
-    } else {
-      // Google link not set — show thank you
-      showScreen('screen-thanks');
-      document.getElementById('thanks-msg').innerHTML =
-        'Thank you for your positive rating! 🌟<br><br>' +
-        '<span style="font-size:.85rem;color:rgba(255,255,255,.5)">We appreciate your time.</span>';
-    }
+  if(n>=4){
+    // MOBILE FIX: read google link synchronously — no await before window.location
+    var googleLink = (appState.googleLink||'').trim();
+    try{ var sv=localStorage.getItem('rbp_state'); if(sv){var ps=JSON.parse(sv);if(ps.googleLink)googleLink=ps.googleLink.trim();} }catch(e){}
+    var isReal=googleLink&&googleLink!=='https://g.page/your-business/review'&&googleLink.indexOf('http')===0&&googleLink.length>15;
+    if(isReal){ window.location.href=googleLink; }
+    else{ showScreen('screen-thanks'); document.getElementById('thanks-msg').textContent='Thank you for your positive rating! We appreciate your time.'; }
+    // Track async after decision (fire and forget)
+    trackEvent('rated',appState.currentSendId,n);
+    trackEvent('google_redirect',appState.currentSendId,n);
   }
 }
 
-function submitFeedback() {
-  appState.stats.feedback++;
-  var text = document.getElementById('feedback-text').value.trim();
-  var tags = [];
-  document.querySelectorAll('#feedback-tags .tag-btn.active').forEach(function(t){ tags.push(t.textContent.trim()); });
 
-  // Save feedback to appState for dashboard inbox
-  if(!appState.feedbackItems) appState.feedbackItems = [];
-  var now = new Date();
-  var timeStr = now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})+', '+now.toLocaleDateString('en-IN',{day:'numeric',month:'short'});
-  appState.feedbackItems.push({
-    rating: appState.selectedStar,
-    tags: tags,
-    message: text || 'No additional comments.',
-    time: timeStr,
-    resolved: false
-  });
+async function submitRating(){
+  // Only handles 1-3 stars (Continue button) — 4-5 stars handled by doGoogleRedirect()
+  var n=appState.selectedStar;if(!n||n>=4)return;
+  await trackEvent('rated',appState.currentSendId,n);
+  showScreen('screen-feedback');
+}
 
-  // Update latest send status
-  if(appState.sends.length > 0){
-    var last = appState.sends[appState.sends.length-1];
-    last.status='Reviewed'; last.rating=appState.selectedStar;
+async function submitFeedback(){
+  var text=document.getElementById('feedback-text').value.trim();
+  var tags=[];
+  document.querySelectorAll('#feedback-tags .tag-btn.active').forEach(function(t){tags.push(t.textContent.trim());});
+  await trackEvent('feedback_submitted',appState.currentSendId,appState.selectedStar);
+  if(sb){
+    try{
+      var payload={rating:appState.selectedStar,tags:tags,message:text||'No additional comments.'};
+      if(appState.currentSendId){
+        payload.send_id=appState.currentSendId;
+        var r=await sb.from('sends').select('user_id').eq('id',appState.currentSendId).single();
+        if(r.data){payload.user_id=r.data.user_id;await sb.from('sends').update({status:'Reviewed',rating:appState.selectedStar}).eq('id',appState.currentSendId);}
+      }
+      await sb.from('feedback').insert(payload);
+    }catch(e){console.log('feedback err',e);}
   }
-  saveState();
-
-  // Add to inbox DOM if dashboard is open
-  var d = document.getElementById('inbox-dynamic');
-  if(d){
-    var borderColor = appState.selectedStar <= 2 ? 'var(--red)' : 'var(--amber)';
-    d.innerHTML += '<div style="border:1px solid rgba(0,0,0,.08);border-radius:10px;padding:1.25rem;margin-bottom:.75rem;border-left:3px solid '+borderColor+';background:#fff">'+
-      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem">'+
-      '<div style="font-size:.88rem;font-weight:600;color:#111">'+'⭐'.repeat(appState.selectedStar)+' · '+appState.selectedStar+' star'+(appState.selectedStar>1?'s':'')+' (private)</div>'+
-      '<button class="btn-sm" onclick="this.parentElement.parentElement.style.opacity=0.4">Mark resolved</button></div>'+
-      '<div style="font-size:.85rem;color:#4a6b4a;line-height:1.6">'+(tags.length?'<strong>Tags:</strong> '+tags.join(', ')+'<br>':'')+(text||'No additional comments.')+'</div>'+
-      '<div style="font-size:.73rem;color:#8da08d;margin-top:.5rem">Received '+timeStr+'</div></div>';
-  }
-
-  document.getElementById('thanks-msg').textContent = 'Thank you for sharing! We will use this to improve your experience. 🙏';
+  document.getElementById('thanks-msg').textContent='Thank you for sharing! We will use this to improve your experience.';
   showScreen('screen-thanks');
 }
 
-function toggleTag(el){ el.classList.toggle('active'); }
+function toggleTag(el){el.classList.toggle('active');}
 
-// ═══════════════ TOAST ═══════════════
-function showToast(msg) {
-  var t = document.getElementById('toast');
-  document.getElementById('toast-msg').textContent = msg;
+function showToast(msg){
+  var t=document.getElementById('toast');
+  document.getElementById('toast-msg').textContent=msg;
   t.classList.add('show');
-  setTimeout(function(){ t.classList.remove('show'); }, 3000);
+  setTimeout(function(){t.classList.remove('show');},3000);
 }
 </script>
 </body>
