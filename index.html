@@ -1201,7 +1201,16 @@ function selectStar(n){
       var googleLink = (appState.googleLink||'').trim();
       var isReal = googleLink && googleLink !== 'https://g.page/your-business/review' && googleLink.indexOf('http')===0 && googleLink.length>15;
       if(isReal) {
-        window.location.href = googleLink;
+        // Show a tap button as fallback in case auto-redirect is blocked
+        var card = document.querySelector('.funnel-card');
+        if(card) {
+          card.innerHTML = '<div style="font-size:2rem;margin-bottom:1rem">⭐⭐⭐⭐⭐</div>' +
+            '<div style="font-family:serif;font-size:1.5rem;margin-bottom:.75rem">Thank you!</div>' +
+            '<div style="font-size:.9rem;color:rgba(255,255,255,.6);margin-bottom:1.5rem">Please leave us a Google review!</div>' +
+            '<a href="' + googleLink + '" style="display:block;width:100%;padding:1rem;background:#22c55e;border-radius:10px;color:#000;font-weight:700;font-size:1rem;text-align:center;text-decoration:none;">⭐ Write a Google Review →</a>';
+        }
+        // Also try auto redirect
+        setTimeout(function(){ window.location.replace(googleLink); }, 300);
       } else {
         showScreen('screen-thanks');
         document.getElementById('thanks-msg').textContent='Thank you for your positive rating! We appreciate your time.';
