@@ -521,6 +521,7 @@ Could you spare 30 seconds to rate us? It means the world to small businesses li
         <div class="form-group">
           <label style="font-size:.8rem;color:var(--dash-mid);display:block;margin-bottom:.4rem">Your Google Review link <span style="color:var(--red)">*</span></label>
           <input type="text" class="input-field" id="google-review-link" placeholder="https://g.page/your-business/review" oninput="onGoogleLinkInput()">
+          <div id="google-link-limit-msg" style="display:none;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:8px;padding:.65rem 1rem;font-size:.82rem;color:#fca5a5;margin-top:.5rem;">You have reached the maximum number of Google Review link changes (5). Please <a href="mailto:support@reviewboost.in" style="color:#fca5a5;text-decoration:underline">contact support</a> to update it.</div>
           <div style="font-size:.75rem;color:var(--dash-dim);margin-top:.4rem;">Find this in Google Business Profile → Get more reviews → Share review form. 4-5 star customers are sent here automatically.</div>
         </div>
       </div>
@@ -565,7 +566,7 @@ Could you spare 30 seconds to rate us? It means the world to small businesses li
 <div id="screen-funnel" class="screen">
   <div class="auth-grid-bg"></div><div class="auth-glow"></div>
   <div class="funnel-card">
-    <div style="font-size:.9rem;font-weight:600;color:rgba(255,255,255,.7);margin-bottom:.75rem;"><span id="funnel-biz-name">My Business</span></div>
+    <div style="font-size:1.4rem;font-weight:700;color:var(--white);margin-bottom:.75rem;letter-spacing:-.02em;"><span id="funnel-biz-name">My Business</span></div>
     <div class="funnel-h">How was your visit?</div>
     <div class="funnel-sub">We'd love to hear about your experience with us.</div>
     <div class="star-row">
@@ -672,6 +673,8 @@ function initApp() {
     var sh = document.getElementById('star-hint'); if(sh) sh.textContent = '';
     var fb = document.getElementById('funnel-btn'); if(fb) { fb.classList.add('disabled'); fb.style.display = 'none'; }
     document.documentElement.style.visibility = 'visible';
+    // Pre-fetch Google link from Supabase so redirect works instantly on mobile
+    prefetchGoogleLink(sendId);
     return;
   }
 
@@ -1081,7 +1084,25 @@ function testWhatsApp(){
   document.body.appendChild(a);a.click();document.body.removeChild(a);
 }
 
-function onGoogleLinkInput(){appState.googleLink=document.getElementById('google-review-link').value.trim();}
+function getGoogleLinkChangeCount() {
+  try { return parseInt(localStorage.getItem('rbp_gl_changes')||'0'); } catch(e){ return 0; }
+}
+function incrementGoogleLinkChangeCount() {
+  try { localStorage.setItem('rbp_gl_changes', (getGoogleLinkChangeCount()+1).toString()); } catch(e){}
+}
+function onGoogleLinkInput() {
+  var count = getGoogleLinkChangeCount();
+  var limitMsg = document.getElementById('google-link-limit-msg');
+  var input = document.getElementById('google-review-link');
+  if(count >= 5) {
+    if(limitMsg) limitMsg.style.display = 'block';
+    // Restore last saved value
+    input.value = appState.googleLink || '';
+    return;
+  }
+  if(limitMsg) limitMsg.style.display = 'none';
+  appState.googleLink = input.value.trim();
+}
 
 function updatePreview(){
   var name=document.getElementById('cust-name')?document.getElementById('cust-name').value||'Customer':'Customer';
@@ -1093,8 +1114,28 @@ function updatePreview(){
 
 async function saveTemplate(){
   var t=document.getElementById('msg-template');var g=document.getElementById('google-review-link');
-  if(t)appState.messageTemplate=t.value;if(g)appState.googleLink=g.value.trim();
-  saveState();await saveProfileToSupabase();showToast('Template saved!');
+  if(t) appState.messageTemplate=t.value;
+  if(g) {
+    var newLink = g.value.trim();
+    if(newLink && newLink !== appState.googleLink) {
+      var count = getGoogleLinkChangeCount();
+      if(count >= 5) {
+        showToast('Google link change limit reached. Contact support.');
+        g.value = appState.googleLink || '';
+        return;
+      }
+      incrementGoogleLinkChangeCount();
+      appState.googleLink = newLink;
+      var remaining = 4 - count;
+      if(remaining <= 2) showToast('Google link saved. ' + remaining + ' change' + (remaining===1?'':'s') + ' remaining.');
+      else showToast('Template saved!');
+    } else {
+      showToast('Template saved!');
+    }
+  } else {
+    showToast('Template saved!');
+  }
+  saveState();await saveProfileToSupabase();
 }
 
 async function saveSettings(){
@@ -1104,6 +1145,26 @@ async function saveSettings(){
 }
 
 // ═══ REVIEW FUNNEL ═══
+// Pre-fetch google link from Supabase and cache it in appState
+async function prefetchGoogleLink(sendId) {
+  if(!sb) {
+    // Supabase not ready yet — retry
+    setTimeout(function(){ prefetchGoogleLink(sendId); }, 300);
+    return;
+  }
+  try {
+    if(sendId) {
+      var r = await sb.from('sends').select('user_id').eq('id', sendId).single();
+      if(r.data) {
+        var pr = await sb.from('profiles').select('google_review_url').eq('id', r.data.user_id).single();
+        if(pr.data && pr.data.google_review_url) {
+          appState.googleLink = pr.data.google_review_url.trim();
+        }
+      }
+    }
+  } catch(e) {}
+}
+
 function selectStar(n){
   appState.selectedStar=n;
   document.querySelectorAll('.star-btn').forEach(function(s,i){s.classList.toggle('active',i<n);});
@@ -1125,7 +1186,7 @@ function selectStar(n){
     try{ var sv=localStorage.getItem('rbp_state'); if(sv){var ps=JSON.parse(sv);if(ps.googleLink)googleLink=ps.googleLink.trim();} }catch(e){}
     var isReal=googleLink&&googleLink!=='https://g.page/your-business/review'&&googleLink.indexOf('http')===0&&googleLink.length>15;
     if(isReal){ window.location.href=googleLink; }
-    else{ showScreen('screen-thanks'); document.getElementById('thanks-msg').textContent='Thank you for your positive rating! We appreciate your time.'; }
+    else{ showScreen('screen-thanks'); document.getElementById('thanks-msg').textContent='Thank you for your positive rating! We appreciate your time.'; history.replaceState(null,'',window.location.pathname); }
     // Track async after decision (fire and forget)
     trackEvent('rated',appState.currentSendId,n);
     trackEvent('google_redirect',appState.currentSendId,n);
@@ -1158,6 +1219,8 @@ async function submitFeedback(){
   }
   document.getElementById('thanks-msg').textContent='Thank you for sharing! We will use this to improve your experience.';
   showScreen('screen-thanks');
+  // Clear URL so refresh doesn't restart the funnel
+  history.replaceState(null, '', window.location.pathname);
 }
 
 function toggleTag(el){el.classList.toggle('active');}
