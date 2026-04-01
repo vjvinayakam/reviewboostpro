@@ -1044,7 +1044,7 @@ async function sendWhatsApp(){
     if(r.data)sendId=r.data.id;
   }
 
-  var reviewLink='https://vjvinayakam.github.io/reviewboostpro/?review=true';
+  var reviewLink='https://reviewboost.in/?review=true';
   if(sendId)reviewLink+='&sid='+sendId;
   reviewLink+='&biz='+encodeURIComponent(appState.bizName);
 
@@ -1073,7 +1073,7 @@ function testWhatsApp(){
   var phone=rawPhone.replace(/\D/g,'');
   var name=document.getElementById('cust-name').value.trim()||'Test Customer';
   if(!phone||phone.length<7){showToast('Enter a phone number first');return;}
-  var reviewLink='https://vjvinayakam.github.io/reviewboostpro/?review=true&biz='+encodeURIComponent(appState.bizName);
+  var reviewLink='https://reviewboost.in/?review=true&biz='+encodeURIComponent(appState.bizName);
   var template=document.getElementById('msg-template')?document.getElementById('msg-template').value:appState.messageTemplate;
   var msg=template.replace(/{name}/g,name).replace(/{business}/g,appState.bizName).replace(/{review_link}/g,reviewLink);
   var waUrl='https://wa.me/'+phone+'?text='+encodeURIComponent(msg);
@@ -1086,7 +1086,7 @@ function onGoogleLinkInput(){appState.googleLink=document.getElementById('google
 function updatePreview(){
   var name=document.getElementById('cust-name')?document.getElementById('cust-name').value||'Customer':'Customer';
   var template=document.getElementById('msg-template')?document.getElementById('msg-template').value:appState.messageTemplate;
-  var reviewLink='https://vjvinayakam.github.io/reviewboostpro/?review=true';
+  var reviewLink='reviewboost.in';
   var msg=template.replace(/{name}/g,'<em>'+name+'</em>').replace(/{business}/g,'<strong>'+appState.bizName+'</strong>').replace(/{review_link}/g,'<span class="wa-link">'+reviewLink+'</span>');
   var el=document.getElementById('wa-msg-preview');if(el)el.innerHTML=msg.replace(/\n/g,'<br>');
 }
