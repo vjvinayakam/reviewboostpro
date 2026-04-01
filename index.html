@@ -620,10 +620,7 @@ var SUPA_URL = 'https://cauqeiyzxyvpetntplkz.supabase.co';
 var SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNhdXFlaXl6eHl2cGV0bnRwbGt6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NzU5MjksImV4cCI6MjA5MDU1MTkyOX0.MSG8ThadxzV7CMcT4gl9Xj1lFdmTEKV--MB-JtBhegc';
 var sb = null;
 
-// ═══ HIDE PAGE UNTIL READY ═══
-document.documentElement.style.visibility = 'hidden';
-// Safety: always show page after 3 seconds no matter what
-setTimeout(function(){ document.documentElement.style.visibility='visible'; }, 3000);
+// Page always visible — no hiding
 
 // ═══ STATE ═══
 var appState = {
@@ -662,7 +659,7 @@ function initApp() {
     }
     // Supabase failed to load — show landing page anyway
     showScreen('screen-landing');
-    document.documentElement.style.visibility = 'visible';
+    
     return;
   }
 
@@ -681,7 +678,7 @@ function initApp() {
     var sl = document.getElementById('star-label'); if(sl) sl.textContent = 'Tap a star to rate';
     var sh = document.getElementById('star-hint'); if(sh) sh.textContent = '';
     var fb = document.getElementById('funnel-btn'); if(fb) { fb.classList.add('disabled'); fb.style.display = 'none'; }
-    document.documentElement.style.visibility = 'visible';
+    
     // Pre-fetch Google link from Supabase so redirect works instantly on mobile
     prefetchGoogleLink(sendId);
     return;
@@ -696,15 +693,15 @@ function initApp() {
         loadAndGoToDashboard();
       } else {
         showScreen('screen-landing');
-        document.documentElement.style.visibility = 'visible';
+        
       }
     }).catch(function() {
       showScreen('screen-landing');
-      document.documentElement.style.visibility = 'visible';
+      
     });
   } else {
     showScreen('screen-landing');
-    document.documentElement.style.visibility = 'visible';
+    
   }
 }
 
@@ -961,7 +958,7 @@ function showFunnel(){
 function goToDashboard(){
   showScreen('screen-dashboard');
   updateDashboard();
-  document.documentElement.style.visibility='visible';
+  
 }
 function switchAuthTab(tab){
   document.getElementById('tab-login').classList.toggle('active',tab==='login');
