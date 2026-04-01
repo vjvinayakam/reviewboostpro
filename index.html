@@ -622,6 +622,8 @@ var sb = null;
 
 // ═══ HIDE PAGE UNTIL READY ═══
 document.documentElement.style.visibility = 'hidden';
+// Safety: always show page after 3 seconds no matter what
+setTimeout(function(){ document.documentElement.style.visibility='visible'; }, 3000);
 
 // ═══ STATE ═══
 var appState = {
@@ -647,13 +649,20 @@ function saveState() {
 }
 
 // ═══ INIT ═══
+var _initRetries = 0;
 function initApp() {
   // Init Supabase - retry if CDN not loaded yet
   if(window.supabase && window.supabase.createClient) {
     sb = window.supabase.createClient(SUPA_URL, SUPA_KEY);
   } else {
-    // CDN not ready yet - retry in 200ms
-    setTimeout(initApp, 200);
+    _initRetries++;
+    if(_initRetries < 10) {
+      setTimeout(initApp, 200);
+      return;
+    }
+    // Supabase failed to load — show landing page anyway
+    showScreen('screen-landing');
+    document.documentElement.style.visibility = 'visible';
     return;
   }
 
