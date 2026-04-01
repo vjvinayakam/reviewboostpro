@@ -1194,7 +1194,6 @@ function selectStar(n){
       } else {
         showScreen('screen-thanks');
         document.getElementById('thanks-msg').textContent='Thank you for your positive rating! We appreciate your time.';
-        history.replaceState(null,'',window.location.pathname);
       }
     };
     if(_googleLinkReady) {
@@ -1232,7 +1231,6 @@ async function submitFeedback(){
   document.getElementById('thanks-msg').textContent='Thank you for sharing! We will use this to improve your experience.';
   showScreen('screen-thanks');
   // Clear URL so refresh doesn't restart the funnel
-  history.replaceState(null, '', window.location.pathname);
 }
 
 function toggleTag(el){el.classList.toggle('active');}
