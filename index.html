@@ -705,86 +705,82 @@ if(document.readyState === 'loading') {
 
 // ═══ SUPABASE FUNCTIONS ═══
 async function doSignup() {
-  var biz = document.getElementById('biz-name').value.trim();
+  var biz   = document.getElementById('biz-name').value.trim();
   var owner = document.getElementById('signup-owner').value.trim();
   var email = document.getElementById('signup-email').value.trim();
-  var pass = document.getElementById('signup-pass').value;
-  var err = document.getElementById('signup-error');
+  var pass  = document.getElementById('signup-pass').value;
+  var err   = document.getElementById('signup-error');
+
+  // Validate
   var valid = true;
-  ['fg-biz','fg-owner','fg-email','fg-pass'].forEach(function(id) {
-    var el = document.getElementById(id); if(el) el.classList.remove('has-error');
+  ['fg-biz','fg-owner','fg-email','fg-pass'].forEach(function(id){
+    var el=document.getElementById(id); if(el) el.classList.remove('has-error');
   });
   err.style.display = 'none';
-  if(!biz) { setFieldError('fg-biz','Please enter your business name.'); valid=false; }
-  if(!owner) { setFieldError('fg-owner','Please enter your name.'); valid=false; }
-  if(!email||!isValidEmail(email)) { setFieldError('fg-email','Please enter a valid email.'); valid=false; }
-  if(!pass||pass.length<6) { setFieldError('fg-pass','Password must be at least 6 characters.'); valid=false; }
-  if(!valid) { err.textContent='Please fix the errors above.'; err.style.display='block'; return; }
+  if(!biz)  { setFieldError('fg-biz','Please enter your business name.'); valid=false; }
+  if(!owner){ setFieldError('fg-owner','Please enter your name.'); valid=false; }
+  if(!email||!isValidEmail(email)){ setFieldError('fg-email','Please enter a valid email.'); valid=false; }
+  if(!pass||pass.length<6){ setFieldError('fg-pass','Password must be at least 6 characters.'); valid=false; }
+  if(!valid){ err.textContent='Please fix the errors above.'; err.style.display='block'; return; }
 
   var btn = document.getElementById('btn-signup');
-  btn.textContent = 'Creating account...'; btn.style.opacity='.7'; btn.style.pointerEvents='none';
+  btn.textContent='Creating account...'; btn.style.opacity='.7'; btn.style.pointerEvents='none';
 
-  if(!sb) {
-    err.textContent = 'Connection error. Please refresh the page and try again.';
-    err.style.display = 'block';
-    btn.textContent = 'Create account →'; btn.style.opacity='1'; btn.style.pointerEvents='auto';
+  // Check Supabase loaded
+  if(!sb){
+    err.textContent='Connection error. Please refresh and try again.';
+    err.style.display='block';
+    btn.textContent='Create account →'; btn.style.opacity='1'; btn.style.pointerEvents='auto';
     return;
   }
-  if(sb) {
-    // Store biz/owner in auth metadata — always works regardless of RLS
-    var result = await sb.auth.signUp({
-      email: email, password: pass,
-      options: { data: { full_name: owner, business_name: biz } }
+
+  // Step 1: Create auth user
+  var signupResult = await sb.auth.signUp({
+    email: email,
+    password: pass,
+    options: { data: { full_name: owner, business_name: biz } }
+  });
+
+  if(signupResult.error) {
+    var msg = signupResult.error.message || 'Signup failed';
+    if(msg.toLowerCase().includes('already registered') || msg.toLowerCase().includes('already exists')) {
+      msg = 'This email is already registered. Please sign in instead.';
+    }
+    err.textContent = msg; err.style.display='block';
+    btn.textContent='Create account →'; btn.style.opacity='1'; btn.style.pointerEvents='auto';
+    return;
+  }
+
+  // Step 2: Save biz name locally
+  appState.bizName = biz;
+  appState._pendingOwner = owner;
+  saveState();
+
+  // Step 3: Auto login immediately (email confirmation is OFF)
+  var loginResult = await sb.auth.signInWithPassword({ email: email, password: pass });
+
+  if(loginResult.error) {
+    // Signup worked but auto-login failed — send them to sign in tab
+    err.textContent = ''; err.style.display='none';
+    switchAuthTab('login');
+    document.getElementById('login-email').value = email;
+    showToast('Account created! Please sign in now.');
+    return;
+  }
+
+  // Step 4: Logged in — save profile and go to dashboard
+  appState.currentUser = loginResult.data.user;
+  try {
+    await sb.from('profiles').upsert({
+      id: appState.currentUser.id,
+      business_name: biz,
+      owner_name: owner
     });
-    if(result.error) {
-      var msg = result.error.message || 'Signup failed';
-      // Make common errors user-friendly
-      if(msg.toLowerCase().includes('already registered') || msg.toLowerCase().includes('already exists') || msg.toLowerCase().includes('duplicate')) {
-        msg = 'This email is already registered. Please sign in instead.';
-      } else if(msg.toLowerCase().includes('database')) {
-        msg = 'Account created! Please check your email to confirm, then sign in.';
-        // Auth user was created even if metadata save had issues
-        appState.bizName = biz; saveState();
-        showConfirmationScreen(email);
-        return;
-      }
-      err.textContent = msg; err.style.display='block';
-      btn.textContent='Create account →'; btn.style.opacity='1'; btn.style.pointerEvents='auto';
-      return;
-    }
-    // NOTE: Do NOT save to profiles table here — user email not confirmed yet
-    // Profile will be created on first login via loadAndGoToDashboard()
-  }
+  } catch(e) {}
 
-  appState.bizName = biz; saveState();
-  // Email confirmation is OFF — log user in immediately after signup
-  if(sb) {
-    var loginResult = await sb.auth.signInWithPassword({ email: email, password: pass });
-    if(loginResult.error) {
-      // Fallback: show sign in tab
-      switchAuthTab('login');
-      document.getElementById('login-email').value = email;
-      showToast('Account created! Please sign in.');
-      return;
-    }
-    appState.currentUser = loginResult.data.user;
-    await loadAndGoToDashboard();
-  }
+  await loadAndGoToDashboard();
 }
 
-function showConfirmationScreen(email) {
-  var formEl = document.getElementById('form-signup');
-  if(!formEl) return;
-  formEl.innerHTML = '';
-  var successDiv = document.createElement('div');
-  successDiv.style.cssText = 'background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:8px;padding:1.25rem;font-size:.88rem;line-height:1.8;color:var(--green-l);text-align:center;';
-  successDiv.innerHTML = '<strong>Check your inbox!</strong><br>We sent a confirmation link to<br><strong>' + email + '</strong><br><br>Click the link to activate, then sign in below.';
-  var goBtn = document.createElement('button');
-  goBtn.className = 'btn-auth'; goBtn.style.marginTop = '.75rem';
-  goBtn.textContent = 'Go to Sign in';
-  goBtn.addEventListener('click', function() { switchAuthTab('login'); });
-  formEl.appendChild(successDiv); formEl.appendChild(goBtn);
-}
 
 async function doLogin() {
   var email = document.getElementById('login-email').value.trim();
