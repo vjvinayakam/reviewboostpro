@@ -670,6 +670,9 @@ function initApp() {
     var bizParam = params.get('biz') || null;
     appState.currentSendId = sendId;
     if(bizParam) appState.bizName = decodeURIComponent(bizParam);
+    // Read google link directly from URL param — no Supabase fetch needed
+    var glParam = params.get('gl');
+    if(glParam) appState.googleLink = decodeURIComponent(glParam);
     trackEvent('opened', sendId);
     showScreen('screen-funnel');
     var bn = document.getElementById('funnel-biz-name');
@@ -1056,6 +1059,8 @@ async function sendWhatsApp(){
   var reviewLink='https://reviewboost.in/?review=true';
   if(sendId)reviewLink+='&sid='+sendId;
   reviewLink+='&biz='+encodeURIComponent(appState.bizName);
+  // Embed google link directly in URL so customer device never needs to fetch it
+  if(appState.googleLink) reviewLink+='&gl='+encodeURIComponent(appState.googleLink);
 
   var template=document.getElementById('msg-template').value||appState.messageTemplate;
   var msg=template.replace(/{name}/g,name).replace(/{business}/g,appState.bizName).replace(/{review_link}/g,reviewLink);
