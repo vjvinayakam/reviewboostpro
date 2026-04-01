@@ -1243,4 +1243,10 @@ function toggleTag(el){el.classList.toggle('active');}
 
 function showToast(msg){
   var t=document.getElementById('toast');
-  document.getElem
+  document.getElementById('toast-msg').textContent=msg;
+  t.classList.add('show');
+  setTimeout(function(){t.classList.remove('show');},3000);
+}
+</script>
+</body>
+</html>
