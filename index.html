@@ -261,10 +261,11 @@ tr:hover td{background:rgba(34,197,94,.03);}
 .wa-time{font-size:.65rem;color:rgba(0,0,0,.35);text-align:right;margin-top:.3rem;}
 .wa-link{color:var(--green-d);text-decoration:underline;}
 @media(max-width:768px){
-  nav{padding:.75rem 1rem;flex-wrap:nowrap;gap:.5rem;}.nav-links{display:none;}
-  .btn-ghost-nav{padding:.45rem .8rem;font-size:.75rem;}
-  .btn-nav{padding:.45rem .9rem;font-size:.75rem;}
-  .nav-logo{font-size:1rem;}
+  nav{padding:.7rem 1rem;gap:.5rem;}.nav-links{display:none;}
+  .nav-logo{font-size:.95rem;letter-spacing:-.01em;}
+  .logo-dot{width:7px;height:7px;}
+  .btn-ghost-nav{padding:.4rem .75rem;font-size:.72rem;border-radius:5px;}
+  .btn-nav{padding:.4rem .85rem;font-size:.72rem;border-radius:5px;white-space:nowrap;}
   .hero{padding:5rem 1.2rem 3rem;}.hero h1{font-size:2.4rem;}.hero-mockup{display:none;}
   .section{padding:3rem 1.2rem;}.how-steps,.feat-grid,.price-grid{grid-template-columns:1fr;}
   .step-connector{display:none;}.footer-top{grid-template-columns:1fr;gap:2rem;}
@@ -877,20 +878,26 @@ async function loadStats() {
   if(!sb || !appState.currentUser) return;
   var uid = appState.currentUser.id;
   var s = await sb.from('sends').select('*').eq('user_id', uid).order('sent_at',{ascending:false}).limit(50);
-  var e = await sb.from('events').select('*').eq('user_id', uid);
   var f = await sb.from('feedback').select('*').eq('user_id', uid).order('received_at',{ascending:false}).limit(20);
   if(s.data) {
     appState.sends = s.data.map(function(x) {
       return { id:x.id, name:x.customer_name, phone:x.customer_phone,
         time: new Date(x.sent_at).toLocaleString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}),
-        status:x.status, rating:x.rating||0 };
+        status:x.status||'Sent', rating:x.rating||0 };
     });
     appState.stats.sent = s.data.length;
+    // Count stats from sends table directly (more reliable than events)
+    appState.stats.reviews = s.data.filter(function(x){return x.status==='Reviewed'&&(x.rating||0)>=4;}).length;
   }
-  if(e.data) {
+  // Get events for opened/feedback counts
+  var e = await sb.from('events').select('event_type,send_id').eq('user_id', uid);
+  if(e.data && e.data.length > 0) {
     appState.stats.opened = e.data.filter(function(x){return x.event_type==='opened';}).length;
     appState.stats.reviews = e.data.filter(function(x){return x.event_type==='google_redirect';}).length;
     appState.stats.feedback = e.data.filter(function(x){return x.event_type==='feedback_submitted';}).length;
+  } else {
+    // Fallback: count from feedback table
+    appState.stats.feedback = f.data ? f.data.length : 0;
   }
   if(f.data && f.data.length > 0) renderInbox(f.data);
 }
@@ -937,10 +944,13 @@ async function trackEvent(type, sendId, rating) {
     if(appState.currentUser) {
       payload.user_id = appState.currentUser.id;
     } else if(sendId) {
+      // Customer visit — get owner's user_id from send record
       var r = await sb.from('sends').select('user_id').eq('id',sendId).single();
-      if(r.data) payload.user_id = r.data.user_id;
+      if(r.data && r.data.user_id) payload.user_id = r.data.user_id;
     }
-    await sb.from('events').insert(payload);
+    if(payload.user_id) {
+      await sb.from('events').insert(payload);
+    }
   } catch(e) {}
 }
 
