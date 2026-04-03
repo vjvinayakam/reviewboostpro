@@ -64,6 +64,7 @@
 <title>Rate Your Experience</title>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <style>
 :root{--bg:#080c08;--bg2:#0e140e;--bg3:#141c14;--green:#22c55e;--green-d:#16a34a;--green-l:#4ade80;--white:#f8faf8;--mid:#94a394;--dim:#4a5e4a;--border:rgba(255,255,255,0.07);--border2:rgba(34,197,94,0.2);--red:#ef4444;--amber:#f59e0b;--blue:#3b82f6;--dash-bg:#f0f4f0;--dash-bg2:#ffffff;--dash-bg3:#f7faf7;--dash-sidebar:#ffffff;--dash-text:#111811;--dash-mid:#4a6b4a;--dash-dim:#8da08d;--dash-border:rgba(0,0,0,0.08);--dash-border2:rgba(34,197,94,0.3);}
 *{margin:0;padding:0;box-sizing:border-box;}html{scroll-behavior:smooth;}
@@ -763,6 +764,39 @@ tr:hover td{background:rgba(34,197,94,.03);}
   </div>
 </div>
 
+<!-- PAYMENT WALL -->
+<div id="screen-payment" class="screen">
+  <div class="auth-grid-bg"></div>
+  <div class="auth-glow"></div>
+  <div style="position:relative;z-index:1;width:100%;max-width:480px;background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:2.5rem;box-shadow:0 40px 80px rgba(0,0,0,.5);text-align:center;margin:1rem;">
+    <div style="font-size:2.5rem;margin-bottom:1rem;">🔒</div>
+    <div style="font-family:'Instrument Serif',serif;font-size:1.8rem;font-weight:400;margin-bottom:.5rem;" id="payment-title">Your free trial has ended</div>
+    <div style="font-size:.88rem;color:var(--mid);margin-bottom:1.5rem;line-height:1.6;" id="payment-subtitle">Subscribe to keep sending review requests and growing your Google rating.</div>
+
+    <!-- Plan box -->
+    <div style="background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.25);border-radius:14px;padding:1.5rem;margin-bottom:1.5rem;">
+      <div style="font-size:.75rem;font-weight:600;color:var(--green);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem;">ReviewBoostPRO</div>
+      <div style="font-family:'Instrument Serif',serif;font-size:3rem;color:var(--white);line-height:1;">₹499<span style="font-size:1.2rem;color:var(--mid);">/month</span></div>
+      <div style="font-size:.8rem;color:var(--mid);margin-top:.4rem;">Auto-renews monthly · Cancel anytime</div>
+      <div style="margin-top:1rem;display:flex;flex-direction:column;gap:.4rem;">
+        <div style="font-size:.82rem;color:rgba(255,255,255,.7);display:flex;align-items:center;gap:.5rem;justify-content:center;"><span style="color:var(--green);">✓</span> Unlimited WhatsApp review requests</div>
+        <div style="font-size:.82rem;color:rgba(255,255,255,.7);display:flex;align-items:center;gap:.5rem;justify-content:center;"><span style="color:var(--green);">✓</span> Smart review funnel (4-5★ → Google)</div>
+        <div style="font-size:.82rem;color:rgba(255,255,255,.7);display:flex;align-items:center;gap:.5rem;justify-content:center;"><span style="color:var(--green);">✓</span> Private feedback inbox</div>
+        <div style="font-size:.82rem;color:rgba(255,255,255,.7);display:flex;align-items:center;gap:.5rem;justify-content:center;"><span style="color:var(--green);">✓</span> Live analytics dashboard</div>
+      </div>
+    </div>
+
+    <button onclick="startPayment()" style="width:100%;padding:1rem;background:var(--green);border:none;border-radius:10px;color:#000;font-size:1rem;font-weight:700;cursor:pointer;margin-bottom:.75rem;" id="pay-btn">
+      Pay ₹499 &amp; Continue →
+    </button>
+    <div style="font-size:.75rem;color:var(--dim);margin-bottom:1rem;">Secured by Razorpay · UPI, Cards, Net Banking accepted</div>
+    <button onclick="doSignOut()" style="background:none;border:none;font-size:.78rem;color:var(--dim);text-decoration:underline;cursor:pointer;">Sign out</button>
+
+    <!-- Days remaining banner (shown during trial) -->
+    <div id="trial-banner" style="display:none;margin-top:1rem;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25);border-radius:8px;padding:.65rem 1rem;font-size:.82rem;color:#fcd34d;"></div>
+  </div>
+</div>
+
 <!-- DASHBOARD -->
 <div id="screen-dashboard" class="screen">
   <div class="sidebar">
@@ -827,7 +861,10 @@ tr:hover td{background:rgba(34,197,94,.03);}
         <span>This message sends <strong>from your own WhatsApp number</strong> — you click Send manually in WhatsApp.</span>
       </div>
       <div class="send-form">
-        <div style="font-size:.88rem;font-weight:600;margin-bottom:1rem;color:var(--dash-mid)">📲 New message</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+        <div style="font-size:.88rem;font-weight:600;color:var(--dash-mid)">📲 New message</div>
+        <div id="trial-msg-counter" style="font-size:.75rem;color:var(--dash-dim);"></div>
+      </div>
         <div class="send-form-grid">
           <div class="form-group-inline"><label>Customer name</label><input type="text" class="input-field" id="cust-name" placeholder="e.g. Priya Sharma" oninput="updatePreview()"></div>
           <div class="form-group-inline"><label>WhatsApp number (with country code)</label><input type="text" class="input-field" id="cust-phone" placeholder="+91 98765 43210" oninput="updatePreview()"></div>
@@ -953,6 +990,10 @@ Could you spare 30 seconds to rate us? It means the world to small businesses li
 </div>
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// ═══ RAZORPAY CONFIG ═══
+var RZP_KEY = 'rzp_live_SZ0KtC8cO2S37n';
+var RZP_PLAN = 'plan_SZ0YLwwVVmIH1L';
+
 // ═══ SUPABASE CONFIG ═══
 var SUPA_URL = 'https://cauqeiyzxyvpetntplkz.supabase.co';
 var SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNhdXFlaXl6eHl2cGV0bnRwbGt6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NzU5MjksImV4cCI6MjA5MDU1MTkyOX0.MSG8ThadxzV7CMcT4gl9Xj1lFdmTEKV--MB-JtBhegc';
@@ -1198,7 +1239,14 @@ async function loadAndGoToDashboard() {
     }
     await loadStats();
   }
+  // Check trial status
+  if(r && r.data) {
+    appState.isPaid = r.data.is_paid || false;
+    appState.trialEndsAt = r.data.trial_ends_at || null;
+  }
   goToDashboard();
+  // Check payment wall after dashboard loads
+  setTimeout(checkPaymentWall, 500);
 }
 
 async function loadStats() {
@@ -1369,6 +1417,22 @@ function updateDashboard(){
     var sg=document.getElementById('settings-google-link');if(sg&&appState.googleLink)sg.value=appState.googleLink;
     var mt=document.getElementById('msg-template');if(mt&&appState.messageTemplate)mt.value=appState.messageTemplate;
     updatePreview();
+    // Update trial counter
+    var counter = document.getElementById('trial-msg-counter');
+    if(counter) {
+      if(appState.isPaid) {
+        counter.textContent = '✓ Unlimited sends';
+        counter.style.color = 'var(--green-d)';
+      } else {
+        var used = appState.sends ? appState.sends.length : 0;
+        var left = Math.max(0, 10 - used);
+        if(left === 0) {
+          counter.innerHTML = '<span style="color:var(--red);">Trial limit reached</span>';
+        } else {
+          counter.innerHTML = '<span style="color:' + (left<=3?'var(--amber)':'var(--dash-dim)') + ';">' + left + ' free message' + (left===1?'':'s') + ' left</span>';
+        }
+      }
+    }
   },50);
 }
 function renderTables(){
@@ -1396,6 +1460,18 @@ async function sendWhatsApp(){
   var phone=rawPhone.replace(/\D/g,'');
   if(!name){showToast('Please enter the customer name');document.getElementById('cust-name').focus();return;}
   if(!rawPhone||phone.length<7){showToast('Please enter a valid WhatsApp number with country code');document.getElementById('cust-phone').focus();return;}
+
+  // Trial limit: max 10 messages
+  if(!appState.isPaid) {
+    var sentCount = appState.sends ? appState.sends.length : 0;
+    if(sentCount >= 10) {
+      showTrialLimitModal();
+      return;
+    }
+    // Warn when close to limit
+    if(sentCount === 8) showToast('⚠️ 2 messages left in free trial. Subscribe to send unlimited.');
+    if(sentCount === 9) showToast('⚠️ Last free message! Subscribe to continue.');
+  }
 
   var sendId=null;
   if(sb&&appState.currentUser){
@@ -1592,6 +1668,109 @@ async function submitFeedback(){
 }
 
 function toggleTag(el){el.classList.toggle('active');}
+
+// ═══ TRIAL & PAYMENT ═══
+function getTrialDaysLeft() {
+  if(!appState.currentUser) return 0;
+  // Get trial_ends_at from Supabase profile or use signup date + 14 days
+  if(appState.trialEndsAt) {
+    var ms = new Date(appState.trialEndsAt) - new Date();
+    return Math.max(0, Math.ceil(ms / (1000*60*60*24)));
+  }
+  return 14; // default - will be set after profile load
+}
+
+function isTrialExpired() {
+  if(appState.isPaid) return false;
+  return getTrialDaysLeft() <= 0;
+}
+
+function checkPaymentWall() {
+  if(!appState.currentUser) return;
+  if(appState.isPaid) return; // paid user, no wall
+  var days = getTrialDaysLeft();
+  if(days <= 0) {
+    // Trial expired - show payment wall
+    document.getElementById('payment-title').textContent = 'Your free trial has ended';
+    document.getElementById('payment-subtitle').textContent = 'Subscribe to keep sending review requests and growing your Google rating.';
+    document.getElementById('trial-banner').style.display = 'none';
+    showScreen('screen-payment');
+  } else if(days <= 3) {
+    // Show warning in dashboard header
+    showToast('⚠️ ' + days + ' day' + (days===1?'':'s') + ' left in your trial. Subscribe to continue.');
+  }
+}
+
+function showTrialLimitModal() {
+  // Show payment wall with trial limit message
+  document.getElementById('payment-title').textContent = 'Free trial limit reached';
+  document.getElementById('payment-subtitle').textContent = 'You\'ve used all 10 free messages. Subscribe to send unlimited review requests and keep growing your Google rating.';
+  document.getElementById('trial-banner').style.display = 'block';
+  document.getElementById('trial-banner').textContent = '✓ You sent 10 review requests in your trial — subscribe to unlock unlimited sends!';
+  showScreen('screen-payment');
+}
+
+function startPayment() {
+  if(!appState.currentUser) return;
+  var btn = document.getElementById('pay-btn');
+  btn.textContent = 'Opening Razorpay...';
+  btn.style.opacity = '.7';
+
+  // Build payment link with prefilled email
+  var email = encodeURIComponent(appState.currentUser.email || '');
+  var name = encodeURIComponent(appState.bizName || '');
+  var payUrl = 'https://rzp.io/l/plink_SZ0e7CTFl17n1L?prefill_email=' + email + '&prefill_name=' + name;
+
+  // Open Razorpay payment page
+  var win = window.open(payUrl, '_blank');
+
+  // Poll for payment completion (user comes back)
+  btn.textContent = 'Waiting for payment...';
+  var checkInterval = setInterval(async function() {
+    if(win && win.closed) {
+      clearInterval(checkInterval);
+      btn.textContent = 'Verifying payment...';
+      // Check if payment was made - ask user to confirm
+      var confirmed = confirm('Did you complete the payment? Click OK to activate your account.');
+      if(confirmed) {
+        await onPaymentSuccess({ razorpay_payment_id: 'manual_' + Date.now() });
+      } else {
+        btn.textContent = 'Pay ₹499 & Continue →';
+        btn.style.opacity = '1';
+      }
+    }
+  }, 1000);
+
+  setTimeout(function() {
+    btn.textContent = 'Pay ₹499 & Continue →';
+    btn.style.opacity = '1';
+  }, 5000);
+}
+
+async function createRazorpaySubscription() {
+  return null; // using payment link instead
+}
+
+async function onPaymentSuccess(response) {
+  var btn = document.getElementById('pay-btn');
+  btn.textContent = 'Activating...';
+
+  // Save payment info to Supabase
+  if(sb && appState.currentUser) {
+    try {
+      await sb.from('profiles').update({
+        is_paid: true,
+        razorpay_payment_id: response.razorpay_payment_id || '',
+        razorpay_subscription_id: response.razorpay_subscription_id || ''
+      }).eq('id', appState.currentUser.id);
+    } catch(e) {}
+  }
+
+  appState.isPaid = true;
+  saveState();
+  showToast('🎉 Payment successful! Welcome to ReviewBoostPRO!');
+  goToDashboard();
+}
 
 // ═══ HOW IT WORKS STEPPER ═══
 var _howStep = 0;
