@@ -810,6 +810,13 @@ tr:hover td{background:rgba(34,197,94,.03);}
     <div class="sb-section">Account</div>
     <div class="sb-item" onclick="switchPanel('settings')"><span class="sb-icon">⚙️</span> Settings</div>
     <div class="sb-bottom">
+      <!-- Upgrade button - hidden if paid -->
+      <div id="sb-upgrade-btn" style="margin-bottom:1rem;display:block;">
+        <button onclick="showTrialLimitModal()" style="width:100%;padding:.65rem;background:linear-gradient(135deg,var(--green),var(--green-d));border:none;border-radius:8px;color:#000;font-size:.78rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.4rem;">
+          ⚡ Upgrade to Pro — ₹499/mo
+        </button>
+        <div id="sb-trial-left" style="text-align:center;font-size:.68rem;color:var(--dash-dim);margin-top:.35rem;"></div>
+      </div>
       <div class="sb-user">
         <div class="sb-avatar" id="sb-avatar-text">BS</div>
         <div><div class="sb-user-name" id="sb-user-name">Business Owner</div><div class="sb-user-email" id="sb-user-email"></div></div>
@@ -1410,6 +1417,25 @@ function updateDashboard(){
   document.getElementById('sb-avatar-text').textContent=initials;
   var emailEl=document.getElementById('sb-user-email');
   if(emailEl&&appState.currentUser)emailEl.textContent=appState.currentUser.email||'';
+  // Show/hide upgrade button
+  var upgradeBtn = document.getElementById('sb-upgrade-btn');
+  var trialLeft = document.getElementById('sb-trial-left');
+  if(upgradeBtn) {
+    if(appState.isPaid) {
+      upgradeBtn.style.display = 'none';
+    } else {
+      upgradeBtn.style.display = 'block';
+      var used = appState.sends ? appState.sends.length : 0;
+      var left = Math.max(0, 10 - used);
+      if(trialLeft) {
+        if(left === 0) {
+          trialLeft.innerHTML = '<span style="color:var(--red);">Trial limit reached!</span>';
+        } else {
+          trialLeft.textContent = left + ' free message' + (left===1?'':'s') + ' remaining';
+        }
+      }
+    }
+  }
   renderTables();animateStats();
   setTimeout(function(){
     var gl=document.getElementById('google-review-link');if(gl&&appState.googleLink)gl.value=appState.googleLink;
