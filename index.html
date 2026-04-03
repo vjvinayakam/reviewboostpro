@@ -76,7 +76,7 @@ input,textarea,select{font-family:'Geist',sans-serif;}
 .cur{position:fixed;width:10px;height:10px;background:var(--green);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);}
 .cur-ring{position:fixed;width:36px;height:36px;border:1px solid rgba(34,197,94,0.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:left .12s ease,top .12s ease;}
 .screen{display:none;min-height:100vh;}.screen.active{display:block;}
-#screen-funnel.active,#screen-feedback.active,#screen-auth.active{display:flex!important;}
+#screen-funnel.active,#screen-feedback.active,#screen-auth.active,#screen-payment.active{display:flex!important;}
 #screen-thanks.active{display:flex!important;align-items:center;justify-content:center;}
 nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:1.1rem 5rem;border-bottom:1px solid var(--border);background:rgba(8,12,8,0.85);backdrop-filter:blur(20px);}
 .nav-logo{display:flex;align-items:center;gap:.6rem;font-size:1.15rem;font-weight:700;}
@@ -765,7 +765,7 @@ tr:hover td{background:rgba(34,197,94,.03);}
 </div>
 
 <!-- PAYMENT WALL -->
-<div id="screen-payment" class="screen">
+<div id="screen-payment" class="screen" style="min-height:100vh;display:none;align-items:center;justify-content:center;background:var(--bg);position:relative;">
   <div class="auth-grid-bg"></div>
   <div class="auth-glow"></div>
   <div style="position:relative;z-index:1;width:100%;max-width:480px;background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:2.5rem;box-shadow:0 40px 80px rgba(0,0,0,.5);text-align:center;margin:1rem;">
@@ -1745,7 +1745,7 @@ function startPayment() {
   // Build payment link with prefilled email
   var email = encodeURIComponent(appState.currentUser.email || '');
   var name = encodeURIComponent(appState.bizName || '');
-  var payUrl = 'https://rzp.io/l/plink_SZ0e7CTFl17n1L?prefill_email=' + email + '&prefill_name=' + name;
+  var payUrl = 'https://rzp.io/l/plink_SZ0e7CTFl17n1L';
 
   // Open Razorpay payment page
   var win = window.open(payUrl, '_blank');
