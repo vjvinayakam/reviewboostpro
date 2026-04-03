@@ -810,9 +810,9 @@ tr:hover td{background:rgba(34,197,94,.03);}
     <div class="sb-section">Account</div>
     <div class="sb-item" onclick="switchPanel('settings')"><span class="sb-icon">⚙️</span> Settings</div>
     <div class="sb-bottom">
-      <!-- Upgrade button - hidden if paid -->
+      <!-- Payment button - always visible -->
       <div id="sb-upgrade-btn" style="margin-bottom:1rem;display:block;">
-        <button onclick="showTrialLimitModal()" style="width:100%;padding:.65rem;background:linear-gradient(135deg,var(--green),var(--green-d));border:none;border-radius:8px;color:#000;font-size:.78rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.4rem;">
+        <button onclick="showTrialLimitModal()" id="sb-pay-btn" style="width:100%;padding:.65rem;background:linear-gradient(135deg,var(--green),var(--green-d));border:none;border-radius:8px;color:#000;font-size:.78rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.4rem;">
           ⚡ Upgrade to Pro — ₹499/mo
         </button>
         <div id="sb-trial-left" style="text-align:center;font-size:.68rem;color:var(--dash-dim);margin-top:.35rem;"></div>
@@ -1417,16 +1417,19 @@ function updateDashboard(){
   document.getElementById('sb-avatar-text').textContent=initials;
   var emailEl=document.getElementById('sb-user-email');
   if(emailEl&&appState.currentUser)emailEl.textContent=appState.currentUser.email||'';
-  // Show/hide upgrade button
+  // Always show payment button
   var upgradeBtn = document.getElementById('sb-upgrade-btn');
   var trialLeft = document.getElementById('sb-trial-left');
+  var payBtn = document.getElementById('sb-pay-btn');
   if(upgradeBtn) {
+    upgradeBtn.style.display = 'block';
+    var used = appState.stats.sent || (appState.sends ? appState.sends.length : 0);
+    var left = Math.max(0, 10 - used);
     if(appState.isPaid) {
-      upgradeBtn.style.display = 'none';
+      if(payBtn) { payBtn.textContent = '✓ Pro Plan Active'; payBtn.style.background = 'rgba(34,197,94,.15)'; payBtn.style.color = 'var(--green-d)'; payBtn.onclick = null; payBtn.style.cursor = 'default'; }
+      if(trialLeft) trialLeft.textContent = 'Unlimited sends active';
     } else {
-      upgradeBtn.style.display = 'block';
-      var used = appState.sends ? appState.sends.length : 0;
-      var left = Math.max(0, 10 - used);
+      if(payBtn) { payBtn.innerHTML = '⚡ Upgrade to Pro — ₹499/mo'; payBtn.onclick = showTrialLimitModal; }
       if(trialLeft) {
         if(left === 0) {
           trialLeft.innerHTML = '<span style="color:var(--red);">Trial limit reached!</span>';
@@ -1489,7 +1492,7 @@ async function sendWhatsApp(){
 
   // Trial limit: max 10 messages
   if(!appState.isPaid) {
-    var sentCount = appState.sends ? appState.sends.length : 0;
+    var sentCount = appState.stats.sent || (appState.sends ? appState.sends.length : 0);
     if(sentCount >= 10) {
       showTrialLimitModal();
       return;
