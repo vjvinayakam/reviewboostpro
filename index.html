@@ -24,9 +24,9 @@
 *{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;}
 body{font-family:'Inter',sans-serif;background:#ffffff;color:#0a0a0a;overflow-x:hidden;}
-#screen-auth,#screen-dashboard,#screen-funnel,#screen-feedback,#screen-thanks{display:none;}
+#screen-auth,#screen-dashboard,#screen-funnel,#screen-feedback,#screen-thanks,#screen-customer-funnel{display:none;}
 #screen-landing{display:block;}
-#screen-auth.active,#screen-funnel.active,#screen-feedback.active,#screen-thanks.active{display:flex;position:fixed;inset:0;z-index:2000;overflow-y:auto;align-items:center;justify-content:center;background:#0d1117;}
+#screen-auth.active,#screen-funnel.active,#screen-feedback.active,#screen-thanks.active,#screen-customer-funnel.active{display:flex;position:fixed;inset:0;z-index:2000;overflow-y:auto;align-items:center;justify-content:center;background:#0d1117;}
 #screen-dashboard.active{display:flex;position:fixed;inset:0;z-index:2000;overflow:hidden;background:#0d1117;}
 
 /* ── CSS VARIABLES ── */
@@ -1026,6 +1026,32 @@ Could you spare 30 seconds to rate us? It means the world to small businesses li
     </button>
   </div>
 </div>
+
+<!-- CUSTOMER REVIEW SCREEN (real customer visits via WhatsApp link) -->
+<div id="screen-customer-funnel" class="screen">
+  <div class="auth-grid-bg"></div>
+  <div style="width:100%;max-width:420px;margin:0 auto;padding:2rem 1.25rem;position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;justify-content:center;">
+    <div style="text-align:center;margin-bottom:2rem;">
+      <div style="width:64px;height:64px;border-radius:18px;background:linear-gradient(135deg,#25D366,#16a34a);display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:800;color:#fff;margin:0 auto 1rem;" id="customer-avatar">MB</div>
+      <div style="font-size:1rem;font-weight:700;color:rgba(240,246,252,.8);" id="customer-biz-name">My Business</div>
+    </div>
+    <div style="background:#161b22;border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:2rem;text-align:center;margin-bottom:1.5rem;">
+      <div style="font-size:1.6rem;font-weight:800;color:#f0f6fc;margin-bottom:.5rem;">How was your visit?</div>
+      <div style="font-size:.88rem;color:rgba(240,246,252,.45);margin-bottom:1.75rem;">Tap a star to rate your experience</div>
+      <div style="display:flex;justify-content:center;gap:.75rem;margin-bottom:1.25rem;" id="customer-star-row">
+        <button onclick="customerSelectStar(1)" style="font-size:2.5rem;background:none;border:none;cursor:pointer;padding:.1rem;transition:transform .15s;line-height:1;" id="cstar-1">⭐</button>
+        <button onclick="customerSelectStar(2)" style="font-size:2.5rem;background:none;border:none;cursor:pointer;padding:.1rem;transition:transform .15s;line-height:1;" id="cstar-2">⭐</button>
+        <button onclick="customerSelectStar(3)" style="font-size:2.5rem;background:none;border:none;cursor:pointer;padding:.1rem;transition:transform .15s;line-height:1;" id="cstar-3">⭐</button>
+        <button onclick="customerSelectStar(4)" style="font-size:2.5rem;background:none;border:none;cursor:pointer;padding:.1rem;transition:transform .15s;line-height:1;" id="cstar-4">⭐</button>
+        <button onclick="customerSelectStar(5)" style="font-size:2.5rem;background:none;border:none;cursor:pointer;padding:.1rem;transition:transform .15s;line-height:1;" id="cstar-5">⭐</button>
+      </div>
+      <div style="font-size:.88rem;color:rgba(240,246,252,.5);min-height:1.5em;" id="customer-star-label">Tap a star above</div>
+      <button id="customer-continue-btn" onclick="customerContinue()" style="display:none;width:100%;margin-top:1.25rem;padding:1rem;background:#25D366;border:none;border-radius:12px;font-size:1rem;font-weight:700;color:#fff;cursor:pointer;box-shadow:0 4px 16px rgba(37,211,102,.3);">Continue →</button>
+    </div>
+    <div style="text-align:center;font-size:.72rem;color:rgba(240,246,252,.2);">Powered by ReviewBoostPRO</div>
+  </div>
+</div>
+
 <div id="screen-funnel" class="screen">
   <div class="auth-grid-bg"></div><div class="auth-glow"></div>
 
@@ -1118,6 +1144,42 @@ function demoSelectStar(n) {
     pathHigh.style.background = 'rgba(37,211,102,.08)';
   }
 }
+
+// ── REAL CUSTOMER FUNNEL ──
+function customerSelectStar(n) {
+  appState.selectedStar = n;
+  for(var i=1;i<=5;i++){
+    var s=document.getElementById('cstar-'+i);
+    if(s){s.style.opacity=i<=n?'1':'0.25';s.style.transform=i<=n?'scale(1.1)':'scale(1)';}
+  }
+  // Set avatar initials from business name
+  var bn=document.getElementById('customer-biz-name');
+  var av=document.getElementById('customer-avatar');
+  if(av&&bn) av.textContent=(bn.textContent||'MB').replace(/[^a-zA-Z ]/g,'').trim().split(' ').slice(0,2).map(function(w){return w[0]||'';}).join('').toUpperCase()||'MB';
+
+  var label=document.getElementById('customer-star-label');
+  var btn=document.getElementById('customer-continue-btn');
+  if(label){
+    if(n<=3) label.innerHTML='<span style="color:#fb923c;">'+n+' star'+(n>1?'s':'')+'</span> — we\'d love your feedback';
+    else label.innerHTML='<span style="color:#4ade80;">'+n+' star'+(n>1?'s':'')+'</span> — thank you!';
+  }
+  if(btn) btn.style.display='block';
+}
+function customerContinue(){
+  var n=appState.selectedStar;
+  if(!n) return;
+  if(n>=4){
+    trackEvent('rated',appState.currentSendId,n);
+    trackEvent('google_redirect',appState.currentSendId,n);
+    var gl=appState.googleLink||'https://search.google.com/local/writereview';
+    window.location.href=gl;
+  } else {
+    trackEvent('rated',appState.currentSendId,n);
+    showScreen('screen-feedback');
+    var fi=document.getElementById('feedback-text');if(fi)fi.value='';
+    document.querySelectorAll('.tag-btn').forEach(function(b){b.classList.remove('active');});
+  }
+}
 </script>
 
 <!-- FEEDBACK -->
@@ -1203,24 +1265,18 @@ function initApp() {
 
   var params = new URLSearchParams(window.location.search);
   if(params.get('review') === 'true') {
-    // Customer review flow
+    // Customer review flow — show clean customer screen (not demo)
     var sendId = params.get('sid') || null;
     var bizParam = params.get('biz') || null;
     appState.currentSendId = sendId;
     if(bizParam) appState.bizName = decodeURIComponent(bizParam);
-    // Read google link directly from URL param — no Supabase fetch needed
     var glParam = params.get('gl');
     if(glParam) appState.googleLink = decodeURIComponent(glParam);
     trackEvent('opened', sendId);
-    showScreen('screen-funnel');
-    var bn = document.getElementById('funnel-biz-name');
+    showScreen('screen-customer-funnel');
+    var bn = document.getElementById('customer-biz-name');
     if(bn) bn.textContent = appState.bizName || 'My Business';
     appState.selectedStar = 0;
-    var sl = document.getElementById('star-label'); if(sl) sl.textContent = 'Tap a star to rate';
-    var sh = document.getElementById('star-hint'); if(sh) sh.textContent = '';
-    var fb = document.getElementById('funnel-btn'); if(fb) { fb.classList.add('disabled'); fb.style.display = 'none'; }
-    
-    // Pre-fetch Google link from Supabase so redirect works instantly on mobile
     prefetchGoogleLink(sendId);
     return;
   }
@@ -1501,7 +1557,8 @@ function showScreen(id) {
     } else {
       // Full-page overlay
       t.style.cssText = 'display:flex;position:fixed;inset:0;z-index:2000;overflow-y:auto;' +
-        (id === 'screen-dashboard' ? 'overflow:hidden;' : 'align-items:center;justify-content:center;');
+        (id === 'screen-dashboard' ? 'overflow:hidden;' : 'align-items:center;justify-content:center;') +
+        'background:#0d1117;';
     }
     t.classList.add('active');
   }
