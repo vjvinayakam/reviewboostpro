@@ -106,6 +106,13 @@ body{font-family:'Inter',sans-serif;background:#ffffff;color:#0a0a0a;overflow-x:
 .sb-bottom{margin-top:auto;padding:1rem 1.25rem;border-top:1px solid #f0f0f0;}
 .notif-dot{width:7px;height:7px;border-radius:50%;background:#ef4444;margin-left:auto;}
 .main-area{flex:1;overflow-y:auto;background:#f5f7fa;display:flex;flex-direction:column;}
+.dash-main{flex:1;overflow-y:auto;background:#f5f7fa;display:flex;flex-direction:column;}
+.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin-bottom:1.5rem;}
+.stat-card{background:#fff;border:1px solid #e8ecf0;border-radius:14px;padding:1.25rem;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+.stat-label{font-size:.72rem;font-weight:600;color:#9ca3af;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.4rem;}
+.stat-value{font-size:2rem;font-weight:900;color:#0a0a0a;line-height:1;margin-bottom:.2rem;}
+.stat-change{font-size:.72rem;color:#9ca3af;}
+@media(max-width:420px){.stats-grid{grid-template-columns:1fr 1fr;gap:.6rem;}.stat-value{font-size:1.6rem;}.stat-card{padding:.9rem;}}
 .dash-header{padding:1.5rem 2rem 1rem;border-bottom:1px solid #e8ecf0;background:#fff;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;}
 .dash-title{font-size:1.15rem;font-weight:800;color:#0a0a0a;}
 .dash-subtitle{font-size:.78rem;color:#9ca3af;margin-top:.15rem;}
@@ -138,7 +145,35 @@ td{padding:.7rem .75rem;color:#374151;border-bottom:1px solid #f9f9f9;}
 .form-group-inline label{font-size:.75rem;color:#6b7280;font-weight:500;}
 .toast{position:fixed;bottom:2rem;right:2rem;background:#0a0a0a;border-radius:12px;padding:.85rem 1.25rem;font-size:.85rem;color:#fff;z-index:9999;transform:translateY(100px);opacity:0;transition:all .3s;box-shadow:0 8px 24px rgba(0,0,0,.2);}
 .toast.show{transform:translateY(0);opacity:1;}
-@media(max-width:768px){.kpi-row{grid-template-columns:1fr 1fr;}.sidebar{width:60px;}.sb-logo,.sb-section,.sb-item span:not(.sb-icon){display:none;}.dash-content{padding:1rem;}.dash-header{padding:1rem;}}
+@media(max-width:768px){
+  .kpi-row{grid-template-columns:1fr 1fr;}
+  .dash-content{padding:.875rem;}
+  .dash-header{padding:.875rem 1rem;flex-wrap:nowrap;}
+  .dash-header .dash-subtitle{display:none;}
+  /* Hide sidebar on mobile - use bottom nav instead */
+  .sidebar{display:none!important;}
+  .main-area{width:100%;}
+  #screen-dashboard.active{padding-bottom:64px;}
+  /* Bottom nav bar */
+  .dash-bottom-nav{display:flex!important;}
+}
+@media(min-width:769px){
+  .dash-bottom-nav{display:none!important;}
+}
+.dash-bottom-nav{
+  display:none;
+  position:fixed;bottom:0;left:0;right:0;z-index:3000;
+  background:#fff;border-top:1px solid #e8ecf0;
+  flex-direction:row;align-items:center;justify-content:space-around;
+  height:64px;padding:0 .5rem;
+}
+.dash-bn-item{
+  display:flex;flex-direction:column;align-items:center;gap:.15rem;
+  padding:.4rem .6rem;border:none;background:none;cursor:pointer;
+  font-size:.6rem;font-weight:600;color:#9ca3af;min-width:48px;
+}
+.dash-bn-item.active{color:#25D366;}
+.dash-bn-item .bn-icon{font-size:1.3rem;line-height:1;}
 .logo-dot{width:8px;height:8px;border-radius:50%;background:#25D366;display:inline-block;margin-right:.3rem;}
 /* Dashboard var overrides for white theme */
 #screen-dashboard .card-title{color:#0a0a0a;}
@@ -902,9 +937,26 @@ Could you spare 30 seconds to rate us? It means the world to small businesses li
       </div>
     </div>
   </div>
-</div>
 
-<!-- REVIEW FUNNEL -->
+  <!-- Mobile bottom nav -->
+  <div class="dash-bottom-nav" id="dash-bottom-nav">
+    <button class="dash-bn-item active" id="bn-overview" onclick="switchPanel('overview');updateBnActive('bn-overview')">
+      <span class="bn-icon">📊</span>Overview
+    </button>
+    <button class="dash-bn-item" id="bn-send" onclick="switchPanel('send');updateBnActive('bn-send')">
+      <span class="bn-icon">💬</span>Send
+    </button>
+    <button class="dash-bn-item" id="bn-inbox" onclick="switchPanel('inbox');updateBnActive('bn-inbox')">
+      <span class="bn-icon">📥</span>Inbox
+    </button>
+    <button class="dash-bn-item" id="bn-customers" onclick="switchPanel('customers');updateBnActive('bn-customers')">
+      <span class="bn-icon">👥</span>Customers
+    </button>
+    <button class="dash-bn-item" id="bn-settings" onclick="switchPanel('settings');updateBnActive('bn-settings')">
+      <span class="bn-icon">⚙️</span>Settings
+    </button>
+  </div>
+</div>
 <div id="screen-funnel" class="screen">
   <div class="auth-grid-bg"></div><div class="auth-glow"></div>
 
@@ -1453,6 +1505,10 @@ function switchPanel(name){
   if(items[map[name]])items[map[name]].classList.add('active');
   if(name==='overview')animateStats();
   var main=document.querySelector('.dash-main');if(main)main.scrollTo({top:0,behavior:'smooth'});
+}
+function updateBnActive(activeId){
+  document.querySelectorAll('.dash-bn-item').forEach(function(b){b.classList.remove('active');});
+  var el=document.getElementById(activeId);if(el)el.classList.add('active');
 }
 function animateStats(){
   animateNum('stat-sent',appState.stats.sent);animateNum('stat-opened',appState.stats.opened);
