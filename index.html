@@ -181,7 +181,11 @@ td{padding:.7rem .75rem;color:#374151;border-bottom:1px solid #f9f9f9;}
 }
 .dash-bn-item.active{color:#25D366;}
 .dash-bn-item .bn-icon{font-size:1.3rem;line-height:1;}
-.logo-dot{width:8px;height:8px;border-radius:50%;background:#25D366;display:inline-block;margin-right:.3rem;}
+.badge{display:inline-block;padding:.2rem .6rem;border-radius:100px;font-size:.68rem;font-weight:700;}
+.badge.sent{background:#f0f0f0;color:#6b7280;}
+.badge.opened{background:#eff6ff;color:#1d4ed8;}
+.badge.reviewed{background:#f0fdf4;color:#15803d;}
+.badge.feedback{background:#fff7ed;color:#c2410c;}
 /* Dashboard var overrides for white theme */
 #screen-dashboard .card-title{color:#0a0a0a;}
 #screen-dashboard [style*="color:#374151"]{color:#374151!important;}
@@ -967,13 +971,45 @@ Could you spare 30 seconds to rate us? It means the world to small businesses li
 
       <!-- Recent sends -->
       <div class="card" style="margin-top:1.25rem;">
-        <div class="card-header"><div class="card-title">Recent Sends</div></div>
+        <div class="card-header">
+          <div class="card-title">Recent Sends</div>
+          <div style="display:flex;gap:.5rem;">
+            <button class="btn-sm" onclick="exportCSV()" title="Export to CSV">⬇ Export</button>
+          </div>
+        </div>
         <div class="table-wrap"><table><thead><tr><th>Customer</th><th>Phone</th><th>Sent at</th><th>Status</th></tr></thead><tbody id="send-table"><tr><td colspan="4" style="text-align:center;color:#9ca3af;padding:1.5rem;font-size:.83rem;">No messages sent yet. Send your first one above!</td></tr></tbody></table></div>
+      </div>
+
+      <!-- CSV Bulk Upload -->
+      <div class="card" style="margin-top:1rem;">
+        <div class="card-header">
+          <div class="card-title">📋 Bulk Send via CSV</div>
+          <a href="#" onclick="downloadCSVTemplate();return false;" style="font-size:.75rem;color:#15803d;font-weight:600;">Download template</a>
+        </div>
+        <div style="font-size:.78rem;color:#6b7280;margin-bottom:1rem;line-height:1.6;">Upload a CSV with columns <code style="background:#f5f5f5;padding:.1rem .4rem;border-radius:4px;">name,phone</code> to send WhatsApp review requests to multiple customers at once.</div>
+        <div id="csv-drop-zone" style="border:2px dashed #e8ecf0;border-radius:12px;padding:2rem;text-align:center;cursor:pointer;transition:border-color .2s;background:#fafafa;" onclick="document.getElementById('csv-file-input').click()" ondragover="event.preventDefault();this.style.borderColor='#25D366'" ondragleave="this.style.borderColor='#e8ecf0'" ondrop="handleCSVDrop(event)">
+          <div style="font-size:2rem;margin-bottom:.5rem;">📄</div>
+          <div style="font-size:.85rem;font-weight:600;color:#374151;">Click to upload or drag & drop</div>
+          <div style="font-size:.72rem;color:#9ca3af;margin-top:.25rem;">CSV files only · name, phone columns required</div>
+          <input type="file" id="csv-file-input" accept=".csv" style="display:none" onchange="handleCSVFile(this)">
+        </div>
+        <div id="csv-preview" style="display:none;margin-top:1rem;">
+          <div style="font-size:.8rem;font-weight:600;color:#0a0a0a;margin-bottom:.5rem;" id="csv-preview-title"></div>
+          <div style="max-height:200px;overflow-y:auto;border:1px solid #e8ecf0;border-radius:8px;margin-bottom:.75rem;">
+            <table style="width:100%;border-collapse:collapse;font-size:.78rem;">
+              <thead><tr><th style="padding:.5rem .75rem;text-align:left;background:#f5f7fa;color:#6b7280;font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #e8ecf0;">Name</th><th style="padding:.5rem .75rem;text-align:left;background:#f5f7fa;color:#6b7280;font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #e8ecf0;">Phone</th><th style="padding:.5rem .75rem;text-align:left;background:#f5f7fa;color:#6b7280;font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #e8ecf0;">Status</th></tr></thead>
+              <tbody id="csv-preview-table"></tbody>
+            </table>
+          </div>
+          <button id="csv-send-btn" onclick="sendCSVBatch()" style="width:100%;padding:.8rem;background:#25D366;border:none;border-radius:10px;font-size:.88rem;font-weight:700;color:#fff;cursor:pointer;box-shadow:0 3px 12px rgba(37,211,102,.25);">Send to all contacts →</button>
+          <div id="csv-progress" style="display:none;margin-top:.75rem;"></div>
+        </div>
       </div>
 
       <style>
         .send-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;align-items:start;}
         @media(max-width:768px){.send-grid{grid-template-columns:1fr!important;}}
+        code{font-family:monospace;}
       </style>
     </div>
     <div class="dash-panel" id="panel-inbox">
@@ -1671,19 +1707,123 @@ function updateDashboard(){
 function renderTables(){
   var at=document.getElementById('activity-table');
   if(at){
-    if(!appState.sends||appState.sends.length===0){at.innerHTML='<tr><td colspan="4" style="text-align:center;color:#9ca3af;padding:2rem">No messages sent yet. <a href="#" onclick="switchPanel(\'send\');return false" style="color:#15803d">Send your first one</a></td></tr>';}
-    else{at.innerHTML=appState.sends.slice(-10).reverse().map(function(s){var sc=s.status==='Sent'?'sent':s.status==='Opened'?'opened':'reviewed';return '<tr><td>'+s.name+'</td><td>'+s.phone+'</td><td>'+s.time+'</td><td><span class="badge '+sc+'">'+s.status+'</span></td></tr>';}).join('');}
+    if(!appState.sends||appState.sends.length===0){at.innerHTML='<tr><td colspan="4" style="text-align:center;color:#9ca3af;padding:2rem">No messages sent yet. <a href="#" onclick="switchPanel(\'send\');return false" style="color:#15803d">Send your first one →</a></td></tr>';}
+    else{at.innerHTML=appState.sends.slice().reverse().map(function(s){var sc=s.status==='Reviewed'?'reviewed':s.status==='Opened'?'opened':s.status==='Feedback'?'feedback':'sent';return '<tr><td style="font-weight:500;">'+s.name+'</td><td style="color:#6b7280;">'+s.phone+'</td><td style="color:#6b7280;">'+s.time+'</td><td><span class="badge '+sc+'">'+s.status+'</span></td></tr>';}).join('');}
   }
   var st=document.getElementById('send-table');
   if(st){
     if(!appState.sends||appState.sends.length===0){st.innerHTML='<tr><td colspan="4" style="text-align:center;color:#9ca3af;padding:1.5rem">No messages sent yet.</td></tr>';}
-    else{st.innerHTML=appState.sends.slice(-8).reverse().map(function(s){var sc=s.status==='Sent'?'sent':s.status==='Opened'?'opened':'reviewed';return '<tr><td>'+s.name+'</td><td>'+s.phone+'</td><td>'+s.time+'</td><td><span class="badge '+sc+'">'+s.status+'</span></td></tr>';}).join('');}
+    else{st.innerHTML=appState.sends.slice().reverse().map(function(s){var sc=s.status==='Reviewed'?'reviewed':s.status==='Opened'?'opened':s.status==='Feedback'?'feedback':'sent';return '<tr><td style="font-weight:500;">'+s.name+'</td><td style="color:#6b7280;">'+s.phone+'</td><td style="color:#6b7280;">'+s.time+'</td><td><span class="badge '+sc+'">'+s.status+'</span></td></tr>';}).join('');}
   }
   var ct=document.getElementById('customers-table');
   if(ct){
     if(!appState.customers||appState.customers.length===0){ct.innerHTML='<tr><td colspan="4" style="text-align:center;color:#9ca3af;padding:2rem">No customers yet.</td></tr>';}
-    else{ct.innerHTML=appState.customers.slice().reverse().map(function(c){return '<tr><td>'+c.name+'</td><td>'+c.phone+'</td><td>1</td><td>'+c.time+'</td></tr>';}).join('');}
+    else{ct.innerHTML=appState.customers.slice().reverse().map(function(c){return '<tr><td style="font-weight:500;">'+c.name+'</td><td style="color:#6b7280;">'+c.phone+'</td><td>1</td><td style="color:#6b7280;">'+c.time+'</td></tr>';}).join('');}
   }
+}
+
+// ═══ CSV BULK SEND ═══
+var _csvContacts = [];
+
+function parseCSV(text) {
+  var lines = text.trim().split('\n');
+  if(lines.length < 2) return [];
+  var headers = lines[0].toLowerCase().split(',').map(function(h){return h.trim().replace(/"/g,'');});
+  var nameIdx = headers.indexOf('name'); var phoneIdx = headers.indexOf('phone');
+  if(nameIdx<0||phoneIdx<0) return null; // invalid
+  return lines.slice(1).map(function(line){
+    var cols = line.split(',').map(function(c){return c.trim().replace(/"/g,'');});
+    return {name:cols[nameIdx]||'', phone:cols[phoneIdx]||''};
+  }).filter(function(c){return c.name&&c.phone;});
+}
+
+function handleCSVDrop(e) {
+  e.preventDefault();
+  document.getElementById('csv-drop-zone').style.borderColor='#e8ecf0';
+  var file = e.dataTransfer.files[0];
+  if(file) processCSVFile(file);
+}
+
+function handleCSVFile(input) {
+  if(input.files[0]) processCSVFile(input.files[0]);
+}
+
+function processCSVFile(file) {
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var contacts = parseCSV(e.target.result);
+    if(!contacts) { showToast('CSV must have "name" and "phone" columns'); return; }
+    if(contacts.length === 0) { showToast('No valid contacts found in CSV'); return; }
+    _csvContacts = contacts;
+    var title = document.getElementById('csv-preview-title');
+    var tbody = document.getElementById('csv-preview-table');
+    var preview = document.getElementById('csv-preview');
+    var btn = document.getElementById('csv-send-btn');
+    if(title) title.textContent = contacts.length + ' contacts loaded — ready to send';
+    if(btn) btn.textContent = '💬 Send WhatsApp to ' + contacts.length + ' contacts →';
+    if(tbody) tbody.innerHTML = contacts.slice(0,20).map(function(c){
+      return '<tr><td style="padding:.45rem .75rem;border-bottom:1px solid #f5f5f5;font-weight:500;">'+c.name+'</td><td style="padding:.45rem .75rem;border-bottom:1px solid #f5f5f5;color:#6b7280;">'+c.phone+'</td><td style="padding:.45rem .75rem;border-bottom:1px solid #f5f5f5;"><span style="background:#f0f0f0;color:#6b7280;font-size:.65rem;font-weight:700;padding:.15rem .5rem;border-radius:100px;">Pending</span></td></tr>';
+    }).join('') + (contacts.length>20 ? '<tr><td colspan="3" style="padding:.5rem .75rem;color:#9ca3af;font-size:.75rem;">...and '+(contacts.length-20)+' more</td></tr>' : '');
+    if(preview) preview.style.display = 'block';
+  };
+  reader.readAsText(file);
+}
+
+function sendCSVBatch() {
+  if(!_csvContacts||!_csvContacts.length) return;
+  var progress = document.getElementById('csv-progress');
+  var btn = document.getElementById('csv-send-btn');
+  var tbody = document.getElementById('csv-preview-table');
+  if(btn) btn.style.display = 'none';
+
+  var i = 0;
+  var template = (document.getElementById('msg-template')||{}).value || appState.messageTemplate;
+
+  function sendNext() {
+    if(i >= _csvContacts.length) {
+      if(progress) progress.innerHTML = '<div style="background:#f0fdf4;border:1px solid #d1fae5;border-radius:8px;padding:.75rem 1rem;font-size:.82rem;color:#15803d;font-weight:600;">✅ All '+_csvContacts.length+' WhatsApp messages opened! Check each tab and hit Send.</div>';
+      renderTables(); animateStats();
+      return;
+    }
+    var c = _csvContacts[i];
+    var phone = c.phone.replace(/\D/g,'');
+    if(phone) {
+      var reviewLink='https://reviewboost.in/?review=true&biz='+encodeURIComponent(appState.bizName);
+      if(appState.googleLink) reviewLink+='&gl='+encodeURIComponent(appState.googleLink);
+      var msg = template.replace(/{name}/g,c.name).replace(/{business}/g,appState.bizName).replace(/{review_link}/g,reviewLink);
+      window.open('https://wa.me/'+phone+'?text='+encodeURIComponent(msg),'_blank');
+      var now=new Date();
+      var ts=now.getHours()+':'+String(now.getMinutes()).padStart(2,'0')+', '+now.toLocaleDateString('en-IN',{day:'numeric',month:'short'});
+      appState.sends.push({id:'local_'+Date.now()+'_'+i,name:c.name,phone:phone,time:ts,status:'Sent',rating:0});
+      appState.customers.push({name:c.name,phone:phone,time:ts});
+      appState.stats.sent++;
+    }
+    if(progress) progress.innerHTML = '<div style="background:#f5f7fa;border-radius:8px;padding:.6rem 1rem;font-size:.8rem;color:#6b7280;">Opening '+(i+1)+' of '+_csvContacts.length+' — <strong>'+c.name+'</strong></div>';
+    i++;
+    setTimeout(sendNext, 800);
+  }
+  saveState();
+  sendNext();
+}
+
+function downloadCSVTemplate() {
+  var csv = 'name,phone\nPriya Sharma,+919876543210\nRahul Verma,+919123456789';
+  var blob = new Blob([csv], {type:'text/csv'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a'); a.href=url; a.download='contacts-template.csv';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function exportCSV() {
+  if(!appState.sends||!appState.sends.length){showToast('No sends to export');return;}
+  var rows = ['Name,Phone,Sent At,Status'];
+  appState.sends.forEach(function(s){rows.push('"'+s.name+'","'+s.phone+'","'+s.time+'","'+s.status+'"');});
+  var blob = new Blob([rows.join('\n')],{type:'text/csv'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a'); a.href=url; a.download='reviewboost-sends.csv';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 // ═══ WHATSAPP SEND ═══
