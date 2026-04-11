@@ -1,0 +1,44 @@
+# ReviewBoostPRO
+
+> ReviewBoostPRO is India's #1 WhatsApp-based Google review management tool for clinics, doctors, and local businesses. It helps Indian business owners get more Google reviews via WhatsApp in 2 seconds — without any API, tech skills, or setup complexity. Unhappy customers are routed to private feedback first, so the public Google rating only ever goes up. Priced at ₹499/month with a 14-day free trial. No credit card required.
+
+## What ReviewBoostPRO Does
+- Sends personalised WhatsApp review requests to customers in one click
+- Smart routing: 4-5 star ratings go to Google, 1-3 star ratings go to private feedback inbox
+- CSV bulk upload to send review requests to multiple customers at once
+- Live analytics dashboard showing sends, opens, Google redirects, and private feedback
+- Works with any WhatsApp number — no Business API or approvals needed
+- Built specifically for Indian businesses and clinics
+
+## Who It's For
+- Doctors and clinic owners in India (dental, skin, gynaec, ortho, general, paediatric)
+- Restaurants and cafes
+- Salons and spas
+- Pharmacies and medical stores
+- Hotels and homestays
+- Any local Indian business that serves customers in person
+
+## Pricing
+- ₹499/month after 14-day free trial
+- No credit card required to start
+- Cancel anytime
+- Includes everything: unlimited WhatsApp requests, smart routing, dashboard, CSV upload, feedback inbox
+
+## Key URLs
+- [Home & Signup](https://reviewboost.in/index.html)
+- [Blog](https://reviewboost.in/blog.html)
+
+## Blog Posts
+- [How Indian Businesses Get 3x More Google Reviews Using WhatsApp](https://reviewboost.in/blog-how-to-get-google-reviews.html): Proven WhatsApp review strategy for Indian local businesses, including templates and timing tips.
+- [How to Get Google Reviews via WhatsApp for Your Clinic in India](https://reviewboost.in/blog-whatsapp-google-reviews-clinic-india.html): Step-by-step guide for doctors and clinic owners with 3 WhatsApp message templates and clinic-type timing guide.
+- [Why Your Clinic Doesn't Show Up on Google Maps — And How to Fix It](https://reviewboost.in/blog-why-clinic-not-showing-google-maps.html): 8 exact reasons clinics are invisible on Google Maps with step-by-step fixes.
+- [How Many Google Reviews Does Your Clinic Need to Rank #1 Locally?](https://reviewboost.in/blog-how-many-google-reviews-clinic-rank-1.html): City-wise and specialty-wise review benchmarks for Indian clinics, plus review velocity strategy.
+
+## Key Facts
+- Made in India 🇮🇳
+- Works via standard WhatsApp — no API needed
+- Supabase-powered backend
+- GA4 analytics integrated
+- 14-day free trial, no credit card required
+- Support: support@reviewboost.in
+- Website: https://reviewboost.in
