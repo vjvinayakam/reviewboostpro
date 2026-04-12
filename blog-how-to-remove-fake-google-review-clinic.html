@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-7EG69HH90M"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-7EG69HH90M');
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How to Remove a Fake Google Review from Your Clinic | ReviewBoost Blog</title>
+<meta name="description" content="Step-by-step guide for Indian doctors to report and remove fake Google reviews. Includes what Google will and won't remove, escalation steps, and how to protect your clinic rating.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&family=Lora:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:#fff;color:#1a1a1a;overflow-x:hidden;}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,.95);backdrop-filter:blur(12px);border-bottom:1px solid #f0f0f0;padding:.9rem 2rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;}
+.back-link{display:flex;align-items:center;gap:.4rem;font-size:.83rem;font-weight:600;color:#6b7280;text-decoration:none;transition:color .2s;}
+.back-link:hover{color:#16a34a;}
+.nav-cta{background:#22c55e;color:#fff;border:none;border-radius:10px;padding:.55rem 1.2rem;font-size:.85rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;}
+
+.blog-hero{padding:7rem 1.5rem 4rem;max-width:760px;margin:0 auto;text-align:center;}
+.blog-tag{display:inline-flex;align-items:center;gap:.4rem;background:#fef2f2;border:1px solid #fecaca;border-radius:100px;padding:.3rem .9rem;font-size:.75rem;font-weight:700;color:#dc2626;letter-spacing:.04em;margin-bottom:1.5rem;}
+.blog-hero h1{font-family:'Lora',serif;font-size:clamp(2rem,5vw,3rem);font-weight:600;line-height:1.25;color:#111;margin-bottom:1.25rem;letter-spacing:-.01em;}
+.blog-hero h1 em{font-style:italic;color:#16a34a;}
+.blog-meta{display:flex;align-items:center;justify-content:center;gap:1.25rem;font-size:.8rem;color:#9ca3af;flex-wrap:wrap;}
+.blog-meta-dot{width:4px;height:4px;border-radius:50%;background:#d1d5db;}
+.author-chip{display:flex;align-items:center;gap:.5rem;}
+.author-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#16a34a,#22c55e);display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:800;color:#fff;}
+
+.blog-cover{max-width:860px;margin:0 auto;padding:0 1.5rem 3rem;}
+.cover-card{background:linear-gradient(135deg,#fef2f2,#fff1f2);border:1.5px solid #fecaca;border-radius:20px;padding:2.5rem 2rem;text-align:center;}
+.cover-stat-row{display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;}
+.cover-stat{background:#fff;border:1.5px solid #fecaca;border-radius:14px;padding:1.25rem 2rem;text-align:center;}
+.cover-stat-num{font-size:2.2rem;font-weight:900;color:#dc2626;line-height:1;margin-bottom:.25rem;}
+.cover-stat-label{font-size:.75rem;color:#6b7280;font-weight:600;}
+
+.article-wrap{max-width:700px;margin:0 auto;padding:0 1.5rem 5rem;}
+.article-body{font-family:'Lora',serif;font-size:1.05rem;line-height:1.85;color:#374151;}
+.article-body h2{font-family:'DM Sans',sans-serif;font-size:1.4rem;font-weight:800;color:#111;margin:2.5rem 0 .85rem;line-height:1.3;}
+.article-body h3{font-family:'DM Sans',sans-serif;font-size:1.1rem;font-weight:700;color:#111;margin:2rem 0 .6rem;}
+.article-body p{margin-bottom:1.4rem;}
+.article-body strong{font-weight:700;color:#111;}
+.article-body ul{margin:1rem 0 1.4rem 1.5rem;}
+.article-body ul li{margin-bottom:.6rem;line-height:1.7;}
+.article-body ol{margin:1rem 0 1.4rem 1.5rem;}
+.article-body ol li{margin-bottom:.7rem;line-height:1.7;}
+
+.callout{border-radius:14px;padding:1.25rem 1.5rem;margin:2rem 0;font-family:'DM Sans',sans-serif;font-size:.92rem;line-height:1.7;}
+.callout-green{background:#f0fdf4;border:1.5px solid #bbf7d0;color:#166534;}
+.callout-red{background:#fef2f2;border:1.5px solid #fecaca;color:#991b1b;}
+.callout-orange{background:#fff7ed;border:1.5px solid #fed7aa;color:#9a3412;}
+.callout-blue{background:#eff6ff;border:1.5px solid #bfdbfe;color:#1e40af;}
+.callout-title{font-weight:800;font-size:.78rem;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.6rem;display:block;}
+
+/* STEP CARDS */
+.steps{display:flex;flex-direction:column;gap:1rem;margin:1.5rem 0 2rem;}
+.step{display:flex;gap:1rem;align-items:flex-start;background:#fafafa;border:1px solid #f0f0f0;border-radius:14px;padding:1.1rem 1.25rem;}
+.step-num{width:32px;height:32px;border-radius:50%;background:#dc2626;color:#fff;font-size:.85rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.1rem;}
+.step-body{font-family:'DM Sans',sans-serif;font-size:.9rem;line-height:1.65;color:#374151;}
+.step-body strong{color:#111;}
+
+/* WHAT GOOGLE WILL/WON'T TABLE */
+.verdict-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:1.5rem 0 2rem;}
+.verdict-box{border-radius:14px;padding:1.25rem;}
+.verdict-yes{background:#f0fdf4;border:1.5px solid #bbf7d0;}
+.verdict-no{background:#fef2f2;border:1.5px solid #fecaca;}
+.verdict-title{font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.75rem;}
+.vt-yes{color:#15803d;}
+.vt-no{color:#dc2626;}
+.verdict-list{list-style:none;display:flex;flex-direction:column;gap:.5rem;}
+.verdict-list li{font-family:'DM Sans',sans-serif;font-size:.85rem;color:#374151;line-height:1.5;display:flex;gap:.5rem;align-items:flex-start;}
+.vi{flex-shrink:0;margin-top:2px;font-size:.8rem;}
+
+/* RESPONSE TEMPLATE */
+.response-box{background:#0f172a;border-radius:14px;padding:1.5rem 1.75rem;margin:1.25rem 0 2rem;font-family:'DM Sans',sans-serif;font-size:.88rem;line-height:1.8;color:#e2e8f0;border-left:4px solid #22c55e;}
+.response-label{font-family:'DM Sans',sans-serif;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#22c55e;margin-bottom:.5rem;display:block;}
+
+blockquote{border-left:4px solid #dc2626;padding:.75rem 0 .75rem 1.5rem;margin:2rem 0;font-style:italic;color:#374151;}
+blockquote cite{display:block;font-style:normal;font-size:.8rem;font-family:'DM Sans',sans-serif;color:#9ca3af;margin-top:.5rem;font-weight:600;}
+
+.cta-banner{background:#0f172a;border-radius:20px;padding:2.5rem 2rem;text-align:center;margin:3rem 0;}
+.cta-banner h3{font-family:'DM Sans',sans-serif;font-size:1.4rem;font-weight:800;color:#fff;margin-bottom:.5rem;}
+.cta-banner p{font-size:.88rem;color:rgba(255,255,255,.6);margin-bottom:1.5rem;font-family:'DM Sans',sans-serif;}
+.cta-banner button{background:#22c55e;color:#fff;border:none;border-radius:12px;padding:1rem 2.5rem;font-size:.95rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:0 4px 16px rgba(34,197,94,.35);}
+.cta-banner .sub{font-size:.75rem;color:rgba(255,255,255,.35);margin-top:.75rem;font-family:'DM Sans',sans-serif;}
+
+.more-posts{background:#fafafa;border-top:1px solid #f0f0f0;padding:4rem 1.5rem;}
+.more-posts-inner{max-width:760px;margin:0 auto;}
+.more-posts h2{font-family:'DM Sans',sans-serif;font-size:1.25rem;font-weight:800;color:#111;margin-bottom:1.5rem;}
+.posts-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;}
+.post-card{background:#fff;border:1px solid #e8e8e8;border-radius:14px;padding:1.25rem;text-decoration:none;transition:box-shadow .2s,transform .2s;}
+.post-card:hover{box-shadow:0 6px 20px rgba(0,0,0,.08);transform:translateY(-2px);}
+.post-card-tag{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#16a34a;margin-bottom:.5rem;}
+.post-card h3{font-family:'DM Sans',sans-serif;font-size:.92rem;font-weight:700;color:#111;line-height:1.4;margin-bottom:.4rem;}
+.post-card p{font-size:.78rem;color:#9ca3af;line-height:1.5;}
+
+footer{background:#fff;border-top:1px solid #f0f0f0;padding:2rem 1.5rem;text-align:center;}
+footer p{font-size:.78rem;color:#9ca3af;}
+footer a{color:#16a34a;text-decoration:none;font-weight:600;}
+
+@media(max-width:600px){
+  .cover-stat-row{flex-direction:column;align-items:center;}
+  .posts-grid{grid-template-columns:1fr;}
+  .verdict-grid{grid-template-columns:1fr;}
+  .blog-hero h1{font-size:1.75rem;}
+  nav{padding:.75rem 1.25rem;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="blog.html" class="back-link">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    Back to blog
+  </a>
+  <a href="index.html" style="text-decoration:none;">
+    <div style="display:inline-flex;align-items:center;border-radius:50px;overflow:hidden;border:2px solid #16a34a;">
+      <div style="background:#16a34a;padding:8px 14px;display:flex;align-items:center;gap:7px;">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 8.5L6.5 12L13 5" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span style="font-family:'DM Sans',sans-serif;font-weight:900;font-size:13px;color:#fff;">Review</span>
+      </div>
+      <div style="background:#fff;padding:8px 14px;display:flex;align-items:center;gap:8px;">
+        <span style="font-family:'DM Sans',sans-serif;font-weight:900;font-size:13px;color:#0f172a;">Boost</span>
+        <div style="background:#16a34a;color:#fff;font-family:'DM Sans',sans-serif;font-size:7px;font-weight:900;letter-spacing:.1em;padding:2px 6px;border-radius:4px;">PRO</div>
+      </div>
+    </div>
+  </a>
+  <button class="nav-cta" onclick="window.location.href='index.html'">Free trial →</button>
+</nav>
+
+<!-- HERO -->
+<div class="blog-hero">
+  <div class="blog-tag">🚨 Reputation Protection</div>
+  <h1>How to Remove a Fake Google Review from Your Clinic <em>(Step by Step)</em></h1>
+  <div class="blog-meta">
+    <div class="author-chip">
+      <div class="author-avatar">RB</div>
+      <span>ReviewBoost Team</span>
+    </div>
+    <div class="blog-meta-dot"></div>
+    <span>April 2026</span>
+    <div class="blog-meta-dot"></div>
+    <span>8 min read</span>
+  </div>
+</div>
+
+<!-- COVER -->
+<div class="blog-cover">
+  <div class="cover-card">
+    <p style="font-family:'DM Sans',sans-serif;font-size:.82rem;color:#6b7280;margin-bottom:1.5rem;font-weight:600;">THE DAMAGE A FAKE REVIEW CAN DO</p>
+    <div class="cover-stat-row">
+      <div class="cover-stat">
+        <div class="cover-stat-num">94%</div>
+        <div class="cover-stat-label">Patients read reviews<br>before choosing a doctor</div>
+      </div>
+      <div class="cover-stat">
+        <div class="cover-stat-num">30+</div>
+        <div class="cover-stat-label">Patients lost per<br>1-star fake review</div>
+      </div>
+      <div class="cover-stat">
+        <div class="cover-stat-num">3–10</div>
+        <div class="cover-stat-label">Days for Google to<br>review your report</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ARTICLE -->
+<div class="article-wrap">
+  <div class="article-body">
+
+    <p>You open Google Maps one morning and see it — a 1-star review from someone you've never treated. No name you recognise. No details about a real visit. Just a vague complaint designed to damage your reputation.</p>
+
+    <p>It's one of the most infuriating things that can happen to a doctor. And unfortunately, it's more common than you think — especially from competitors, disgruntled ex-staff, or people who simply have the wrong clinic.</p>
+
+    <p><strong>The good news: Google does remove fake reviews</strong> — if you follow the right process. This guide tells you exactly what to do, step by step.</p>
+
+    <h2>First: Is It Actually Removable?</h2>
+
+    <p>Before you start, you need to understand what Google will and won't remove. Many doctors waste time reporting reviews that Google won't act on — and miss the ones they actually could get removed.</p>
+
+    <div class="verdict-grid">
+      <div class="verdict-box verdict-yes">
+        <div class="verdict-title vt-yes">✅ Google WILL remove</div>
+        <ul class="verdict-list">
+          <li><span class="vi">✓</span>Review from someone who never visited your clinic</li>
+          <li><span class="vi">✓</span>Fake review from a competitor's account</li>
+          <li><span class="vi">✓</span>Review containing hate speech or profanity</li>
+          <li><span class="vi">✓</span>Spam or promotional content in a review</li>
+          <li><span class="vi">✓</span>Review posted by a bot or fake account</li>
+          <li><span class="vi">✓</span>Review about a completely different business</li>
+          <li><span class="vi">✓</span>Extortion reviews (demanding money to remove)</li>
+        </ul>
+      </div>
+      <div class="verdict-box verdict-no">
+        <div class="verdict-title vt-no">❌ Google WON'T remove</div>
+        <ul class="verdict-list">
+          <li><span class="vi">✗</span>Genuine negative review — even if unfair</li>
+          <li><span class="vi">✗</span>Review you simply disagree with</li>
+          <li><span class="vi">✗</span>Exaggerated but real patient complaint</li>
+          <li><span class="vi">✗</span>Review from a patient you had a dispute with</li>
+          <li><span class="vi">✗</span>Low rating with no text (not a policy violation)</li>
+          <li><span class="vi">✗</span>Old reviews that hurt your average rating</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout callout-orange">
+      <span class="callout-title">⚠️ Important reality check</span>
+      Google does not mediate factual disputes. If a real patient genuinely had a bad experience and left a 1-star review, Google will not remove it — even if you believe it's unfair or exaggerated. Only reviews that clearly violate Google's policies can be removed.
+    </div>
+
+    <h2>How to Identify if a Review is Fake</h2>
+
+    <p>Before reporting, gather evidence. Check these signs:</p>
+
+    <ul>
+      <li><strong>No match in your records</strong> — the name doesn't appear in your appointment book or patient records</li>
+      <li><strong>Suspicious profile</strong> — the reviewer has 0 other reviews, was created recently, or has reviewed many different businesses in a short time</li>
+      <li><strong>Generic language</strong> — "very bad service", "worst doctor" with no specific details about a real visit</li>
+      <li><strong>Wrong details</strong> — mentions staff, services, or experiences that don't match your clinic</li>
+      <li><strong>Pattern of attacks</strong> — multiple 1-star reviews appearing in a short period from different accounts</li>
+      <li><strong>Same timing as a competitor opening nearby</strong> — common in Indian cities</li>
+    </ul>
+
+    <p>Screenshot everything before you take any action. You'll need this evidence.</p>
+
+    <h2>Step-by-Step: How to Report the Fake Review</h2>
+
+    <div class="steps">
+
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body"><strong>Flag the review directly</strong><br>Go to Google Maps → find your clinic → click the review → tap the three dots (⋮) → "Report review" → select the best matching reason (Spam, Fake engagement, Conflict of interest, Off topic, or Policy violation). This starts Google's process and creates a record.</div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body"><strong>Use the Reviews Management Tool</strong><br>Go to <strong>business.google.com/reviews</strong> → find the review → click "Report review". This specialised tool is more effective than flagging from Maps. You can track the status of your report here.</div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body"><strong>Contact Google Business Profile support</strong><br>Go to <strong>support.google.com/business</strong> → choose "Manage reviews" → "Report inappropriate reviews". Explain clearly: who the reviewer is, why you believe it's fake, and what evidence you have. Be factual, not emotional.</div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body"><strong>Respond to the review publicly</strong><br>While you wait, always respond professionally. Your response is read by hundreds of future patients. A calm, factual response builds more trust than the fake review damages.</div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body"><strong>If rejected — appeal once</strong><br>Google allows one re-evaluation. Go to Google Business Profile Help → "Contact us" → explain why the review violates policy. Provide screenshots, appointment records, or any evidence that proves the reviewer was never a patient.</div>
+      </div>
+
+    </div>
+
+    <h2>How to Respond to a Fake Review Publicly</h2>
+
+    <p>Always respond — even to fake reviews. Your response is not for the fake reviewer. It's for the thousands of future patients who will read it. Here's a template that works:</p>
+
+    <span class="response-label">📋 Copy this response</span>
+    <div class="response-box">Thank you for your feedback. We take all patient experiences very seriously.
+
+However, after a thorough review of our records, we are unable to identify a patient by this name or any appointment matching the experience described.
+
+We are committed to providing the highest standard of care to every patient. If this review was intended for our clinic, we welcome you to contact us directly at [phone number] so we can understand and address your concern.
+
+— Dr. [Name], [Clinic Name]</div>
+
+    <div class="callout callout-blue">
+      <span class="callout-title">💡 Why this response works</span>
+      It's calm and professional. It clearly signals the review may be fake without being accusatory. It shows future patients that you are transparent and responsive. And it invites real resolution — which a fake reviewer will never take up.
+    </div>
+
+    <h2>If It's a Competitor Attack — Escalate</h2>
+
+    <p>If you suspect a competitor is behind multiple fake reviews (common in Indian cities where clinics compete in the same neighbourhood), take these additional steps:</p>
+
+    <ul>
+      <li><strong>Document the pattern</strong> — screenshot all suspicious reviews, their profiles, and dates</li>
+      <li><strong>Use Google's Merchant Extortion form</strong> — if someone is demanding money or favours in exchange for removing reviews, this is illegal. Report at <strong>support.google.com</strong> using the extortion-specific form</li>
+      <li><strong>Report the reviewer profiles</strong> — flag each suspicious profile on Google Maps as fake</li>
+      <li><strong>Contact a lawyer</strong> — if the fake reviews contain defamatory claims, a cease and desist letter often makes reviewers back down immediately</li>
+    </ul>
+
+    <div class="callout callout-red">
+      <span class="callout-title">🚨 Never do this</span>
+      Never respond aggressively or accusatorially in public. Never try to pay someone to remove a review. Never create fake positive reviews to counter the fakes. All of these violate Google's policies and can get your Business Profile suspended entirely.
+    </div>
+
+    <h2>The Best Long-Term Defence: More Real Reviews</h2>
+
+    <p>Here's the truth about fake reviews that most doctors don't realise: <strong>a single fake 1-star review matters much less when you have 80 real 5-star reviews.</strong></p>
+
+    <p>A clinic with 4.7 stars from 90 reviews and one recent 1-star fake is far more credible than a clinic with 4.9 from 8 reviews. Volume and consistency of real reviews is your best protection.</p>
+
+    <blockquote>
+      "The best way to fight a fake review is to drown it with real ones. Within 30 days of using WhatsApp review requests, most clinics generate enough genuine reviews that one fake becomes irrelevant."
+      <cite>— ReviewBoostPRO team, based on clinic data across India</cite>
+    </blockquote>
+
+    <div class="callout callout-green">
+      <span class="callout-title">✅ Your fake review action plan</span>
+      <strong>Day 1:</strong> Screenshot the review + flag it on Google Maps and Business Profile<br>
+      <strong>Day 2:</strong> Respond publicly with a professional, factual response<br>
+      <strong>Day 3–5:</strong> Contact Google support with evidence<br>
+      <strong>Week 2:</strong> Start sending WhatsApp review requests to real patients<br>
+      <strong>Month 1:</strong> 10–20 new real reviews dilute the fake one significantly<br>
+      <strong>Month 2:</strong> Your rating recovers — and you're now protected from future attacks
+    </div>
+
+    <h2>How Long Does Google Take to Remove a Review?</h2>
+
+    <p>Typically <strong>3 to 10 business days</strong> for an initial response. If Google finds the review violates policy, it's removed. If they don't act, you have one appeal. The entire process can take 2–4 weeks.</p>
+
+    <p>Some reviews sit in "pending" status for much longer, especially if the evidence isn't strong. This is why responding publicly and building more real reviews is equally important — you can't just wait for Google.</p>
+
+    <!-- CTA -->
+    <div class="cta-banner">
+      <h3>Build a rating that's immune to fake reviews</h3>
+      <p>Start collecting real Google reviews via WhatsApp — 5 new reviews per month makes one fake review irrelevant.</p>
+      <button onclick="window.location.href='index.html'">Start free 14-day trial →</button>
+      <div class="sub">No credit card required · ₹499/month · Setup in 5 minutes</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MORE POSTS -->
+<div class="more-posts">
+  <div class="more-posts-inner">
+    <h2>More from the blog</h2>
+    <div class="posts-grid">
+      <a href="blog-whatsapp-google-reviews-clinic-india.html" class="post-card">
+        <div class="post-card-tag">🏥 Clinics & Doctors</div>
+        <h3>How to Get Google Reviews via WhatsApp for Your Clinic in India</h3>
+        <p>3 WhatsApp templates, timing guide, and the smart routing system.</p>
+      </a>
+      <a href="blog-why-clinic-not-showing-google-maps.html" class="post-card">
+        <div class="post-card-tag">🗺️ Google Maps</div>
+        <h3>Why Your Clinic Doesn't Show Up on Google Maps</h3>
+        <p>8 exact reasons and step-by-step fixes any doctor can do today.</p>
+      </a>
+      <a href="blog-how-many-google-reviews-clinic-rank-1.html" class="post-card">
+        <div class="post-card-tag">📊 Rankings</div>
+        <h3>How Many Google Reviews Does Your Clinic Need to Rank #1?</h3>
+        <p>City-wise and specialty-wise benchmarks with review velocity strategy.</p>
+      </a>
+      <a href="blog.html" class="post-card">
+        <div class="post-card-tag">📚 All Posts</div>
+        <h3>Browse All Blog Posts</h3>
+        <p>More guides on Google Reviews, Maps rankings, and clinic growth.</p>
+      </a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>© 2026 <a href="index.html">ReviewBoostPRO</a> · Made in India 🇮🇳 · <a href="#">Privacy</a> · <a href="#">Terms</a></p>
+</footer>
+
+</body>
+</html>
