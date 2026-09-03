@@ -791,8 +791,8 @@ document.addEventListener('click', function(e){
     <a href="blog.html">Blog</a>
     <a href="javascript:void(0)" onclick="scrollToSection('faq-new');return false;">FAQ</a>
     <a href="refund-policy.html">Refund Policy</a>
-    <a href="#" onclick="showPolicyModal('privacy');return false;">Privacy</a>
-    <a href="#" onclick="showPolicyModal('terms');return false;">Terms</a>
+    <a href="privacy.html">Privacy</a>
+    <a href="terms.html">Terms</a>
   </div>
   <div class="footer-copy">© 2026 ReviewBoostPRO · Made in India 🇮🇳</div>
 </footer>
@@ -871,7 +871,7 @@ function showPolicyModal(type){
       <div class="form-group" id="fg-email"><label>Email address</label><input type="email" class="form-input" placeholder="you@yourbusiness.com" id="signup-email" oninput="clearFieldError('fg-email')"><span class="field-error">Please enter a valid email.</span></div>
       <div class="form-group" id="fg-pass"><label>Password</label><input type="password" class="form-input" placeholder="At least 6 characters" id="signup-pass" oninput="clearFieldError('fg-pass')"><span class="field-error">Password must be at least 6 characters.</span></div>
       <button class="btn-auth" id="btn-signup" onclick="doSignup()">Create account →</button>
-      <div class="auth-note">By signing up you agree to our <a href="#">Terms</a> &amp; <a href="#">Privacy Policy</a></div>
+      <div class="auth-note">By signing up you agree to our <a href="terms.html">Terms</a> &amp; <a href="privacy.html">Privacy Policy</a></div>
     </div>
     <div id="form-login" class="auth-form" style="display:none">
       <div class="auth-error-banner" id="login-error"></div>
